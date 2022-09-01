@@ -1,29 +1,33 @@
+const { ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
+
 module.exports = {
   data: {
     name: "help",
     description: "❔全コマンドのヘルプを表示します",
     options: [{
-      type: "STRING",
+      type: ApplicationCommandOptionType.String,
       name: "commands",
       description: "詳細を表示するコマンドを指定します",
       required: true,
       choices: [
-        { name: "ping", value: "ping" },
+        { name: "about", value: "about" },
         { name: "botadmin", value: "botadmin" },
-        { name: "me", value: "me"},
-        { name: "omikuji", value: "omikuji"},
-        { name: "tc_create", value: "tc_create"},
-        { name: "COMMAND_LIST", value: "COMMAND_LIST"}
+        { name: "omikuji", value: "omikuji" },
+        { name: "ping", value: "ping" },
+        { name: "qr_code", value: "qr_code" },
+        { name: "tc_create", value: "tc_create" },
+        { name: "yt_search", value: "yt_search" },
+        { name: "command_list", value: "command_list" }
       ]
     }],
   },
   async execute(interaction) {
-    if (interaction.options.getString('commands') === 'ping') {
+    if (interaction.options.getString('commands') === 'about') {
       await interaction.reply({
         embeds: [
           {
-            title: 'Pingコマンドのヘルプ',
-            description: 'BOTとDiscordとの接続状況を表示します。\nこの値が小さいほど、安定して通信できているということです。',
+            title: 'Aboutコマンドのヘルプ',
+            description: 'このBOTに関する情報を表示します',
             color: 4303284,
             thumbnail: {
               url: 'attachment://logo.png',
@@ -58,26 +62,6 @@ module.exports = {
           },
         ],
       });
-    } else if (interaction.options.getString('commands') === 'me') {
-      await interaction.reply({
-        embeds: [
-          {
-            title: 'Meコマンドのヘルプ',
-            description: 'あなたをメンションします。',
-            color: 4303284,
-            thumbnail: {
-              url: 'attachment://logo.png',
-            },
-            timestamp: new Date(),
-          },
-        ],
-        files: [
-          {
-            attachment: 'images/logo.png',
-            name: 'logo.png',
-          },
-        ],
-      });
     } else if (interaction.options.getString('commands') === 'omikuji') {
       await interaction.reply({
         embeds: [
@@ -98,12 +82,12 @@ module.exports = {
           },
         ],
       });
-    } else if (interaction.options.getString('commands') === 'tc_create') {
+    } else if (interaction.options.getString('commands') === 'ping') {
       await interaction.reply({
         embeds: [
           {
-            title: 'Tc_createコマンドのヘルプ',
-            description: 'テキストチャンネルを作成します。\n```diff\n- 要チャンネル管理権限！！ -\n```',
+            title: 'Pingコマンドのヘルプ',
+            description: 'Pingを測定します',
             color: 4303284,
             thumbnail: {
               url: 'attachment://logo.png',
@@ -118,12 +102,73 @@ module.exports = {
           },
         ],
       });
-    } else if (interaction.options.getString('commands') === 'COMMAND_LIST') {
+    } else if (interaction.options.getString('commands') === 'qr_code') {
+      await interaction.reply({
+        embeds: [
+          {
+            title: 'Qr_codeコマンドのヘルプ',
+            description: '入力された文字列やURLのQRコードを作成します。\n　※QRコードは(株)デンソーウェーブの登録商標です。',
+            color: 4303284,
+            thumbnail: {
+              url: 'attachment://logo.png',
+            },
+            timestamp: new Date(),
+          },
+        ],
+        files: [
+          {
+            attachment: 'images/logo.png',
+            name: 'logo.png',
+          },
+        ],
+      });
+    } else if (interaction.options.getString('commands') === 'tc_create') {
+      await interaction.reply({
+        embeds: [
+          {
+            title: 'Tc_createコマンドのヘルプ',
+            description: '・カテゴリーチャンネル\n・テキストチャンネル\n・ボイスチャンネル\nを作成します。\n```diff\n- 要チャンネル管理権限！！ -\n```',
+            color: 4303284,
+            thumbnail: {
+              url: 'attachment://logo.png',
+            },
+            timestamp: new Date(),
+          },
+        ],
+        files: [
+          {
+            attachment: 'images/logo.png',
+            name: 'logo.png',
+          },
+        ],
+      });
+    } else if (interaction.options.getString('commands') === 'yt_search') {
+      await interaction.reply({
+        embeds: [
+          {
+            title: 'Yt_searchコマンドのヘルプ',
+            description: 'Youtubeの動画を検索します。',
+            color: 4303284,
+            thumbnail: {
+              url: 'attachment://logo.png',
+            },
+            timestamp: new Date(),
+          },
+        ],
+        files: [
+          {
+            attachment: 'images/logo.png',
+            name: 'logo.png',
+          },
+        ],
+      });
+
+    } else if (interaction.options.getString('commands') === 'command_list') {
       await interaction.reply({
         embeds: [
           {
             title: 'コマンドリスト',
-            description: '`p!ping`でPINGを見てみよう！\n\n`p!botadmin`でこのBOTの管理者のメンションをするよ\n\n`p!me`であなたにメンションするよ\n\n`p!omikuji`でおみくじを引けるよ\n\n`p!tc_create <チャンネル名>`でテキストチャンネルを作成するよ\n　※要、チャンネル管理権限\n\n`p!stop`でBOTを停止するよ(__**BOT管理者限定機能**__)',
+            description: '`/ping`でPINGを見てみよう！\n\n`/botadmin`でこのBOTの管理者のメンションをするよ\n\n`/me`であなたにメンションするよ\n\n`/help`でこれを表示するよ\n\n`/omikuji`でおみくじを引けるよ\n\n`/tc_create <何を作るか選択> <チャンネル名>`でチャンネルを作成するよ\n　※要、チャンネル管理権限\n\n`/yt_search <キーワード>` でそのキーワードに関連した動画URLを投稿するよ\n\n`/qr_code <文字列かURL>`でその文字列を読み取れるQRコードを作成するよ\n　※QRコードは(株)デンソーウェーブの登録商標です。\n\n`/stop`でBOTを停止するよ(__**BOT管理者限定機能**__)',
             color: 4303284,
             thumbnail: {
               url: 'attachment://logo.png',
