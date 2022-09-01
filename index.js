@@ -6,12 +6,9 @@ http.createServer(function(req, res) {
 
 
 const fs = require('fs')
-const { Client, Intents } = require('discord.js');
-const dotenv = require('dotenv');
+const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
 
-dotenv.config();
-
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds], partials: [Partials.Channel] });
 
 const commands = {}
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
@@ -28,29 +25,16 @@ client.once("ready", async () => {
   }
   await client.application.commands.set(data);
   console.log("Ready!");
+  setInterval(() => {
+    client.user.setActivity({
+      name: `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜replitで起動中です`,
+    });
+  }, 10000);
+  client.channels.cache.get('889486664760721418').send('起動しました！');
 });
 
 client.on("interactionCreate", async (interaction) => {
-  if (interaction.customId === "join") {
-    if (interaction.member.roles.cache.has('889474498699595826')) {
-      await interaction.reply({ content: 'あなたは既に参加済みです', ephemeral: true });
-    } else {
-      interaction.member.roles.add('889474498699595826')
-      await interaction.reply({ content: '参加手続きが完了しました。', ephemeral: true });
-      await client.channels.cache.get('889756065531564052').send({
-        embeds: [
-          {
-            title: "📥認証ログ",
-            description: `<@${interaction.user.id}> の参加手続きが完了しました。`,
-            color: 0x33FF33,
-            timestamp: new Date()
-          }
-        ]
-      });
-      return;
-    }
-  }
-  if (!interaction.isCommand()) {
+  if (!interaction.type === InteractionType.ApplicationCommand) {
     return;
   }
   const command = commands[interaction.commandName];
