@@ -1,10 +1,12 @@
+const { ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
+
 module.exports = {
   data: {
     name: "create",
     description: "🧰カテゴリー・テキストチャンネル・ボイスチャンネルを作成します！（チャンネル管理権限必須）",
     options: [
       {
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "type",
         description: "何を作るか指定します",
         required: true,
@@ -12,14 +14,16 @@ module.exports = {
           { name: "カテゴリー", value: "category" },
           { name: "テキストチャンネル", value: "text_channel" },
           { name: "ボイスチャンネル", value: "voice_channel"},
-        ]
+        ],
+        channel_types: [0]
       },
       {
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "name",
         value: "name",
         description: "名前を指定します",
-        required: true
+        required: true,
+        channel_types: [0]
       }
     ]
   },
@@ -39,7 +43,12 @@ module.exports = {
       });
     } else {
       if (interaction.options.getString('type') === 'category') {
-        interaction.guild.channels.create(c_name,{type: 'GUILD_CATEGORY'});
+        interaction.guild.channels.create(
+          {
+            name: c_name,
+            type: 4
+          }
+        );
         await interaction.reply({
           embeds: [
             {
@@ -51,9 +60,13 @@ module.exports = {
           ]
         });
       } else if (interaction.options.getString('type') === 'text_channel') {
-        interaction.guild.channels.create(c_name,{
-          type: 'TEXT',parent: interaction.channel.parent
-        }).then(async channels => {
+        interaction.guild.channels.create(
+          {
+            name: c_name,
+            type: 0,
+            parent: interaction.channel.parent
+          }
+        ).then(async channels => {
           const c_id = channels.id
           await interaction.reply({
             embeds: [
@@ -67,9 +80,13 @@ module.exports = {
           });
         });
       } else if (interaction.options.getString('type') === 'voice_channel') {
-        interaction.guild.channels.create(c_name,{
-          type: 'GUILD_VOICE', parent: interaction.channel.parent
-        }).then(async channels => {
+        interaction.guild.channels.create(
+          {
+            name: c_name,
+            type: 2,
+            parent: interaction.channel.parent
+          }
+        ).then(async channels => {
           const c_id = channels.id
           await interaction.reply({
             embeds: [
