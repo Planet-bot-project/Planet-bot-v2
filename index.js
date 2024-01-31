@@ -1,52 +1,70 @@
-const http = require('http');
-http.createServer(function(req, res) {
-  res.write('Discord bot is active.\nPleace check it.');
-  res.end();
-}).listen(8000);
+const fs = require("fs");
+const { Client, GatewayIntentBits } = require("discord.js");
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+  ],
+});
+const express = require("express");
+const app = express();
+require("dotenv").config();
 
+//機密情報取得
+const token = process.env.token;
+const PORT = 8000;
 
-const fs = require('fs')
-const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
+///////////////////////////////////////////////////
+fs.readdir("./events", (_err, files) => {
+  files.forEach((file) => {
+    if (!file.endsWith(".js")) return;
+    const event = require(`./events/${file}`);
+    let eventName = file.split(".")[0];
+    console.log(`クライアントイベントの読み込みが完了: ${eventName}`);
+    client.on(eventName, event.bind(null, client));
+    delete require.cache[require.resolve(`./events/${file}`)];
+  });
+});
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds], partials: [Partials.Channel] });
+client.commands = [];
+fs.readdir("./commands", (err, files) => {
+  if (err) throw err;
+  files.forEach(async (f) => {
+    try {
+      if (f.endsWith(".js")) {
+        let props = require(`./commands/${f}`);
+        client.commands.push({
+          name: props.name,
+          description: props.description,
+          options: props.options,
+        });
+        console.log(`コマンドの読み込みが完了: ${props.name}`);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });
+});
 
-const commands = {}
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
-
-for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
-  commands[command.data.name] = command
+if (token) {
+  client.login(token).catch((err) => {
+    console.log(
+      "プロジェクトに入力したボットのトークンが間違っているか、ボットのINTENTSがオフになっています!"
+    );
+  });
+} else {
+  setTimeout(() => {
+    console.log(
+      "ボットのトークンをプロジェクト内の.envファイルに設定してください!"
+    );
+  }, 2000);
 }
 
-client.once("ready", async () => {
-  const data = []
-  for (const commandName in commands) {
-    data.push(commands[commandName].data)
-  }
-  await client.application.commands.set(data);
-  console.log("Ready!");
-  setInterval(() => {
-    client.user.setActivity({
-      name: `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜replitで起動中です`,
-    });
-  }, 10000);
-  client.channels.cache.get('889486664760721418').send('起動しました！');
+app.get("/", (request, response) => {
+  response?.sendStatus(200);
 });
-
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.type === InteractionType.ApplicationCommand) {
-    return;
-  }
-  const command = commands[interaction.commandName];
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({
-      content: '内部エラーが発生しました。管理者にお問い合わせください。',
-      ephemeral: true,
-    })
-  }
+app.listen(PORT, function () {
+  console.log(`[NodeJS] Application Listening on Port ${PORT}`);
 });
-
-client.login(process.env.TOKEN);
