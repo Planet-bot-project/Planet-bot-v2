@@ -1,6 +1,6 @@
 const { SnowflakeUtil, ApplicationCommandOptionType } = require("discord.js");
-const wait = require("node:timers/promises").setTimeout;
 const QRCode = require("qrcode");
+const fs = require("fs");
 
 module.exports = {
   name: "qr_code",
@@ -19,18 +19,20 @@ module.exports = {
       await interaction.deferReply();
 
       let now = SnowflakeUtil.generate();
+      let filePath = `./images/qr_code/${interaction.guild.id}.${now}.png`;
 
       const QRValue = interaction.options.getString("keyword");
       //splitでユーザーのメッセージを取得し、それをqr.pngへ出力する
-      QRCode.toFile(
-        `./images/qr_code/${interaction.guild.id}.${now}.png`,
-        QRValue
-      );
+      QRCode.toFile(filePath, QRValue);
       //出力されたqr.pngを添付ファイルとして、送信する
-      await wait(1000);
-      await interaction.editReply({
-        files: [`./images/qr_code/${interaction.guild.id}.${now}.png`],
-      });
+      setTimeout(async () => {
+        await interaction.editReply({
+          files: [filePath],
+        });
+        fs.unlink(filePath, (err) => {
+          if (err) throw err;
+        });
+      }, 1000);
     } catch (err) {
       const errorNotification = require("../functions.js");
       errorNotification(client, interaction, err);
