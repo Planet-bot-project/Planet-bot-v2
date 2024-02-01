@@ -15,7 +15,6 @@ module.exports = {
         { name: "テキストチャンネル", value: "text_channel" },
         { name: "ボイスチャンネル", value: "voice_channel" },
       ],
-      channel_types: [0],
     },
     {
       type: ApplicationCommandOptionType.String,
@@ -23,7 +22,6 @@ module.exports = {
       value: "name",
       description: "名前を指定します",
       required: true,
-      channel_types: [0],
     },
   ],
 
