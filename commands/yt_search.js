@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType } = require("discord.js");
-const wait = require("node:timers/promises").setTimeout;
+const { setTimeout } = require("node:timers/promises");
 const yts = require("yt-search"); //yt-searchを読み込む
 
 module.exports = {
@@ -18,13 +18,19 @@ module.exports = {
     try {
       await interaction.deferReply();
 
-      const AKB = interaction.options.getString("keyword");
-      yts(AKB, async function (err, R) {
-        //検索
-        const videos = R.videos;
-        await wait(1000);
+      const keyword = interaction.options.getString("keyword");
+      await yts({ query: keyword }, async function (err, result) {
+        if (err) {
+          console.log(`ytSearch ERROR: ${err}`);
+          return interaction.editReply({
+            content:
+              "エラーが発生しました。時間を空けてもう一度お試しください。",
+            ephemeral: true,
+          });
+        }
+
         await interaction.editReply({
-          content: videos[0].url,
+          content: result.all[0].url,
           ephemeral: true,
         });
       });
