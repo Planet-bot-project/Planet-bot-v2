@@ -1,5 +1,4 @@
 const { PermissionsBitField } = require("discord.js");
-const { setTimeout } = require("node:timers/promises");
 
 module.exports = {
   name: "grade_role_update",
@@ -97,6 +96,7 @@ module.exports = {
           const grade_role_student = await interaction.guild.roles.cache.find(
             (role) => role.name.includes("生徒")
           );
+
           if (user.roles.cache.has(grade_role_kou3.id)) {
             // 高３だけ別処理
             user.roles.remove(grade_role_kou3);
@@ -117,13 +117,13 @@ module.exports = {
 
               if (user.roles.cache.has(grade_role.id)) {
                 user.roles.remove(grade_role);
-                await setTimeout(500);
-                user.roles.add(grade_role_new);
+                setTimeout(() => {
+                  user.roles.add(grade_role_new);
+                }, 500);
                 break;
               }
             }
           }
-          await setTimeout(500);
         }
         await interaction.editReply("✅更新が完了しました。");
       }

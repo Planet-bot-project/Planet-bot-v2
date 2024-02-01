@@ -1,5 +1,4 @@
 const { ApplicationCommandOptionType } = require("discord.js");
-const { setTimeout } = require("node:timers/promises");
 const yts = require("yt-search"); //yt-searchを読み込む
 
 module.exports = {
