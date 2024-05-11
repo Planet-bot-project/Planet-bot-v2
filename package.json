@@ -9,12 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/rest": "^2.2.0",
-    "discord.js": "^14.14.1",
+    "@discordjs/rest": "^2.3.0",
+    "discord.js": "^14.15.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
     "qrcode": "^1.5.3",
-    "yt-search": "^2.10.4"
+    "yt-search": "^2.11.0"
   }
 }
