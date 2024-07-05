@@ -1,4 +1,9 @@
-const { ApplicationCommandOptionType } = require("discord.js");
+const {
+  ApplicationCommandOptionType,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
 
 module.exports = {
   name: "help",
@@ -25,69 +30,48 @@ module.exports = {
     try {
       const commands = interaction.options.getString("commands");
 
+      let button = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel("サポートサーバーに参加する")
+          .setStyle(ButtonStyle.Link)
+          .setURL("https://discord.gg/uYYaVRuUuJ")
+      );
+
+      let title, description;
       if (commands === "ping") {
-        await interaction.reply({
-          embeds: [
-            {
-              title: "Pingコマンドのヘルプ",
-              description: "Pingを測定します",
-              color: 4303284,
-              thumbnail: {
-                url: "attachment://logo.png",
-              },
-              timestamp: new Date(),
-            },
-          ],
-          files: [
-            {
-              attachment: "images/logo.png",
-              name: "logo.png",
-            },
-          ],
-        });
+        title = "Pingコマンドのヘルプ";
+        description = "Pingを測定します";
       } else if (commands === "qr_code") {
-        await interaction.reply({
-          embeds: [
-            {
-              title: "Qr_codeコマンドのヘルプ",
-              description:
-                "入力された文字列やURLのQRコードを作成します。\n　※QRコードは(株)デンソーウェーブの登録商標です。",
-              color: 4303284,
-              thumbnail: {
-                url: "attachment://logo.png",
-              },
-              timestamp: new Date(),
-            },
-          ],
-          files: [
-            {
-              attachment: "images/logo.png",
-              name: "logo.png",
-            },
-          ],
-        });
+        title = "Qr_codeコマンドのヘルプ";
+        description =
+          "入力された文字列やURLのQRコードを作成します。\n　※QRコードは(株)デンソーウェーブの登録商標です。";
       } else {
-        await interaction.reply({
-          embeds: [
-            {
-              title: "Planet-botのヘルプ",
-              description:
-                "`/ping`でPINGを見てみよう！\n\n`/botadmin`でこのBOTの管理者のメンションをするよ\n\n`/me`であなたにメンションするよ\n\n`/help`でこれを表示するよ\n\n`/omikuji`でおみくじを引けるよ\n\n`/tc_create <何を作るか選択> <チャンネル名>`でチャンネルを作成するよ\n　※要、チャンネル管理権限\n\n`/yt_search <キーワード>` でそのキーワードに関連した動画URLを投稿するよ\n\n`/qr_code <文字列かURL>`でその文字列を読み取れるQRコードを作成するよ\n　※QRコードは(株)デンソーウェーブの登録商標です。\n\n`/stop`でBOTを停止するよ(__**BOT管理者限定機能**__)",
-              color: 4303284,
-              thumbnail: {
-                url: "attachment://logo.png",
-              },
-              timestamp: new Date(),
-            },
-          ],
-          files: [
-            {
-              attachment: "images/logo.png",
-              name: "logo.png",
-            },
-          ],
-        });
+        title = "Planet - botのヘルプ";
+        description = "Planet - botのヘルプ";
       }
+
+      //↓TODO調整
+      await interaction.reply({
+        embeds: [
+          {
+            title: "",
+            description:
+              "`/ping`でPINGを見てみよう！\n\n`/botadmin`でこのBOTの管理者のメンションをするよ\n\n`/me`であなたにメンションするよ\n\n`/help`でこれを表示するよ\n\n`/omikuji`でおみくじを引けるよ\n\n`/tc_create <何を作るか選択> <チャンネル名>`でチャンネルを作成するよ\n　※要、チャンネル管理権限\n\n`/yt_search <キーワード>` でそのキーワードに関連した動画URLを投稿するよ\n\n`/qr_code <文字列かURL>`でその文字列を読み取れるQRコードを作成するよ\n　※QRコードは(株)デンソーウェーブの登録商標です。\n\n`/stop`でBOTを停止するよ(__**BOT管理者限定機能**__)",
+            color: 4303284,
+            thumbnail: {
+              url: "attachment://logo.png",
+            },
+            timestamp: new Date(),
+          },
+        ],
+        files: [
+          {
+            attachment: "images/logo.png",
+            name: "logo.png",
+          },
+        ],
+        components: [button],
+      });
     } catch (err) {
       const errorNotification = require("../functions.js");
       errorNotification(client, interaction, err);
