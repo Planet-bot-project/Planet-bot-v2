@@ -47,16 +47,16 @@ module.exports = {
           "入力された文字列やURLのQRコードを作成します。\n　※QRコードは(株)デンソーウェーブの登録商標です。";
       } else {
         title = "Planet - botのヘルプ";
-        description = "Planet - botのヘルプ";
+        description =
+          "`/ping`でPINGを見てみよう！\n\n`/botadmin`でこのBOTの管理者のメンションをするよ\n\n`/me`であなたにメンションするよ\n\n`/help`でこれを表示するよ\n\n`/omikuji`でおみくじを引けるよ\n\n`/tc_create <何を作るか選択> <チャンネル名>`でチャンネルを作成するよ\n　※要、チャンネル管理権限\n\n`/yt_search <キーワード>` でそのキーワードに関連した動画URLを投稿するよ\n\n`/qr_code <文字列かURL>`でその文字列を読み取れるQRコードを作成するよ\n　※QRコードは(株)デンソーウェーブの登録商標です。\n\n`/stop`でBOTを停止するよ(__**BOT管理者限定機能**__)";
       }
 
       //↓TODO調整
       await interaction.reply({
         embeds: [
           {
-            title: "",
-            description:
-              "`/ping`でPINGを見てみよう！\n\n`/botadmin`でこのBOTの管理者のメンションをするよ\n\n`/me`であなたにメンションするよ\n\n`/help`でこれを表示するよ\n\n`/omikuji`でおみくじを引けるよ\n\n`/tc_create <何を作るか選択> <チャンネル名>`でチャンネルを作成するよ\n　※要、チャンネル管理権限\n\n`/yt_search <キーワード>` でそのキーワードに関連した動画URLを投稿するよ\n\n`/qr_code <文字列かURL>`でその文字列を読み取れるQRコードを作成するよ\n　※QRコードは(株)デンソーウェーブの登録商標です。\n\n`/stop`でBOTを停止するよ(__**BOT管理者限定機能**__)",
+            title: title,
+            description: description,
             color: 4303284,
             thumbnail: {
               url: "attachment://logo.png",
