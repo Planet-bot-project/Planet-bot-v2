@@ -28,6 +28,12 @@ module.exports = {
           });
         }
 
+        //ディスクリプションを作成
+
+        //結果を一定文字数以上になったら別ページ用配列にする。
+
+        // TODO: https://www.youtube.com/watch?v=tZxN3Irad_I を参考に、ページネーションを作成
+
         await interaction.editReply({
           content: result.all[0].url,
           ephemeral: true,
