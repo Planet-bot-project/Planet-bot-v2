@@ -1,7 +1,7 @@
 {
   "name": "new_main_program",
   "version": "1.0.0",
-  "description": "https://qiita.com/gaato/items/55b32bc4777905ac162a",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
