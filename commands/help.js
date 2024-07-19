@@ -73,7 +73,7 @@ module.exports = {
         components: [button],
       });
     } catch (err) {
-      const errorNotification = require("../functions.js");
+      const errorNotification = require("../errorNotification.js");
       errorNotification(client, interaction, err);
     }
   },
