@@ -28,11 +28,12 @@ module.exports = {
           });
         }
 
-        //ディスクリプションを作成
+        let tenResult = result.all.slice(0, 9); //結果のうち10個分を抽出
 
-        //結果を一定文字数以上になったら別ページ用配列にする。
-
-        // TODO: https://www.youtube.com/watch?v=tZxN3Irad_I を参考に、ページネーションを作成
+        let embedDescriptions = [];
+        for (let value of tenResult) {
+          let embedDescription = `[\`${value.type}\`]`;
+        }
 
         await interaction.editReply({
           content: result.all[0].url,
