@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType } = require("discord.js");
-const yts = require("yt-search"); //yt-searchを読み込む
+const ytsr = require("@distube/ytsr");
 
 module.exports = {
   name: "yt_search",
@@ -18,28 +18,45 @@ module.exports = {
       await interaction.deferReply();
 
       const keyword = interaction.options.getString("keyword");
-      await yts({ query: keyword }, async function (err, result) {
-        if (err) {
-          console.log(`ytSearch ERROR: ${err}`);
-          return interaction.editReply({
-            content:
-              "エラーが発生しました。時間を空けてもう一度お試しください。",
-            ephemeral: true,
-          });
+
+      ytsr(keyword, { type: "playlist", safeSearch: true, limit: 5 }).then(
+        (playlistResult) => {
+          ytsr(keyword, { type: "video", safeSearch: true, limit: 5 }).then(
+            (videoResult) => {
+              if (!playlistResult) playlistResult = "見つかりませんでした。";
+              if (!videoResult) videoResult = "見つかりませんでした。";
+
+              let playlistDescription = [];
+              let videosDescription = [];
+              for (let i = 0; i < 5; i++) {
+                let playlistString = `[**${i}**] **[\`${playlistResult.items[i].name}\`](${playlistResult.items[i].url})**(${playlistResult.items[i]?.videoCount}曲)｜[\`${playlistResult.items[i].duration}.\`]｜by \`${playlistResult.items[i].author.name}\``;
+                playlistDescription.push(playlistString);
+
+                let videoString = `[**${i}**] **[\`スーパーカリフラジリスティックエクスピアリドーシャス\`](https://youtube.com/watch?v=8TghOw3v61k)**｜[\`30:56\`]｜by \`スーパーカリフラジリスティックエクスピアリドーシャス\``;
+                videosDescription.push(videoString);
+              }
+
+              return interaction.editReply({
+                embeds: [
+                  {
+                    title: `${keyword}の検索結果`,
+                    fields: [
+                      {
+                        name: "プレイリスト",
+                        value: playlistDescription.join("\n"),
+                      },
+                      {
+                        name: "動画",
+                        value: videosDescription.join("\n"),
+                      },
+                    ],
+                  },
+                ],
+              });
+            }
+          );
         }
-
-        let tenResult = result.all.slice(0, 9); //結果のうち10個分を抽出
-
-        let embedDescriptions = [];
-        for (let value of tenResult) {
-          let embedDescription = `[\`${value.type}\`]`;
-        }
-
-        await interaction.editReply({
-          content: result.all[0].url,
-          ephemeral: true,
-        });
-      });
+      );
     } catch (err) {
       const errorNotification = require("../errorNotification.js");
       errorNotification(client, interaction, err);
