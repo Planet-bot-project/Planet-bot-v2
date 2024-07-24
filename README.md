@@ -7,6 +7,6 @@ https://qiita.com/gaato/items/55b32bc4777905ac162a
 
 # インストール
 ```
-npm i discord.js express qrcode yt-search
+npm i discord.js express qrcode @distube/ytsr
 npm i --save-dev dotenv fs
 ```
