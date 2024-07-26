@@ -23,23 +23,41 @@ module.exports = {
         (playlistResult) => {
           ytsr(keyword, { type: "video", safeSearch: true, limit: 5 }).then(
             (videoResult) => {
-              if (!playlistResult) playlistResult = "見つかりませんでした。";
-              if (!videoResult) videoResult = "見つかりませんでした。";
-
               let playlistDescription = [];
               let videosDescription = [];
-              for (let i = 0; i < 5; i++) {
-                let playlistString = `[**${i}**] **[\`${playlistResult.items[i].name}\`](${playlistResult.items[i].url})**(${playlistResult.items[i]?.videoCount}曲)｜[\`${playlistResult.items[i].duration}.\`]｜by \`${playlistResult.items[i].author.name}\``;
-                playlistDescription.push(playlistString);
 
-                let videoString = `[**${i}**] **[\`スーパーカリフラジリスティックエクスピアリドーシャス\`](https://youtube.com/watch?v=8TghOw3v61k)**｜[\`30:56\`]｜by \`スーパーカリフラジリスティックエクスピアリドーシャス\``;
-                videosDescription.push(videoString);
+              //プレイリストのデータ取得
+              if (playlistResult.results != 0) {
+                for (let i = 0; i < 5; i++) {
+                  let playlistString = `${i + 1}. **[\`${
+                    playlistResult.items[i].name
+                  }\`](${playlistResult.items[i].url})**(${
+                    playlistResult.items[i]?.length
+                  }曲)｜作者： \`${playlistResult.items[i].owner.name}\``;
+                  playlistDescription.push(playlistString);
+                }
+              } else {
+                playlistDescription = ["見つかりませんでした"];
+              }
+
+              //動画のデータ取得
+              if (videoResult.results != 0) {
+                for (let i = 0; i < 5; i++) {
+                  let videoString = `${i + 1}. **[\`${
+                    videoResult.items[i].name
+                  }\`](${videoResult.items[i].url})**｜\`[${
+                    videoResult.items[i].duration
+                  }]\`｜作者： \`${videoResult.items[i].author.name}\``;
+                  videosDescription.push(videoString);
+                }
+              } else {
+                videosDescription = ["見つかりませんでした。"];
               }
 
               return interaction.editReply({
                 embeds: [
                   {
-                    title: `${keyword}の検索結果`,
+                    title: `「${keyword}」の検索結果`,
                     fields: [
                       {
                         name: "プレイリスト",
