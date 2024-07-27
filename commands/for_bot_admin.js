@@ -1,0 +1,43 @@
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+
+module.exports = {
+  name: "for_bot_admin",
+  description: "<<BOTオーナー専用コマンド>>",
+  checkJoinVCAndPlaying: false,
+
+  run: async (client, interaction) => {
+    await interaction.deferReply();
+    if (!client.config.ownerID.includes(interaction?.user?.id))
+      return interaction
+        .editReply({
+          content: `申し訳ございません。\n本コマンドはBOTのオーナーのみが使用出来るように設定されているため、使用出来ません。\n\nご不明な点がございましたら、[サポートサーバー](${client.config.supportServer})にてお問い合わせください。`,
+          ephemeral: true,
+        })
+        .catch((err) => {});
+
+    let buttons = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setLabel("サーバー登録")
+        .setCustomId("server_register")
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setLabel("サーバー登録解除")
+        .setCustomId("server_unregister")
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setLabel("デバッグ")
+        .setCustomId("debug")
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setLabel("データベース値の追加/削除")
+        .setCustomId("data_control")
+        .setStyle(ButtonStyle.Secondary)
+    );
+    await interaction.editReply({
+      content:
+        "何をしますか？\n\n# __**※※データベース更新の際は、必ずプログラム内の「/models/profileSchema.js」を更新後に追加/削除を行ってください。それを行わないと、正常に更新できません※※**__",
+      ephemeral: true,
+      components: [buttons],
+    });
+  },
+};

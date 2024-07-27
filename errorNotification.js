@@ -1,5 +1,7 @@
 function errorNotification(client, interaction, e) {
   const { EmbedBuilder } = require("discord.js");
+  const consoleChannel = process.env.console_channel;
+  const adminUserID = process.env.admin_user;
 
   let embed = new EmbedBuilder()
     .setColor(0xffa954)
@@ -34,8 +36,8 @@ function errorNotification(client, interaction, e) {
       },
     ]);
   client.channels.cache
-    .get("980641967694311484")
-    ?.send({ content: "<@728495196303523900>", embeds: [embed] })
+    .get(consoleChannel)
+    ?.send({ content: `<@${adminUserID}>`, embeds: [embed] })
     .catch((err) => {});
 
   return;

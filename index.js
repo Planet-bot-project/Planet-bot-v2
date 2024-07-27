@@ -8,12 +8,13 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
   ],
 });
+const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
 require("dotenv").config();
 
 //機密情報取得
-const token = process.env.token;
+const discord_token = process.env.discord_token;
 const PORT = 8000;
 
 ///////////////////////////////////////////////////
@@ -48,8 +49,8 @@ fs.readdir("./commands", (err, files) => {
   });
 });
 
-if (token) {
-  client.login(token).catch((err) => {
+if (discord_token) {
+  client.login(discord_token).catch((err) => {
     console.log(
       "プロジェクトに入力したボットのトークンが間違っているか、ボットのINTENTSがオフになっています!"
     );
@@ -58,6 +59,26 @@ if (token) {
   setTimeout(() => {
     console.log(
       "ボットのトークンをプロジェクト内の.envファイルに設定してください!"
+    );
+  }, 2000);
+}
+
+let mongodb_TOKEN = process.env.mongodb_token;
+if (mongodb_TOKEN) {
+  //mongooseについて
+  mongoose.set("strictQuery", false);
+  mongoose
+    .connect(mongodb_TOKEN, { dbName: "serverDB" })
+    .then(() => {
+      console.log("データベースに接続したんだゾ");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+} else {
+  setTimeout(() => {
+    console.log(
+      "mongodbのトークンをプロジェクト内の.envファイルに設定してください!"
     );
   }, 2000);
 }
