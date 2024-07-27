@@ -5,14 +5,58 @@ module.exports = {
   description: "⏱ポモドーロタイマーを設定します！",
   options: [
     {
-      type: ApplicationCommandOptionType.String,
-      name: "mode",
-      description: "ポモドーロタイマーを有効にするか無効にするか選んでください",
-      required: true,
-      choices: [
-        { name: "ON(有効)", value: "on" },
-        { name: "OFF(無効)", value: "off" },
+      type: ApplicationCommandOptionType.Subcommand,
+      name: "on",
+      description: "ポモドーロタイマーを有効にします。",
+      options: [
+        {
+          type: ApplicationCommandOptionType.Channel,
+          name: "category",
+          description:
+            "タイマーを使用するカテゴリーを設定してください。設定しない場合は入力しないでください。",
+          required: false,
+        },
       ],
+    },
+    {
+      type: ApplicationCommandOptionType.SubcommandGroup,
+      name: "settings",
+      description: "ポモドーロタイマーの設定を変更します。",
+      options: [
+        {
+          type: ApplicationCommandOptionType.Subcommand,
+          name: "working_time",
+          description:
+            "ポモドーロタイマーの活動時間の長さを設定します。単位は分です。",
+          options: [
+            {
+              type: ApplicationCommandOptionType.Integer,
+              name: "working_minute",
+              description: "単位は分です。",
+              required: true,
+            },
+          ],
+        },
+        {
+          type: ApplicationCommandOptionType.Subcommand,
+          name: "breaking_time",
+          description:
+            "ポモドーロタイマーの休憩時間の長さを設定します。単位は分です。",
+          options: [
+            {
+              type: ApplicationCommandOptionType.Integer,
+              name: "breaking_minute",
+              description: "単位は分です。",
+              required: true,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: ApplicationCommandOptionType.Subcommand,
+      name: "off",
+      description: "ポモドーロタイマーを無効にします。",
     },
   ],
 
