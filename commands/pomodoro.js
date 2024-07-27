@@ -62,9 +62,10 @@ module.exports = {
 
   run: async (client, interaction) => {
     try {
-      let mode = interaction.options.getString("mode");
-
-      if (mode == "on") {
+      let mode = interaction.options.getSubcommand();
+      if (mode === "on") {
+      } else if (mode == "working_time") {
+      } else if (mode == "breaking_time") {
       } else if (mode == "off") {
       }
     } catch (err) {
