@@ -45,6 +45,10 @@ module.exports = async (client) => {
     if (!model.length) {
       const profile = await profileModel.create({
         _id: guild.id,
+        pomodoro: false,
+        pomodoro_category: null,
+        pomodoro_worktime: 10,
+        pomodoro_breaktime: 5,
       });
       profile
         .save()
