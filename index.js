@@ -15,6 +15,7 @@ require("dotenv").config();
 
 //機密情報取得
 const discord_token = process.env.discord_token;
+const mongodb_TOKEN = process.env.mongodb_token;
 const PORT = 8000;
 
 ///////////////////////////////////////////////////
@@ -63,7 +64,6 @@ if (discord_token) {
   }, 2000);
 }
 
-let mongodb_TOKEN = process.env.mongodb_token;
 if (mongodb_TOKEN) {
   //mongooseについて
   mongoose.set("strictQuery", false);
