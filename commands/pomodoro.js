@@ -1,72 +1,66 @@
 const {
-  ApplicationCommandOptionType,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  SlashCommandBuilder,
+  ChannelType,
 } = require("discord.js");
 const profileModel = require("../models/profileSchema");
 
 module.exports = {
-  name: "pomodoro",
-  description: "⏱ポモドーロタイマーを設定します！",
-  options: [
-    {
-      type: ApplicationCommandOptionType.Subcommand,
-      name: "on",
-      description: "ポモドーロタイマーを有効にします。",
-      options: [
-        {
-          type: ApplicationCommandOptionType.Channel,
-          name: "category",
-          description:
-            "タイマーを使用するカテゴリーを設定してください。設定しない場合は入力しないでください。",
-          required: false,
-          //チャンネルタイプ指定が出来るようにする
-          //https://stackoverflow.com/questions/76114164
-        },
-      ],
-    },
-    {
-      type: ApplicationCommandOptionType.SubcommandGroup,
-      name: "settings",
-      description: "ポモドーロタイマーの設定を変更します。",
-      options: [
-        {
-          type: ApplicationCommandOptionType.Subcommand,
-          name: "working_time",
-          description:
-            "ポモドーロタイマーの活動時間の長さを設定します。単位は分です。",
-          options: [
-            {
-              type: ApplicationCommandOptionType.Integer,
-              name: "working_minute",
-              description: "単位は分です。",
-              required: true,
-            },
-          ],
-        },
-        {
-          type: ApplicationCommandOptionType.Subcommand,
-          name: "breaking_time",
-          description:
-            "ポモドーロタイマーの休憩時間の長さを設定します。単位は分です。",
-          options: [
-            {
-              type: ApplicationCommandOptionType.Integer,
-              name: "breaking_minute",
-              description: "単位は分です。",
-              required: true,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      type: ApplicationCommandOptionType.Subcommand,
-      name: "off",
-      description: "ポモドーロタイマーを無効にします。",
-    },
-  ],
+  data: new SlashCommandBuilder()
+    .setName("pomodoro")
+    .setDescription("⏱ポモドーロタイマーを設定します！")
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("on")
+        .setDescription("ポモドーロタイマーを有効にします。")
+        .addChannelOption((option) =>
+          option
+            .setName("category")
+            .setDescription(
+              "タイマーを使用するカテゴリーを設定してください。設定しない場合は入力しないでください。"
+            )
+            .addChannelTypes(ChannelType.GuildCategory)
+            .setRequired(true)
+        )
+    )
+    .addSubcommandGroup((subcommands) =>
+      subcommands
+        .setName("settings")
+        .setDescription("ポモドーロタイマーの設定を変更します。")
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("working_time")
+            .setDescription(
+              "ポモドーロタイマーの活動時間の長さを設定します。単位は分です。"
+            )
+            .addIntegerOption((option) =>
+              option
+                .setName("working_minute")
+                .setDescription("単位は分です。")
+                .setRequired(true)
+            )
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("breaking_time")
+            .setDescription(
+              "ポモドーロタイマーの休憩時間の長さを設定します。単位は分です。"
+            )
+            .addIntegerOption((option) =>
+              option
+                .setName("breaking_minute")
+                .setDescription("単位は分です。")
+                .setRequired(true)
+            )
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("off")
+        .setDescription("ポモドーロタイマーを無効にします。")
+    ),
 
   run: async (client, interaction) => {
     try {
