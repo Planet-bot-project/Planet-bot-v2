@@ -1,8 +1,14 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  SlashCommandBuilder,
+} = require("discord.js");
 
 module.exports = {
-  name: "for_bot_admin",
-  description: "<<BOTオーナー専用コマンド>>",
+  data: new SlashCommandBuilder()
+    .setName("for_bot_admin")
+    .setDescription("<<BOTオーナー専用コマンド>>"),
   checkJoinVCAndPlaying: false,
 
   run: async (client, interaction) => {

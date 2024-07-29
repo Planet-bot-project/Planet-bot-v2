@@ -1,17 +1,16 @@
-const { ApplicationCommandOptionType } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 const ytsr = require("@distube/ytsr");
 
 module.exports = {
-  name: "yt_search",
-  description: "🔍YouTubeの動画を検索します",
-  options: [
-    {
-      type: ApplicationCommandOptionType.String,
-      name: "keyword",
-      description: "検索キーワード",
-      required: true,
-    },
-  ],
+  data: new SlashCommandBuilder()
+    .setName("yt_search")
+    .setDescription("🔍YouTubeの動画を検索します")
+    .addStringOption((option) =>
+      option
+        .setName("keyword")
+        .setDescription("検索キーワード")
+        .setRequired(true)
+    ),
 
   run: async (client, interaction) => {
     try {

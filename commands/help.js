@@ -1,30 +1,29 @@
 const {
-  ApplicationCommandOptionType,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  SlashCommandBuilder,
 } = require("discord.js");
 
 module.exports = {
-  name: "help",
-  description: "❔全コマンドのヘルプを表示します",
-  options: [
-    {
-      type: ApplicationCommandOptionType.String,
-      name: "commands",
-      description: "詳細を表示するコマンドを指定します",
-      required: false,
-      choices: [
-        { name: "about", value: "about" },
-        { name: "botadmin", value: "botadmin" },
-        { name: "omikuji", value: "omikuji" },
-        { name: "ping", value: "ping" },
-        { name: "qr_code", value: "qr_code" },
-        { name: "tc_create", value: "tc_create" },
-        { name: "yt_search", value: "yt_search" },
-      ],
-    },
-  ],
+  data: new SlashCommandBuilder()
+    .setName("help")
+    .setDescription("❔全コマンドのヘルプを表示します")
+    .addStringOption((option) =>
+      option
+        .setName("commands")
+        .setDescription("詳細を表示するコマンドを指定します")
+        .setRequired(false)
+        .setChoices([
+          { name: "about", value: "about" },
+          { name: "botadmin", value: "botadmin" },
+          { name: "omikuji", value: "omikuji" },
+          { name: "ping", value: "ping" },
+          { name: "qr_code", value: "qr_code" },
+          { name: "tc_create", value: "tc_create" },
+          { name: "yt_search", value: "yt_search" },
+        ])
+    ),
 
   run: async (client, interaction) => {
     try {

@@ -1,8 +1,9 @@
-const { PermissionsBitField } = require("discord.js");
+const { PermissionsBitField, SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
-  name: "grade_role_update",
-  description: "⬆学年ロールを更新します(サーバー管理者限定)",
+  data: new SlashCommandBuilder()
+    .setName("grade_role_update")
+    .setDescription("⬆学年ロールを更新します(サーバー管理者限定)"),
 
   run: async (client, interaction) => {
     try {

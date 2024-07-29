@@ -1,29 +1,26 @@
-const { SnowflakeUtil, ApplicationCommandOptionType } = require("discord.js");
+const { SnowflakeUtil, SlashCommandBuilder } = require("discord.js");
 const QRCode = require("qrcode");
 const fs = require("fs");
 
 module.exports = {
-  name: "qr_code",
-  description: "QRコードを作成します",
-  options: [
-    {
-      type: ApplicationCommandOptionType.String,
-      name: "keyword",
-      description: "文字列かURL",
-      required: true,
-    },
-    {
-      type: ApplicationCommandOptionType.String,
-      name: "hidden",
-      description:
-        "作成したqrコードを非公開で作成するかどうかを設定します。(デフォルト：公開)",
-      required: false,
-      choices: [
-        { name: "非公開にする", value: "true" },
-        { name: "公開にする", value: "false" },
-      ],
-    },
-  ],
+  data: new SlashCommandBuilder()
+    .setName("qr_code")
+    .setDescription("QRコードを作成します")
+    .addStringOption((option) =>
+      option.setName("keyword").setDescription("文字列かURL").setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("hidden")
+        .setDescription(
+          "作成したqrコードをチャンネル内で、非公開に作成するかどうかを設定します。(デフォルト：公開)"
+        )
+        .setRequired(false)
+        .addChoices([
+          { name: "非公開にする", value: "true" },
+          { name: "公開にする", value: "false" },
+        ])
+    ),
 
   run: async (client, interaction) => {
     try {

@@ -1,4 +1,4 @@
-const { InteractionType } = require("discord.js");
+const { InteractionType, ApplicationCommandType } = require("discord.js");
 const fs = require("fs");
 
 module.exports = async (client, interaction) => {
@@ -15,7 +15,17 @@ module.exports = async (client, interaction) => {
           if (err) throw err;
           files.forEach(async (f) => {
             let props = require(`../commands/${f}`);
-            if (interaction.commandName == props.name) {
+            let propsJson = props.data.toJSON();
+
+            //propsJsonがundefinedだった場合は、スラッシュコマンドとして、タイプを1にする
+            if (propsJson.type == undefined) {
+              propsJson.type = ApplicationCommandType.ChatInput;
+            }
+
+            if (
+              interaction.commandName == propsJson.name &&
+              interaction.commandType == propsJson.type
+            ) {
               try {
                 if (props && props.checkJoinVCAndPlaying) {
                   if (!interaction?.member?.voice?.channelId)
@@ -25,7 +35,7 @@ module.exports = async (client, interaction) => {
                         ephemeral: true,
                       })
                       .catch((err) => {});
-                  var guild_me = interaction?.guild?.members?.cache?.get(
+                  let guild_me = interaction?.guild?.members?.cache?.get(
                     client?.user?.id
                   );
                   if (guild_me?.voice?.channelId) {
@@ -47,7 +57,7 @@ module.exports = async (client, interaction) => {
                   const queue = client?.player?.getQueue(
                     interaction?.guild?.id
                   );
-                  if (!queue || !queue?.playing)
+                  if (!queue)
                     return interaction
                       ?.reply({
                         content: "❌ 現在再生中の楽曲はありません。",
