@@ -4,6 +4,7 @@ const {
   ButtonStyle,
   SlashCommandBuilder,
 } = require("discord.js");
+let adminIDs = process.env.admin_user.split(",");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -13,10 +14,10 @@ module.exports = {
 
   run: async (client, interaction) => {
     await interaction.deferReply();
-    if (!client.config.ownerID.includes(interaction?.user?.id))
+    if (!adminIDs.includes(interaction?.user?.id))
       return interaction
         .editReply({
-          content: `申し訳ございません。\n本コマンドはBOTのオーナーのみが使用出来るように設定されているため、使用出来ません。\n\nご不明な点がございましたら、[サポートサーバー](${client.config.supportServer})にてお問い合わせください。`,
+          content: `申し訳ございません。\n本コマンドはBOTのオーナーのみが使用出来るように設定されているため、使用出来ません。\n\nご不明な点がございましたら、[サポートサーバー](https://discord.gg/uYYaVRuUuJ)にてお問い合わせください。`,
           ephemeral: true,
         })
         .catch((err) => {});

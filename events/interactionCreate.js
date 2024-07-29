@@ -1,5 +1,17 @@
-const { InteractionType, ApplicationCommandType } = require("discord.js");
+const {
+  InteractionType,
+  ApplicationCommandType,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ActionRowBuilder,
+  EmbedBuilder,
+  ButtonStyle,
+  ButtonBuilder,
+} = require("discord.js");
 const fs = require("fs");
+const profileModel = require("../models/profileSchema.js");
+const shardStatus = process.env.shardStatus == "true";
 
 module.exports = async (client, interaction) => {
   try {
@@ -174,27 +186,28 @@ module.exports = async (client, interaction) => {
             if (!profileData) {
               const profile = await profileModel.create({
                 _id: id,
-                remove_nowplaying: true,
-                silent_nowplaying: true,
-                default_playlist: "",
-                default_volume: 10,
+                pomodoro: false,
+                pomodoro_category: null,
+                pomodoro_worktime: 10,
+                pomodoro_breaktime: 5,
               });
               profile
                 .save()
-                .catch((err) => {
+                .catch(async (err) => {
                   console.log(err);
-                  return interaction.reply(
+                  await interaction.reply(
                     "❌ エラーが発生しました。コンソールを確認してください。"
                   );
                 })
-                .then(() => {
-                  return interaction.reply("✅　登録しました。");
+                .then(async () => {
+                  await interaction.reply("✅　登録しました。");
                 });
             } else {
-              return interaction.reply({
+              await interaction.reply({
                 content: "❌ そのサーバーは既に登録済みです。",
               });
             }
+            return;
           }
           case "ask_unregister_id": {
             let id = interaction.fields.getTextInputValue("unregister_id");
@@ -204,27 +217,28 @@ module.exports = async (client, interaction) => {
             if (profileData) {
               profileModel
                 .deleteOne({ _id: id })
-                .then(function () {
-                  return interaction.reply("✅　登録を解除しました。");
+                .then(async function () {
+                  await interaction.reply("✅　登録を解除しました。");
                 })
-                .catch((err) => {
+                .catch(async (err) => {
                   console.log(err);
-                  return interaction.reply(
+                  await interaction.reply(
                     "❌ エラーが発生しました。コンソールを確認してください。"
                   );
                 });
             } else {
-              return interaction.reply({
+              await interaction.reply({
                 content: "❌ そのサーバーは既に登録解除済みです。",
                 ephemeral: true,
               });
             }
+            return;
           }
           case "ask_server_id": {
             const server = interaction.fields.getTextInputValue("server_id");
             if (server) {
               let guild;
-              if (client.config.shardManager.shardStatus == true) {
+              if (shardStatus == true) {
                 const getServer = async (guildID) => {
                   const req = await client.shard.broadcastEval(
                     (c, id) => c.guilds.cache.get(id),
@@ -236,7 +250,7 @@ module.exports = async (client, interaction) => {
                 };
                 guild = await getServer(server);
                 if (!guild)
-                  return interaction
+                  await interaction
                     .reply({
                       content: "❌ このBOTはそのサーバーに所属していません。",
                       ephemeral: true,
@@ -248,16 +262,16 @@ module.exports = async (client, interaction) => {
                   .setDescription(
                     `> **サーバーID:** \`${guild.id}\`\n> **メンバー数:** \`${guild.memberCount}\`\n> **チャンネル数:** \`${guild.channels.length}\`\n> **ロール数:** \`${guild.roles.length}\`\n> **絵文字数:** \`${guild.emojis.length}\`\n> **サーバーブースト:** \`${guild.premiumSubscriptionCount}\`\n> **サーバーブーストのレベル:** \`${guild.premiumTier}\``
                   )
-                  .setColor(client.config.embedColor.info)
+                  .setColor(4303284)
                   .setThumbnail(guild.iconURL)
                   .setTimestamp();
-                return interaction
+                await interaction
                   .reply({ embeds: [embed], ephemeral: true })
                   .catch((err) => {});
               } else {
                 guild = client.guilds.cache.get(server);
                 if (!guild)
-                  return interaction
+                  await interaction
                     .reply({
                       content: "❌ このBOTはそのサーバーに所属していません。",
                       ephemeral: true,
@@ -269,16 +283,16 @@ module.exports = async (client, interaction) => {
                   .setDescription(
                     `> **サーバーID:** \`${guild.id}\`\n> **メンバー数:** \`${guild.memberCount}\`\n> **チャンネル数:** \`${guild.channels.cache.size}\`\n> **ロール数:** \`${guild.roles.cache.size}\`\n> **絵文字数:** \`${guild.emojis.cache.size}\`\n> **サーバーブースト:** \`${guild.premiumSubscriptionCount}\`\n> **サーバーブーストのレベル:** \`${guild.premiumTier}\``
                   )
-                  .setColor(client.config.embedColor.info)
+                  .setColor(4303284)
                   .setThumbnail(guild.iconURL())
                   .setTimestamp();
-                return interaction
+                await interaction
                   .reply({ embeds: [embed], ephemeral: true })
                   .catch((err) => {});
               }
             } else {
               let guilds;
-              if (client.config.shardManager.shardStatus == true) {
+              if (shardStatus == true) {
                 //fetch all guilds
                 guilds = await client.shard.broadcastEval((c) =>
                   c.guilds.cache.map((g) => {
@@ -321,7 +335,7 @@ module.exports = async (client, interaction) => {
                     )
                     .join("\n")
                 )
-                .setColor(client.config.embedColor.info)
+                .setColor(4303284)
                 .setTimestamp();
               const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
@@ -392,6 +406,7 @@ module.exports = async (client, interaction) => {
                   .catch((err) => {});
               });
             }
+            return;
           }
           case "data_control_form": {
             let variable_name =
@@ -441,24 +456,23 @@ module.exports = async (client, interaction) => {
                 }
 
                 for (let guild_id of all_guild_id) {
-                  let doc = await profileModel
-                    .findOne({ _id: guild_id })
-                    .then((data) => {
-                      data[variable_name] = undefined;
+                  await profileModel.findOne({ _id: guild_id }).then((data) => {
+                    data[variable_name] = undefined;
 
-                      data.save().then(() => {
-                        console.log(`updated!`);
-                      });
+                    data.save().then(() => {
+                      console.log(`updated!`);
                     });
+                  });
                 }
 
                 return interaction.reply("done");
               });
             } else {
-              interaction.reply(
+              await interaction.reply(
                 "❌ how_toに予期せぬ値が入力されました。再度お試しください。"
               );
             }
+            return;
           }
         }
       }
