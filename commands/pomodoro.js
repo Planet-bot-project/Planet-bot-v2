@@ -4,6 +4,7 @@ const {
   ButtonStyle,
   SlashCommandBuilder,
   ChannelType,
+  PermissionFlagsBits
 } = require("discord.js");
 const profileModel = require("../models/profileSchema");
 
@@ -29,7 +30,8 @@ module.exports = {
       subcommand
         .setName("off")
         .setDescription("ポモドーロタイマーを無効にします。")
-    ),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   run: async (client, interaction) => {
     try {
