@@ -82,12 +82,6 @@ module.exports = {
           });
 
         console.log("on");
-      } else if (mode == "working_time") {
-        let workTime = interaction.options.getInteger("working_minute");
-        console.log("workingtime");
-      } else if (mode == "breaking_time") {
-        let breakTime = interaction.options.getInteger("breaking_minute");
-        console.log("breaking time");
       } else if (mode == "off") {
         console.log("off");
       }
