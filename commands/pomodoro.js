@@ -20,7 +20,7 @@ module.exports = {
           option
             .setName("category")
             .setDescription(
-              "タイマーを使用するカテゴリーを設定してください。設定しない場合は入力しないでください。"
+              "タイマーを使用するカテゴリーを設定してください。"
             )
             .addChannelTypes(ChannelType.GuildCategory)
             .setRequired(true)
