@@ -49,8 +49,6 @@ module.exports = {
       if (mode === "on") {
         let channel = interaction.options.getChannel("category");
 
-        //チャンネル設定が
-
         //データベース設定
         profileModel
           .findById(interaction.guild.id)
@@ -74,6 +72,7 @@ module.exports = {
                 embeds: [
                   {
                     title: "✅ 設定を更新しました！",
+                    description: "カテゴリー名やチャンネル名などは変更しても問題ありません。\nただし、別のチャンネルに変更する場合は再設定が必要です。",
                     color: 0x10ff00,
                   },
                 ],
