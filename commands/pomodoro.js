@@ -25,37 +25,6 @@ module.exports = {
             .setRequired(true)
         )
     )
-    .addSubcommandGroup((subcommands) =>
-      subcommands
-        .setName("settings")
-        .setDescription("ポモドーロタイマーの設定を変更します。")
-        .addSubcommand((subcommand) =>
-          subcommand
-            .setName("working_time")
-            .setDescription(
-              "ポモドーロタイマーの活動時間の長さを設定します。単位は分です。"
-            )
-            .addIntegerOption((option) =>
-              option
-                .setName("working_minute")
-                .setDescription("単位は分です。")
-                .setRequired(true)
-            )
-        )
-        .addSubcommand((subcommand) =>
-          subcommand
-            .setName("breaking_time")
-            .setDescription(
-              "ポモドーロタイマーの休憩時間の長さを設定します。単位は分です。"
-            )
-            .addIntegerOption((option) =>
-              option
-                .setName("breaking_minute")
-                .setDescription("単位は分です。")
-                .setRequired(true)
-            )
-        )
-    )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("off")
