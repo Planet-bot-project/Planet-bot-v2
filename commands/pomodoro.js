@@ -4,7 +4,7 @@ const {
   ButtonStyle,
   SlashCommandBuilder,
   ChannelType,
-  PermissionFlagsBits
+  PermissionFlagsBits,
 } = require("discord.js");
 const profileModel = require("../models/profileSchema");
 
@@ -19,9 +19,7 @@ module.exports = {
         .addChannelOption((option) =>
           option
             .setName("category")
-            .setDescription(
-              "タイマーを使用するカテゴリーを設定してください。"
-            )
+            .setDescription("タイマーを使用するカテゴリーを設定してください。")
             .addChannelTypes(ChannelType.GuildCategory)
             .setRequired(true)
         )
@@ -71,18 +69,47 @@ module.exports = {
               return interaction.editReply({
                 embeds: [
                   {
-                    title: "✅ 設定を更新しました！",
-                    description: "カテゴリー名やチャンネル名などは変更しても問題ありません。\nただし、別のチャンネルに変更する場合は再設定が必要です。",
+                    title: "✅ ポモドーロタイマーを有効にしました！",
+                    description: `作成された「ロビー」というVCに参加すると、操作パネルが有効になり、ポモドーロタイマーを使用できるようになります。
+
+                    ※ カテゴリー名やチャンネル名などは変更しても問題ありません。
+                    ※ 別のチャンネルに変更する場合は再設定が必要です。`,
                     color: 0x10ff00,
                   },
                 ],
               });
             });
           });
-
-        console.log("on");
       } else if (mode == "off") {
-        console.log("off");
+        //データベース設定
+        profileModel
+          .findById(interaction.guild.id)
+          .catch((err) => {
+            console.log(
+              `データベース更新時にエラーが発生しました。(場所：pomodoro/on)\n${err}`
+            );
+
+            return interaction.reply({
+              content:
+                "データベース関連の処理でエラーが発生しました。\nしばらく時間を空けて再度お試しいただくか、サポートサーバーにてお問い合わせください。",
+              ephemeral: true,
+              components: [supportServerButton],
+            });
+          })
+          .then((model) => {
+            model.pomodoro = false;
+            model.pomodoro_category = null;
+            model.save().then(async () => {
+              return interaction.editReply({
+                embeds: [
+                  {
+                    title: "✅ ポモドーロタイマーを無効にしました！",
+                    color: 0x10ff00,
+                  },
+                ],
+              });
+            });
+          });
       }
     } catch (err) {
       const errorNotification = require("../errorNotification.js");
