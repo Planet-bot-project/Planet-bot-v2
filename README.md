@@ -10,3 +10,7 @@ https://qiita.com/gaato/items/55b32bc4777905ac162a
 npm i discord.js express qrcode @distube/ytsr mongoose
 npm i --save-dev dotenv fs
 ```
+
+# 開発者用
+ローカル環境でもテスト可。管理者権限ターミナルで`net start MongoDB`ってして、index.jsでmongodbのtokenをローカル用に切り替えれば起動可能。終わったら`net stop MongoDB`で停止出来る。
+なお、MongoDBのサーバー上のデータベースを使用する場合は同様にindex.jsでmongodbのtokenをリモート用に切り替えれば起動可能。
