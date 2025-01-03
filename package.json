@@ -10,10 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "@distube/ytsr": "^2.0.4",
-    "discord.js": "^14.16.3",
+    "discord.js": "^14.17.2",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mongoose": "^8.9.2",
+    "mongoose": "^8.9.3",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
