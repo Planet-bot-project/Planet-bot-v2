@@ -1,4 +1,8 @@
-const { PermissionsBitField, SlashCommandBuilder } = require("discord.js");
+const {
+  PermissionsBitField,
+  SlashCommandBuilder,
+  MessageFlags,
+} = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,11 +20,11 @@ module.exports = {
         //エラーを投げる
         interaction.reply({
           content: "申し訳ございません。\nこのコマンドは管理者限定です",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       } else {
         //時間かかるので、先にreply
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         let roles = [
           "高校3年生",
           "高校2年生",

@@ -5,6 +5,7 @@ const {
   SlashCommandBuilder,
   ChannelType,
   PermissionFlagsBits,
+  MessageFlags,
 } = require("discord.js");
 const profileModel = require("../models/profileSchema");
 
@@ -42,7 +43,7 @@ module.exports = {
       );
 
       //時間かかる処理なので、defer
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
       if (mode === "on") {
         let channel = interaction.options.getChannel("category");
@@ -58,7 +59,7 @@ module.exports = {
             return interaction.reply({
               content:
                 "データベース関連の処理でエラーが発生しました。\nしばらく時間を空けて再度お試しいただくか、サポートサーバーにてお問い合わせください。",
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
               components: [supportServerButton],
             });
           })
@@ -92,7 +93,7 @@ module.exports = {
             return interaction.reply({
               content:
                 "データベース関連の処理でエラーが発生しました。\nしばらく時間を空けて再度お試しいただくか、サポートサーバーにてお問い合わせください。",
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
               components: [supportServerButton],
             });
           })

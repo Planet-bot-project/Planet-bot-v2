@@ -8,6 +8,7 @@ const {
   EmbedBuilder,
   ButtonStyle,
   ButtonBuilder,
+  MessageFlags,
 } = require("discord.js");
 const fs = require("fs");
 const profileModel = require("../models/profileSchema.js");
@@ -19,7 +20,7 @@ module.exports = async (client, interaction) => {
       return interaction?.reply({
         content:
           "❌ このBOTはサーバー内でのみ動作します。\nお手数をおかけしますが、サーバー内でご利用ください。",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } else {
       if (interaction?.type == InteractionType.ApplicationCommand) {
@@ -44,7 +45,7 @@ module.exports = async (client, interaction) => {
                     return interaction
                       ?.reply({
                         content: "❌ ボイスチャンネルに参加してください。",
-                        ephemeral: true,
+                        flags: MessageFlags.Ephemeral,
                       })
                       .catch((err) => {});
                   let guild_me = interaction?.guild?.members?.cache?.get(
@@ -59,7 +60,7 @@ module.exports = async (client, interaction) => {
                         ?.reply({
                           content:
                             "❌ 私と同じボイスチャンネルに接続してください。",
-                          ephemeral: true,
+                          flags: MessageFlags.Ephemeral,
                         })
                         .catch((err) => {});
                     }
@@ -73,7 +74,7 @@ module.exports = async (client, interaction) => {
                     return interaction
                       ?.reply({
                         content: "❌ 現在再生中の楽曲はありません。",
-                        ephemeral: true,
+                        flags: MessageFlags.Ephemeral,
                       })
                       .catch((err) => {});
                 }
@@ -81,7 +82,7 @@ module.exports = async (client, interaction) => {
               } catch (err) {
                 return interaction?.reply({
                   content: `❌ 何らかのエラーが発生しました。`,
-                  ephemeral: true,
+                  flags: MessageFlags.Ephemeral,
                 });
               }
             }
@@ -229,7 +230,7 @@ module.exports = async (client, interaction) => {
             } else {
               await interaction.reply({
                 content: "❌ そのサーバーは既に登録解除済みです。",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
               });
             }
             return;
@@ -253,7 +254,7 @@ module.exports = async (client, interaction) => {
                   await interaction
                     .reply({
                       content: "❌ このBOTはそのサーバーに所属していません。",
-                      ephemeral: true,
+                      flags: MessageFlags.Ephemeral,
                     })
                     .catch((err) => {});
 
@@ -266,7 +267,7 @@ module.exports = async (client, interaction) => {
                   .setThumbnail(guild.iconURL)
                   .setTimestamp();
                 await interaction
-                  .reply({ embeds: [embed], ephemeral: true })
+                  .reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
                   .catch((err) => {});
               } else {
                 guild = client.guilds.cache.get(server);
@@ -274,7 +275,7 @@ module.exports = async (client, interaction) => {
                   await interaction
                     .reply({
                       content: "❌ このBOTはそのサーバーに所属していません。",
-                      ephemeral: true,
+                      flags: MessageFlags.Ephemeral,
                     })
                     .catch((err) => {});
 
@@ -287,7 +288,7 @@ module.exports = async (client, interaction) => {
                   .setThumbnail(guild.iconURL())
                   .setTimestamp();
                 await interaction
-                  .reply({ embeds: [embed], ephemeral: true })
+                  .reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
                   .catch((err) => {});
               }
             } else {
@@ -354,7 +355,7 @@ module.exports = async (client, interaction) => {
                   embeds: [embed],
                   components: [row],
                   fetchReply: true,
-                  ephemeral: true,
+                  flags: MessageFlags.Ephemeral,
                 })
                 .catch((err) => {});
               const filter = (i) => i.user.id == interaction.user.id;
