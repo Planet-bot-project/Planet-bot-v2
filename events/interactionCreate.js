@@ -202,23 +202,40 @@ module.exports = async (client, interaction) => {
               let guild;
               guild = client.guilds.cache.get(server);
               if (!guild)
-                await interaction
+                return interaction
                   .reply({
                     content: "❌ このBOTはそのサーバーに所属していません。",
                     flags: MessageFlags.Ephemeral,
                   })
                   .catch((err) => {});
 
-              const embed = new EmbedBuilder()
-                .setTitle(`ℹ️　サーバー「${guild.name}」の情報`)
+              let embed1 = new EmbedBuilder()
+                .setTitle(`ℹ️ サーバー「${guild.name}」の情報`)
                 .setDescription(
                   `> **サーバーID:** \`${guild.id}\`\n> **メンバー数:** \`${guild.memberCount}\`\n> **チャンネル数:** \`${guild.channels.cache.size}\`\n> **ロール数:** \`${guild.roles.cache.size}\`\n> **絵文字数:** \`${guild.emojis.cache.size}\`\n> **サーバーブースト:** \`${guild.premiumSubscriptionCount}\`\n> **サーバーブーストのレベル:** \`${guild.premiumTier}\``
                 )
                 .setColor(4303284)
                 .setThumbnail(guild.iconURL())
                 .setTimestamp();
+
+              // DBのデータを取得
+              let data = await profileModel.findById({ _id: server });
+              if (!data) {
+                data = "データがありません";
+              } else {
+                data = JSON.stringify(data);
+              }
+
+              let embed2 = new EmbedBuilder()
+                .setTitle(`ℹ️ サーバー「${guild.name}」関連のデータベース情報`)
+                .setDescription(`\`\`\`json\n${data}\n\`\`\``)
+                .setTimestamp();
+
               await interaction
-                .reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
+                .reply({
+                  embeds: [embed1, embed2],
+                  flags: MessageFlags.Ephemeral,
+                })
                 .catch((err) => {});
             } else {
               let guilds = client.guilds.cache.map((g) => {
