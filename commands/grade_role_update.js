@@ -95,7 +95,7 @@ module.exports = {
           const grade_role_kou3 = await interaction.guild.roles.cache.find(
             (role) => role.name.includes("高校3年生")
           );
-          const grade_role_sotugyo = await interaction.guild.roles.cache.find(
+          const grade_role_graduate = await interaction.guild.roles.cache.find(
             (role) => role.name.includes("卒業生")
           );
           const grade_role_student = await interaction.guild.roles.cache.find(
@@ -105,7 +105,7 @@ module.exports = {
           if (user.roles.cache.has(grade_role_kou3.id)) {
             // 高３だけ別処理
             user.roles.remove(grade_role_kou3);
-            user.roles.add(grade_role_sotugyo);
+            user.roles.add(grade_role_graduate);
             user.roles.remove(grade_role_student);
           } else {
             // それ以外のロール処理
