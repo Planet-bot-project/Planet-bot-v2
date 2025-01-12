@@ -27,11 +27,7 @@ module.exports = async (client) => {
   //カスタマイズアクティビティを設定
   setInterval(() => {
     client.user.setActivity({
-      name: `所属サーバー数は${
-        client.guilds.cache.size
-      }｜このサーバーが利用しているシャードは${
-        Number(client?.shard?.ids) + 1 ? Number(client?.shard?.ids) + 1 : "1"
-      }`,
+      name: `所属サーバー数は${client.guilds.cache.size}`,
       type: ActivityType.Listening,
     });
   }, 10000);

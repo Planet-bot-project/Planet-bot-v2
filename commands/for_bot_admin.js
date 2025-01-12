@@ -11,7 +11,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("for_bot_admin")
     .setDescription("<<BOTオーナー専用コマンド>>"),
-  checkJoinVCAndPlaying: false,
 
   run: async (client, interaction) => {
     await interaction.deferReply();

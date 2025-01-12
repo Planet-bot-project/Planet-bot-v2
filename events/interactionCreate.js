@@ -12,7 +12,6 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 const profileModel = require("../models/profileSchema.js");
-const shardStatus = process.env.shardStatus == "true";
 
 module.exports = async (client, interaction) => {
   try {
@@ -40,44 +39,6 @@ module.exports = async (client, interaction) => {
               interaction.commandType == propsJson.type
             ) {
               try {
-                if (props && props.checkJoinVCAndPlaying) {
-                  if (!interaction?.member?.voice?.channelId)
-                    return interaction
-                      ?.reply({
-                        content: "❌ ボイスチャンネルに参加してください。",
-                        flags: MessageFlags.Ephemeral,
-                      })
-                      .catch((err) => {});
-                  let guild_me = interaction?.guild?.members?.cache?.get(
-                    client?.user?.id
-                  );
-                  if (guild_me?.voice?.channelId) {
-                    if (
-                      guild_me?.voice?.channelId !==
-                      interaction?.member?.voice?.channelId
-                    ) {
-                      return interaction
-                        ?.reply({
-                          content:
-                            "❌ 私と同じボイスチャンネルに接続してください。",
-                          flags: MessageFlags.Ephemeral,
-                        })
-                        .catch((err) => {});
-                    }
-                  }
-
-                  // 再生中かどうか調べる
-                  const queue = client?.player?.getQueue(
-                    interaction?.guild?.id
-                  );
-                  if (!queue)
-                    return interaction
-                      ?.reply({
-                        content: "❌ 現在再生中の楽曲はありません。",
-                        flags: MessageFlags.Ephemeral,
-                      })
-                      .catch((err) => {});
-                }
                 return props.run(client, interaction);
               } catch (err) {
                 return interaction?.reply({
@@ -239,88 +200,38 @@ module.exports = async (client, interaction) => {
             const server = interaction.fields.getTextInputValue("server_id");
             if (server) {
               let guild;
-              if (shardStatus == true) {
-                const getServer = async (guildID) => {
-                  const req = await client.shard.broadcastEval(
-                    (c, id) => c.guilds.cache.get(id),
-                    {
-                      context: guildID,
-                    }
-                  );
-                  return req.find((res) => !!res) || null;
-                };
-                guild = await getServer(server);
-                if (!guild)
-                  await interaction
-                    .reply({
-                      content: "❌ このBOTはそのサーバーに所属していません。",
-                      flags: MessageFlags.Ephemeral,
-                    })
-                    .catch((err) => {});
-
-                const embed = new EmbedBuilder()
-                  .setTitle(`ℹ️　サーバー「${guild.name}」の情報`)
-                  .setDescription(
-                    `> **サーバーID:** \`${guild.id}\`\n> **メンバー数:** \`${guild.memberCount}\`\n> **チャンネル数:** \`${guild.channels.length}\`\n> **ロール数:** \`${guild.roles.length}\`\n> **絵文字数:** \`${guild.emojis.length}\`\n> **サーバーブースト:** \`${guild.premiumSubscriptionCount}\`\n> **サーバーブーストのレベル:** \`${guild.premiumTier}\``
-                  )
-                  .setColor(4303284)
-                  .setThumbnail(guild.iconURL)
-                  .setTimestamp();
+              guild = client.guilds.cache.get(server);
+              if (!guild)
                 await interaction
-                  .reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
-                  .catch((err) => {});
-              } else {
-                guild = client.guilds.cache.get(server);
-                if (!guild)
-                  await interaction
-                    .reply({
-                      content: "❌ このBOTはそのサーバーに所属していません。",
-                      flags: MessageFlags.Ephemeral,
-                    })
-                    .catch((err) => {});
-
-                const embed = new EmbedBuilder()
-                  .setTitle(`ℹ️　サーバー「${guild.name}」の情報`)
-                  .setDescription(
-                    `> **サーバーID:** \`${guild.id}\`\n> **メンバー数:** \`${guild.memberCount}\`\n> **チャンネル数:** \`${guild.channels.cache.size}\`\n> **ロール数:** \`${guild.roles.cache.size}\`\n> **絵文字数:** \`${guild.emojis.cache.size}\`\n> **サーバーブースト:** \`${guild.premiumSubscriptionCount}\`\n> **サーバーブーストのレベル:** \`${guild.premiumTier}\``
-                  )
-                  .setColor(4303284)
-                  .setThumbnail(guild.iconURL())
-                  .setTimestamp();
-                await interaction
-                  .reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
-                  .catch((err) => {});
-              }
-            } else {
-              let guilds;
-              if (shardStatus == true) {
-                //fetch all guilds
-                guilds = await client.shard.broadcastEval((c) =>
-                  c.guilds.cache.map((g) => {
-                    return {
-                      name: g.name,
-                      id: g.id,
-                      memberCount: g.memberCount,
-                    };
+                  .reply({
+                    content: "❌ このBOTはそのサーバーに所属していません。",
+                    flags: MessageFlags.Ephemeral,
                   })
-                );
-                //sort from largest to smallest
-                guilds = guilds
-                  .flat()
-                  .sort((a, b) => b.memberCount - a.memberCount);
-              } else {
-                guilds = client.guilds.cache.map((g) => {
-                  return {
-                    name: g.name,
-                    id: g.id,
-                    memberCount: g.memberCount,
-                  };
-                });
-                //sort from largest to smallest
-                guilds = guilds
-                  .flat()
-                  .sort((a, b) => b.memberCount - a.memberCount);
-              }
+                  .catch((err) => {});
+
+              const embed = new EmbedBuilder()
+                .setTitle(`ℹ️　サーバー「${guild.name}」の情報`)
+                .setDescription(
+                  `> **サーバーID:** \`${guild.id}\`\n> **メンバー数:** \`${guild.memberCount}\`\n> **チャンネル数:** \`${guild.channels.cache.size}\`\n> **ロール数:** \`${guild.roles.cache.size}\`\n> **絵文字数:** \`${guild.emojis.cache.size}\`\n> **サーバーブースト:** \`${guild.premiumSubscriptionCount}\`\n> **サーバーブーストのレベル:** \`${guild.premiumTier}\``
+                )
+                .setColor(4303284)
+                .setThumbnail(guild.iconURL())
+                .setTimestamp();
+              await interaction
+                .reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
+                .catch((err) => {});
+            } else {
+              let guilds = client.guilds.cache.map((g) => {
+                return {
+                  name: g.name,
+                  id: g.id,
+                  memberCount: g.memberCount,
+                };
+              });
+              //sort from largest to smallest
+              guilds = guilds
+                .flat()
+                .sort((a, b) => b.memberCount - a.memberCount);
 
               //page system
               let page = 0;
