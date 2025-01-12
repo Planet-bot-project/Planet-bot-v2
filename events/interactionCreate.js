@@ -150,8 +150,8 @@ module.exports = async (client, interaction) => {
                 _id: id,
                 pomodoro: false,
                 pomodoro_category: null,
-                pomodoro_worktime: 10,
-                pomodoro_breaktime: 5,
+                pomodoro_workingTime: 10,
+                pomodoro_breakTime: 5,
               });
               profile
                 .save()
