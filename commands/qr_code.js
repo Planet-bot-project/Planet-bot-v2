@@ -1,4 +1,8 @@
-const { SnowflakeUtil, SlashCommandBuilder } = require("discord.js");
+const {
+  SnowflakeUtil,
+  SlashCommandBuilder,
+  MessageFlags,
+} = require("discord.js");
 const QRCode = require("qrcode");
 const fs = require("fs");
 
@@ -13,13 +17,10 @@ module.exports = {
       option
         .setName("hidden")
         .setDescription(
-          "作成したqrコードをチャンネル内で、非公開に作成するかどうかを設定します。(デフォルト：公開)"
+          "作成したQRコードをチャンネル内で、非公開で作成する場合は設定してください。"
         )
         .setRequired(false)
-        .addChoices([
-          { name: "非公開にする", value: "true" },
-          { name: "公開にする", value: "false" },
-        ])
+        .addChoices({ name: "非公開にする", value: "true" })
     ),
 
   run: async (client, interaction) => {
@@ -27,7 +28,9 @@ module.exports = {
       let hiddenOption = interaction.options.getString("hidden");
       hiddenOption = hiddenOption == "true";
 
-      await interaction.deferReply({ ephemeral: hiddenOption });
+      await interaction.deferReply({
+        flags: hiddenOption ? MessageFlags.Ephemeral : 0,
+      });
 
       let now = SnowflakeUtil.generate();
       let filePath = `./images/qr_code/${interaction.guild.id}.${now}.png`;
@@ -40,7 +43,7 @@ module.exports = {
       setTimeout(async () => {
         await interaction.editReply({
           files: [filePath],
-          ephemeral: hiddenOption,
+          flags: hiddenOption ? MessageFlags.Ephemeral : 0,
         });
         fs.unlink(filePath, (err) => {
           if (err) throw err;
