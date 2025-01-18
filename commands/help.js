@@ -44,6 +44,8 @@ module.exports = {
         title = "Qr_codeコマンドのヘルプ";
         description =
           "入力された文字列やURLのQRコードを作成します。\n　※QRコードは(株)デンソーウェーブの登録商標です。";
+      } else if (commands === "???") {
+        // TODO: 他のコマンドのヘルプを追加する
       } else {
         title = "Planet - botのヘルプ";
         description =

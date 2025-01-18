@@ -11,6 +11,7 @@ const profileModel = require("../models/profileSchema");
 
 module.exports = {
   data: new SlashCommandBuilder()
+    // TODO: このコマンドは、/settingsコマンドに移行する
     .setName("pomodoro")
     .setDescription("⏱ポモドーロタイマーを設定します！")
     .addSubcommand((subcommand) =>
