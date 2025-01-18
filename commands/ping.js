@@ -7,17 +7,18 @@ module.exports = {
 
   run: async (client, interaction) => {
     try {
-      let sent = await interaction.reply({
-        content: "🔄️　計測中…",
-        fetchReply: true,
-      });
+      await interaction.reply(
+        `WebSocketのPing: ${interaction.client.ws.ping}ms\nAPIのエンドポイントのPing: ...`
+      );
 
-      interaction.editReply(
-        `# Ping計測結果
-        - WebsocketのPing: \`${Math.abs(client.ws.ping)}ms\`.
-        - APIのLatency: \`${
-          sent.createdTimestamp - interaction.createdTimestamp
-        }ms\`.`
+      let msg = await interaction.fetchReply();
+
+      await interaction.editReply(
+        `WebSocketのPing: ${
+          interaction.client.ws.ping
+        }ms\nAPIのエンドポイントのPing: ${
+          msg.createdTimestamp - interaction.createdTimestamp
+        }ms`
       );
     } catch (err) {
       const errorNotification = require("../errorNotification.js");
