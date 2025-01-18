@@ -282,7 +282,7 @@ module.exports = async (client, interaction) => {
                 .reply({
                   embeds: [embed],
                   components: [row],
-                  fetchReply: true,
+                  withResponse: true,
                   flags: MessageFlags.Ephemeral,
                 })
                 .catch((err) => {});
