@@ -14,15 +14,14 @@ const profileSchema = new mongoose.Schema(
     },
     starboard: {
       status: { type: Boolean }, //スターボードの有効/無効
-      channelID: { type: String }, //スターボードのチャンネルID
-      emojiID: { type: String }, //スターボードの投票カウントをする絵文字の設定
-      emojiCount: { type: Number }, //スターボードに表示するスターの数
+      boardInfo: [
+        {
+          channelID: { type: String }, //スターボードのチャンネルID
+          emojiID: { type: String }, //スターボードの投票カウントをする絵文字の設定
+          emojiCount: { type: Number }, //スターボードに表示するスターの数
+        },
+      ],
     },
-    // TODO: schemaを修正
-    pomodoro: { type: Boolean }, //ポモドーロタイマーの有効/無効
-    pomodoro_category: { type: String }, //ポモドーロタイマーが使用するカテゴリーID
-    pomodoro_workingTime: { type: Number }, //ポモドーロタイマーの活動時間(分)
-    pomodoro_breakTime: { type: Number }, //ポモドーロタイマーの休憩時間(分)
   },
   { versionKey: false }
 );
