@@ -34,31 +34,40 @@ module.exports = async (client) => {
 
   //登録外のサーバーがあれば、自動登録する
   client.guilds.cache.forEach(async (guild) => {
-    let model = await profileModel.find({
-      _id: guild.id,
-    });
-
-    if (!model.length) {
-      const profile = await profileModel.create({
-        _id: guild.id,
-        pomodoro: false,
-        pomodoro_category: null,
-        pomodoro_workingTime: 10,
-        pomodoro_breakTime: 5,
-      });
-      profile
-        .save()
-        .then(() => {
-          console.log(`未登録のサーバーID「${guild.id}」を新規登録しました`);
-        })
-        .catch((err) => {
-          console.log(err);
-          return client.channels.cache
-            .get(consoleChannel)
-            ?.send({ content: `<@${adminUserID}>`, embeds: [embed] })
-            .catch((err) => {});
+    await profileModel.findById(guild.id).then(async (model) => {
+      if (!model) {
+        const profile = await profileModel.create({
+          _id: guild.id,
+          sticky: {
+            status: false,
+            stickyMessage: "",
+            stickyImageURL: "",
+          },
+          starboard: {
+            status: false,
+            boardInfo: [
+              {
+                channelID: "",
+                emojiID: "",
+                emojiCount: 0,
+              },
+            ],
+          },
         });
-    }
+        profile
+          .save()
+          .then(() => {
+            console.log(`未登録のサーバーID「${guild.id}」を新規登録しました`);
+          })
+          .catch((err) => {
+            console.log(err);
+            return client.channels.cache
+              .get(consoleChannel)
+              ?.send({ content: `<@${adminUserID}>`, embeds: [embed] })
+              .catch((err) => {});
+          });
+      }
+    });
   });
 
   //登録済みのサーバーの中で、退出済みの物があれば削除する
