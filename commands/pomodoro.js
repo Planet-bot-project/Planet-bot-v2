@@ -65,6 +65,7 @@ module.exports = {
             });
           })
           .then((model) => {
+            // TODO: ポモドロはDBを使わない予定。そのため、この処理は削除する
             model.pomodoro = true;
             model.pomodoro_category = channel.id;
             model.save().then(async () => {
@@ -99,6 +100,7 @@ module.exports = {
             });
           })
           .then((model) => {
+            // TODO: ポモドロはDBを使わない予定。そのため、この処理は削除する
             model.pomodoro = false;
             model.pomodoro_category = null;
             model.save().then(async () => {
