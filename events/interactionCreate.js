@@ -416,8 +416,9 @@ module.exports = async (client, interaction) => {
             let stickyImageURL =
               interaction.fields.getTextInputValue("stickyImageURL");
 
-            console.log(stickyMessage);
-            console.log(stickyImageURL);
+            // 固定メッセージを送信する
+
+            // DBを更新(ステータスとメッセージ内容とメッセージID)
           }
         }
       }
