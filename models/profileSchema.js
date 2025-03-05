@@ -9,6 +9,7 @@ const profileSchema = new mongoose.Schema(
         {
           channelID: { type: String },
           stickyMessage: { type: String },
+          stickyImageURL: { type: String },
         },
       ], //スティッキーメッセージのチャンネルIDとメッセージ
     },
