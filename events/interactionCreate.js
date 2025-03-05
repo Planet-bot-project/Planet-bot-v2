@@ -148,7 +148,10 @@ module.exports = async (client, interaction) => {
                 _id: guild.id,
                 sticky: {
                   status: false,
-                  stickyMessage: "",
+                  stickyMessage: {
+                    id: "",
+                    content: "",
+                  },
                   stickyImageURL: "",
                 },
                 starboard: {

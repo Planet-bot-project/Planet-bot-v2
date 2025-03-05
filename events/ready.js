@@ -40,7 +40,10 @@ module.exports = async (client) => {
           _id: guild.id,
           sticky: {
             status: false,
-            stickyMessage: "",
+            stickyMessage: {
+              id: "",
+              content: "",
+            },
             stickyImageURL: "",
           },
           starboard: {
