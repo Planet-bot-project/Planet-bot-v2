@@ -142,16 +142,25 @@ module.exports = async (client, interaction) => {
         switch (interaction?.customId) {
           case "ask_register_id": {
             let id = interaction.fields.getTextInputValue("register_id");
-            const profileData = await profileModel.findOne({
-              _id: id,
-            });
+            const profileData = await profileModel.findById(id);
             if (!profileData) {
               const profile = await profileModel.create({
-                _id: id,
-                pomodoro: false,
-                pomodoro_category: null,
-                pomodoro_workingTime: 10,
-                pomodoro_breakTime: 5,
+                _id: guild.id,
+                sticky: {
+                  status: false,
+                  stickyMessage: "",
+                  stickyImageURL: "",
+                },
+                starboard: {
+                  status: false,
+                  boardInfo: [
+                    {
+                      channelID: "",
+                      emojiID: "",
+                      emojiCount: 0,
+                    },
+                  ],
+                },
               });
               profile
                 .save()
@@ -173,9 +182,7 @@ module.exports = async (client, interaction) => {
           }
           case "ask_unregister_id": {
             let id = interaction.fields.getTextInputValue("unregister_id");
-            const profileData = await profileModel.findOne({
-              _id: id,
-            });
+            const profileData = await profileModel.findById(id);
             if (profileData) {
               profileModel
                 .deleteOne({ _id: id })
@@ -385,7 +392,7 @@ module.exports = async (client, interaction) => {
                 }
 
                 for (let guild_id of all_guild_id) {
-                  await profileModel.findOne({ _id: guild_id }).then((data) => {
+                  await profileModel.findById(guild_id).then((data) => {
                     data[variable_name] = undefined;
 
                     data.save().then(() => {
@@ -402,6 +409,15 @@ module.exports = async (client, interaction) => {
               );
             }
             return;
+          }
+          case "sticky": {
+            let stickyMessage =
+              interaction.fields.getTextInputValue("stickyMessage");
+            let stickyImageURL =
+              interaction.fields.getTextInputValue("stickyImageURL");
+
+            console.log(stickyMessage);
+            console.log(stickyImageURL);
           }
         }
       }
