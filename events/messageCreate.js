@@ -48,7 +48,7 @@ module.exports = async (client, message) => {
             // 前回送信から1分未満であれば、何もしない
             if (
               oldMessageTimestamp &&
-              Date.now() - oldMessageTimestamp <= 60000
+              Date.now() - oldMessageTimestamp <= 30 * 1000
             )
               return;
 
