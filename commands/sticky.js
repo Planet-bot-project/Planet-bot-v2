@@ -36,6 +36,8 @@ module.exports = {
     try {
       let subcommand = await interaction.options.getSubcommand();
 
+      // TODO: エラーメッセージの内容をスマートに書き換え
+      // それに伴い、interactionCreateのsticky関連エラーメッセージも修正
       if (subcommand == "on") {
         profileSchema
           .findById(interaction.guild.id)
