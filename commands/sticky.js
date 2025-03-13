@@ -37,7 +37,6 @@ module.exports = {
       let subcommand = await interaction.options.getSubcommand();
 
       if (subcommand == "on") {
-        // TODO: モーダルを表示して入力を受け付ける
         profileSchema
           .findById(interaction.guild.id)
           .then(async (result) => {
