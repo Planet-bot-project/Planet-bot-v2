@@ -148,24 +148,11 @@ module.exports = async (client, interaction) => {
                 _id: guild.id,
                 sticky: {
                   status: false,
-                  stickyMessage: {
-                    oldMessageId: "",
-                    message: {
-                      title: "",
-                      body: "",
-                      imageURL: "",
-                    },
-                  },
+                  channels: [],
                 },
                 starboard: {
                   status: false,
-                  boardInfo: [
-                    {
-                      channelID: "",
-                      emojiID: "",
-                      emojiCount: 0,
-                    },
-                  ],
+                  boardInfo: [],
                 },
               });
               profile
@@ -426,42 +413,81 @@ module.exports = async (client, interaction) => {
             // 固定メッセージを送信する
             let channelId = interaction.channelId;
             let stickyMessage = await client.channels.cache
-              .get(channelID)
+              .get(channelId)
               .send({
                 embeds: [
                   new EmbedBuilder()
+                    .setTitle(stickyTitle)
                     .setDescription(stickyBody)
-                    .setImage(stickyImageURL ? stickyImageURL : null) //画像URLが無い場合は「""」になってしまうので、nullにする
-                    .setFooter({ text: "(これは固定メッセージです)" }),
+                    .setImage(stickyImageURL ? stickyImageURL : null), //画像URLが無い場合は「""」になってしまうので、nullにする
                 ],
               });
             // DBを更新(ステータスとメッセージ内容とメッセージID)
-            profileModel.findById(interaction.guild.id).then(async (result) => {
-              // 既にそのチャンネルに固定メッセージがある場合は、エラー出して終了
-              if (
-                result.sticky.channels.find((c) => c.channelID == channelId)
-              ) {
+            profileModel
+              .findById(interaction.guild.id)
+              .then(async (result) => {
+                // 既にそのチャンネルに固定メッセージがある場合は、エラー出して終了
+                if (result.sticky.channels.find((c) => c._id == channelId))
+                  return interaction.reply({
+                    content:
+                      "このチャンネルで既にピン留めが有効になっています。\n一度`/sticky off`を実行してピン留めを解除してから再度お試しください。",
+                    flags: MessageFlags.Ephemeral,
+                  });
+
+                result.sticky.status = true;
+                result.sticky.channels.push({
+                  _id: channelId,
+                  stickyMessage: {
+                    oldMessageId: stickyMessage.id,
+                    message: {
+                      title: stickyTitle,
+                      body: stickyBody,
+                      imageURL: stickyImageURL,
+                    },
+                  },
+                });
+                result
+                  .save()
+                  .then(() => {
+                    interaction.reply({
+                      content:
+                        "メッセージ固定の作成に成功しました。\n解除する場合は`/sticky off`コマンドを利用してください。",
+                      flags: MessageFlags.Ephemeral,
+                    });
+                  })
+                  .catch((err) => {
+                    let button = new ActionRowBuilder().addComponents(
+                      new ButtonBuilder()
+                        .setLabel("再招待はこちらから")
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(
+                          "https://discord.com/api/oauth2/authorize?client_id=949289830481821776&permissions=8&scope=bot%20applications.commands"
+                        )
+                    );
+                    return interaction.reply({
+                      content:
+                        "ピン留め作成時に、DB更新エラーが発生しました。お手数ですが、BOTを一度サーバーからkickしていただき、再招待をお願い致します。",
+                      components: [button],
+                      flags: MessageFlags.Ephemeral,
+                    });
+                  });
+              })
+              .catch((err) => {
+                let button = new ActionRowBuilder().addComponents(
+                  new ButtonBuilder()
+                    .setLabel("再招待はこちらから")
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(
+                      "https://discord.com/api/oauth2/authorize?client_id=949289830481821776&permissions=8&scope=bot%20applications.commands"
+                    )
+                );
                 return interaction.reply({
                   content:
-                    "このチャンネルで既にピン留めが有効になっています。\n一度`/sticky off`を実行してピン留めを解除してから再度お試しください。",
+                    "ピン留め作成時に、DB更新エラーが発生しました。お手数ですが、BOTを一度サーバーからkickしていただき、再招待をお願い致します。",
+                  components: [button],
                   flags: MessageFlags.Ephemeral,
                 });
-              }
-
-              result.sticky.status = true;
-              result.sticky.channels.push({
-                channelID: channelId,
-                stickyMessage: {
-                  oldMessageId: stickyMessage.id,
-                  message: {
-                    title: stickyTitle,
-                    body: stickyBody,
-                    imageURL: stickyImageURL,
-                  },
-                },
               });
-              result.save();
-            });
           }
         }
       }
