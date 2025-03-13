@@ -43,11 +43,19 @@ module.exports = async (client) => {
           _id: guild.id,
           sticky: {
             status: false,
-            stickyMessage: {
-              id: "",
-              content: "",
-            },
-            stickyImageURL: "",
+            channels: [
+              {
+                channelID: "",
+                stickyMessage: {
+                  oldMessageId: "",
+                  message: {
+                    title: "",
+                    body: "",
+                    imageURL: "",
+                  },
+                },
+              },
+            ], //スティッキーメッセージのチャンネルIDとメッセージ
           },
           starboard: {
             status: false,
