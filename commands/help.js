@@ -46,6 +46,7 @@ module.exports = {
           "入力された文字列やURLのQRコードを作成します。\n　※QRコードは(株)デンソーウェーブの登録商標です。";
       } else if (commands === "???") {
         // TODO: 他のコマンドのヘルプを追加する
+        // TODO: stickyは、1分おきにしか更新されない旨を表示
       } else {
         title = "Planet - botのヘルプ";
         description =
