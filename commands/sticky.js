@@ -43,24 +43,36 @@ module.exports = {
             let modal = new ModalBuilder()
               .setCustomId("sticky")
               .setTitle("ピン留めの内容を設定");
-            let messageInput = new TextInputBuilder()
-              .setCustomId("stickyMessage")
-              .setLabel("ピン留めをするメッセージを入力してください。")
-              .setPlaceholder("ここにメッセージを入力してください。")
+            let titleInput = new TextInputBuilder()
+              .setCustomId("stickyTitle")
+              .setLabel(
+                "ピン留めするメッセージのタイトルを入力してください。(任意)"
+              )
+              .setPlaceholder("ここにメッセージを入力")
+              .setStyle(TextInputStyle.Short)
+              .setMinLength(0)
+              .setMaxLength(256)
+              .setRequired(false);
+            let bodyInput = new TextInputBuilder()
+              .setCustomId("stickyBody")
+              .setLabel("ピン留めをするメッセージを入力してください。(必須)")
+              .setPlaceholder("ここにメッセージを入力")
               .setStyle(TextInputStyle.Paragraph)
               .setMinLength(1)
-              .setMaxLength(250)
+              .setMaxLength(400)
               .setRequired(true);
             let imageURLInput = new TextInputBuilder()
               .setCustomId("stickyImageURL")
               .setLabel(
-                "ピン留めする画像がある場合はそのURLを入力してください。"
+                "ピン留めする画像がある場合はそのURLを入力してください。(任意)"
               )
               .setPlaceholder("ここに画像のURLを入力してください。")
               .setStyle(TextInputStyle.Short)
               .setRequired(false);
 
-            let actionRow = new ActionRowBuilder().addComponents(messageInput);
+            let actionRow = new ActionRowBuilder().addComponents(titleInput);
+            modal.addComponents(actionRow);
+            actionRow = new ActionRowBuilder().addComponents(bodyInput);
             modal.addComponents(actionRow);
             actionRow = new ActionRowBuilder().addComponents(imageURLInput);
             modal.addComponents(actionRow);
