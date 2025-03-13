@@ -149,10 +149,13 @@ module.exports = async (client, interaction) => {
                 sticky: {
                   status: false,
                   stickyMessage: {
-                    id: "",
-                    content: "",
+                    oldMessageId: "",
+                    message: {
+                      title: "",
+                      body: "",
+                      imageURL: "",
+                    },
                   },
-                  stickyImageURL: "",
                 },
                 starboard: {
                   status: false,
@@ -414,14 +417,51 @@ module.exports = async (client, interaction) => {
             return;
           }
           case "sticky": {
-            let stickyMessage =
-              interaction.fields.getTextInputValue("stickyMessage");
+            let stickyTitle =
+              interaction.fields.getTextInputValue("stickyTitle");
+            let stickyBody = interaction.fields.getTextInputValue("stickyBody");
             let stickyImageURL =
               interaction.fields.getTextInputValue("stickyImageURL");
 
             // 固定メッセージを送信する
-
+            let channelId = interaction.channelId;
+            let stickyMessage = await client.channels.cache
+              .get(channelID)
+              .send({
+                embeds: [
+                  new EmbedBuilder()
+                    .setDescription(stickyBody)
+                    .setImage(stickyImageURL ? stickyImageURL : null) //画像URLが無い場合は「""」になってしまうので、nullにする
+                    .setFooter({ text: "(これは固定メッセージです)" }),
+                ],
+              });
             // DBを更新(ステータスとメッセージ内容とメッセージID)
+            profileModel.findById(interaction.guild.id).then(async (result) => {
+              // 既にそのチャンネルに固定メッセージがある場合は、エラー出して終了
+              if (
+                result.sticky.channels.find((c) => c.channelID == channelId)
+              ) {
+                return interaction.reply({
+                  content:
+                    "このチャンネルで既にピン留めが有効になっています。\n一度`/sticky off`を実行してピン留めを解除してから再度お試しください。",
+                  flags: MessageFlags.Ephemeral,
+                });
+              }
+
+              result.sticky.status = true;
+              result.sticky.channels.push({
+                channelID: channelId,
+                stickyMessage: {
+                  oldMessageId: stickyMessage.id,
+                  message: {
+                    title: stickyTitle,
+                    body: stickyBody,
+                    imageURL: stickyImageURL,
+                  },
+                },
+              });
+              result.save();
+            });
           }
         }
       }
