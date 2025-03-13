@@ -430,7 +430,7 @@ module.exports = async (client, interaction) => {
                 if (result.sticky.channels.find((c) => c._id == channelId))
                   return interaction.reply({
                     content:
-                      "このチャンネルで既にピン留めが有効になっています。\n一度`/sticky off`を実行してピン留めを解除してから再度お試しください。",
+                      "このチャンネルで既にピン留めが有効になっています。\n一度`/sticky clear`を実行してピン留めを解除してから再度お試しください。",
                     flags: MessageFlags.Ephemeral,
                   });
 
@@ -449,9 +449,9 @@ module.exports = async (client, interaction) => {
                 result
                   .save()
                   .then(() => {
-                    interaction.reply({
+                    return interaction.reply({
                       content:
-                        "メッセージ固定の作成に成功しました。\n解除する場合は`/sticky off`コマンドを利用してください。",
+                        "メッセージ固定の作成に成功しました。\n解除する場合は`/sticky clear`コマンドを利用してください。",
                       flags: MessageFlags.Ephemeral,
                     });
                   })
