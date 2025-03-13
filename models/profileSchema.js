@@ -7,7 +7,7 @@ const profileSchema = new mongoose.Schema(
       status: { type: Boolean }, //スティッキーメッセージの有効/無効
       channels: [
         {
-          channelID: { type: String },
+          _id: { type: String },
           stickyMessage: {
             oldMessageId: { type: String }, //送信済みメッセージのメッセージID
             message: {
