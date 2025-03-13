@@ -1,6 +1,5 @@
-const { ActivityType } = require("discord.js");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v10");
+const { REST, Routes, ActivityType } = require("discord.js");
+const os = require("node:os");
 const discord_token = process.env.discord_token;
 const profileModel = require("../models/profileSchema");
 const consoleChannel = process.env.console_channel;
@@ -26,10 +25,14 @@ module.exports = async (client) => {
 
   //カスタマイズアクティビティを設定
   setInterval(() => {
-    client.user.setActivity({
-      name: `所属サーバー数は${client.guilds.cache.size}`,
-      type: ActivityType.Listening,
-    });
+    client.user.setActivity(
+      `所属サーバー数は、${client.guilds.cache.size}｜Ping値は、${
+        client.ws.ping
+      }ms｜${
+        os.type().includes("Windows") ? "開発環境" : "本番環境"
+      }で起動中です`,
+      { type: ActivityType.Listening }
+    );
   }, 10000);
 
   //登録外のサーバーがあれば、自動登録する
@@ -100,4 +103,12 @@ module.exports = async (client) => {
       }
     }
   });
+
+  client.channels.cache
+    .get(consoleChannel)
+    .send(
+      `${
+        os.type().includes("Windows") ? "開発環境" : "本番環境"
+      }で起動しました！`
+    );
 };
