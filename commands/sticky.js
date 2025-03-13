@@ -32,7 +32,11 @@ module.exports = {
         profileSchema
           .findById(interaction.guild.id)
           .then(async (result) => {
-            if (result.sticky.status)
+            if (
+              result.sticky.channels.find(
+                (c) => c._id == interaction.channel.id
+              )
+            )
               return interaction.reply({
                 content:
                   "このチャンネルで既にピン留めが有効になっています。\n一度`/sticky off`を実行してピン留めを解除してから再度お試しください。",
