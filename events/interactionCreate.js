@@ -421,7 +421,8 @@ module.exports = async (client, interaction) => {
                     .setDescription(stickyBody)
                     .setImage(stickyImageURL ? stickyImageURL : null), //画像URLが無い場合は「""」になってしまうので、nullにする
                 ],
-              });
+              })
+              .catch((err) => {});
             // DBを更新(ステータスとメッセージ内容とメッセージID)
             profileModel
               .findById(interaction.guild.id)
@@ -456,6 +457,9 @@ module.exports = async (client, interaction) => {
                     });
                   })
                   .catch((err) => {
+                    const errorNotification = require("../errorNotification.js");
+                    errorNotification(client, interaction, err);
+
                     let button = new ActionRowBuilder().addComponents(
                       new ButtonBuilder()
                         .setLabel("再招待はこちらから")
@@ -473,6 +477,9 @@ module.exports = async (client, interaction) => {
                   });
               })
               .catch((err) => {
+                const errorNotification = require("../errorNotification.js");
+                errorNotification(client, interaction, err);
+
                 let button = new ActionRowBuilder().addComponents(
                   new ButtonBuilder()
                     .setLabel("再招待はこちらから")

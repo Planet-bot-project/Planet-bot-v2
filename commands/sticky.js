@@ -36,8 +36,6 @@ module.exports = {
     try {
       let subcommand = await interaction.options.getSubcommand();
 
-      // TODO: エラーメッセージの内容をスマートに書き換え
-      // それに伴い、interactionCreateのsticky関連エラーメッセージも修正
       if (subcommand == "on") {
         profileSchema
           .findById(interaction.guild.id)
@@ -94,7 +92,8 @@ module.exports = {
             await interaction.showModal(modal);
           })
           .catch((err) => {
-            console.log(`Error: ${err}`);
+            const errorNotification = require("../errorNotification.js");
+            errorNotification(client, interaction, err);
           });
       } else if (subcommand == "clear") {
         profileSchema
@@ -112,7 +111,6 @@ module.exports = {
                 await oldMessage.delete();
               }
             } catch (err) {
-              console.log(err);
               // 古いメッセージが見つからなかったり削除できない場合は、そのままメッセージ送信
             }
 
@@ -134,6 +132,9 @@ module.exports = {
                 });
               })
               .catch((err) => {
+                const errorNotification = require("../errorNotification.js");
+                errorNotification(client, interaction, err);
+
                 let button = new ActionRowBuilder().addComponents(
                   new ButtonBuilder()
                     .setLabel("再招待はこちらから")
@@ -151,6 +152,9 @@ module.exports = {
               });
           })
           .catch((err) => {
+            const errorNotification = require("../errorNotification.js");
+            errorNotification(client, interaction, err);
+
             let button = new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setLabel("再招待はこちらから")
@@ -185,6 +189,9 @@ module.exports = {
                 });
               })
               .catch((err) => {
+                const errorNotification = require("../errorNotification.js");
+                errorNotification(client, interaction, err);
+
                 let button = new ActionRowBuilder().addComponents(
                   new ButtonBuilder()
                     .setLabel("再招待はこちらから")
@@ -202,6 +209,9 @@ module.exports = {
               });
           })
           .catch((err) => {
+            const errorNotification = require("../errorNotification.js");
+            errorNotification(client, interaction, err);
+
             let button = new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setLabel("再招待はこちらから")
