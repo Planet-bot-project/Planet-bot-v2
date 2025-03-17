@@ -21,11 +21,12 @@ const profileSchema = new mongoose.Schema(
     },
     starboard: {
       status: { type: Boolean }, //スターボードの有効/無効
-      boardInfo: [
+      board: [
         {
-          channelID: { type: String }, //スターボードのチャンネルID
+          _id: { type: String }, //スターボードのチャンネルID
           emojiID: { type: String }, //スターボードの投票カウントをする絵文字の設定
-          emojiCount: { type: Number }, //スターボードに表示するスターの数
+          emojiAmount: { type: Number }, //スターボードに表示するスターの数
+          ignoreRoleID: { type: Number }, //無視するロールのID
         },
       ],
     },

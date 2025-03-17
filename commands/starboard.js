@@ -5,6 +5,7 @@ const {
   Utils,
   MessageFlags,
 } = require("discord.js");
+const profileSchema = require("../models/profileSchema.js");
 
 async function checkInput(sendChannel, emoji, emojiCount) {
   let err = [];
@@ -140,6 +141,32 @@ module.exports = {
           flags: MessageFlags.Ephemeral,
         });
       }
+
+      // 絵文字IDの取得
+      let emojiId;
+      // カスタム絵文字の正規表現
+      const customEmojiRegex = /<a?:\w+:(\d+)>/;
+      emojiId = emoji.match(customEmojiRegex);
+      // デフォルト絵文字の情報を取得
+      const unicodePoints = [...emoji]
+        .map((char) => char.codePointAt(0).toString(16))
+        .join(" ");
+      unicodeEmoji = `U+${unicodePoints.toUpperCase()}`;
+      // todo: unicodeとカスタム絵文字の処理を実装。現在のコードは要検証
+
+      // db登録
+      profileSchema
+        .findById(interaction.guild.id)
+        .then(async (result) => {
+          result.starboard.status = true;
+          result.starboard.board.push({
+            _id: sendChannel.id,
+            emojiID: emojiId,
+            emojiAmount: emojiCount,
+            ignoreRoleID: ignoreRole ? ignoreRole.id : 0,
+          });
+        })
+        .catch((err) => {});
     } else if (subcommand == "off") {
     }
     await interaction.reply("test");
