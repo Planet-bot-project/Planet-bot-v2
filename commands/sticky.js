@@ -127,7 +127,7 @@ module.exports = {
               .then(async () => {
                 return interaction.reply({
                   content:
-                    "このチャンネルで有効な固定メッセージの削除に成功しました。",
+                    "✅ このチャンネルで有効な固定メッセージの削除に成功しました。",
                   flags: MessageFlags.Ephemeral,
                 });
               })
