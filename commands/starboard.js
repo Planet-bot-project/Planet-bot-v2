@@ -2,19 +2,20 @@ const {
   SlashCommandBuilder,
   ChannelType,
   PermissionsBitField,
-  Utils,
   MessageFlags,
 } = require("discord.js");
+// twemoji-parserから判定用の正規表現を取得(gオプション付き)
+const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 const profileSchema = require("../models/profileSchema.js");
 
 async function checkInput(sendChannel, emoji, emojiCount) {
-  let err = [];
+  let errList = [];
 
   // sendChannelのチェック
   // チャンネルが存在するか確認
   try {
     if (!sendChannel) {
-      err.push("channelNotFound");
+      errList.push("channelNotFound");
     }
 
     // ボットがそのチャンネルでメッセージを送信する権限があるか確認
@@ -22,41 +23,41 @@ async function checkInput(sendChannel, emoji, emojiCount) {
       sendChannel.guild.members.me
     );
     if (!myPermissions.has(PermissionsBitField.Flags.ViewChannel)) {
-      err.push("doNotHaveViewChannel");
+      errList.push("doNotHaveViewChannel");
     }
     if (!myPermissions.has(PermissionsBitField.Flags.ReadMessageHistory)) {
-      err.push("doNotHaveViewMessageHistory");
+      errList.push("doNotHaveViewMessageHistory");
     }
   } catch (err) {
-    err.push("canNotGetChannelInfo");
+    errList.push("canNotGetChannelInfo");
   }
   // emojiのチェック
   try {
-    const isDefaultEmoji = Utils.parseEmoji(emoji).id === null;
+    const isDefaultEmoji = emoji.match(twemojiRegex) != null;
     const isCustomEmoji = sendChannel.guild.emojis.cache.some(
       (e) => e.toString() === emoji
     );
 
     if (!isDefaultEmoji && !isCustomEmoji) {
-      err.push("invalidEmoji");
+      errList.push("invalidEmoji");
     }
-  } catch (error) {
-    err.push("invalidEmoji");
+  } catch (err) {
+    errList.push("invalidEmoji");
   }
   // emojiCountのチェック
   try {
     if (typeof emojiCount != "number") {
-      err.push("invalidEmojiCount");
+      errList.push("invalidEmojiCount");
     } else {
-      if (emojiCount > 1) {
-        err.push("invalidEmojiCount");
+      if (emojiCount < 1) {
+        errList.push("invalidEmojiCount");
       }
     }
   } catch (err) {
-    err.push("invalidEmojiCount");
+    errList.push("invalidEmojiCount");
   }
 
-  return err;
+  return errList;
 }
 
 module.exports = {
@@ -143,16 +144,25 @@ module.exports = {
       }
 
       // 絵文字IDの取得
-      let emojiId;
-      // カスタム絵文字の正規表現
-      const customEmojiRegex = /<a?:\w+:(\d+)>/;
-      emojiId = emoji.match(customEmojiRegex);
-      // デフォルト絵文字の情報を取得
-      const unicodePoints = [...emoji]
-        .map((char) => char.codePointAt(0).toString(16))
-        .join(" ");
-      unicodeEmoji = `U+${unicodePoints.toUpperCase()}`;
-      // todo: unicodeとカスタム絵文字の処理を実装。現在のコードは要検証
+      let pursedEmoji;
+      if (emoji.match(twemojiRegex)) {
+        // unicode絵文字の場合
+        pursedEmoji = emoji.match(twemojiRegex)[0];
+      } else {
+        // カスタム絵文字の場合
+        const customEmojiRegex = /<a?:\w+:(\d+)>/;
+        emojiId = emoji.match(customEmojiRegex)[1];
+        pursedEmoji = interaction.guild.emojis.cache?.find(
+          (GuildEmoji) => GuildEmoji.id == emojiId
+        );
+
+        if (pursedEmoji == undefined)
+          return interaction.reply({
+            content:
+              "確認出来ない絵文字が入力されました。絵文字が正しく入力されているか確認してください。",
+            flags: MessageFlags.Ephemeral,
+          });
+      }
 
       // db登録
       profileSchema
@@ -161,14 +171,44 @@ module.exports = {
           result.starboard.status = true;
           result.starboard.board.push({
             _id: sendChannel.id,
-            emojiID: emojiId,
+            emoji: pursedEmoji,
             emojiAmount: emojiCount,
             ignoreRoleID: ignoreRole ? ignoreRole.id : 0,
           });
+
+          await result
+            .save()
+            .then(async () => {
+              return interaction.reply({
+                content: `✅ スターボードの設定が完了しました。${pursedEmoji}が${emojiCount}個以上付いたメッセージは${sendChannel}に転送されます。`,
+              });
+            })
+            .catch((err) => {
+              const errorNotification = require("../errorNotification.js");
+              errorNotification(client, interaction, err);
+
+              let button = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setLabel("再招待はこちらから")
+                  .setStyle(ButtonStyle.Link)
+                  .setURL(
+                    "https://discord.com/api/oauth2/authorize?client_id=949289830481821776&permissions=8&scope=bot%20applications.commands"
+                  )
+              );
+              return interaction.reply({
+                content:
+                  "スターボード作成時に、DB更新エラーが発生しました。お手数ですが、BOTを一度サーバーからkickしていただき、再招待をお願い致します。",
+                components: [button],
+                flags: MessageFlags.Ephemeral,
+              });
+            });
         })
-        .catch((err) => {});
+        .catch((err) => {
+          const errorNotification = require("../errorNotification.js");
+          errorNotification(client, interaction, err);
+        });
     } else if (subcommand == "off") {
+      await interaction.reply("test");
     }
-    await interaction.reply("test");
   },
 };
