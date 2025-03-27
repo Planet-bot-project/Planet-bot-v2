@@ -40,7 +40,6 @@ async function checkInput(sendChannel, emoji, emojiCount) {
     const isCustomEmoji = sendChannel.guild.emojis.cache.some(
       (e) => e.toString() === emoji
     );
-    // TODO: アニメーション絵文字に対応する
 
     if (!isDefaultEmoji && !isCustomEmoji) {
       errList.push("invalidEmoji");
