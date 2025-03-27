@@ -176,9 +176,10 @@ module.exports = {
             _id: sendChannel.id,
             emoji: pursedEmoji,
             emojiAmount: emojiCount,
-            ignoreRoleID: ignoreRole ? ignoreRole.id : 0,
+            ignoreRoleID: ignoreRole.id,
           });
 
+          // TODO: 多重登録防止の仕組み
           await result
             .save()
             .then(async () => {

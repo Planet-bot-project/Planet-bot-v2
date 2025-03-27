@@ -26,7 +26,7 @@ const profileSchema = new mongoose.Schema(
           _id: { type: String }, //スターボードのチャンネルID
           emoji: { type: String }, //スターボードの投票カウントをする絵文字の設定
           emojiAmount: { type: Number }, //スターボードに表示するスターの数
-          ignoreRoleID: { type: Number }, //無視するロールのID
+          ignoreRoleID: { type: String }, //無視するロールのID
         },
       ],
       transportedMessages: [{ type: String }],
