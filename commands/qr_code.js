@@ -1,10 +1,5 @@
-const {
-  SnowflakeUtil,
-  SlashCommandBuilder,
-  MessageFlags,
-} = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const QRCode = require("qrcode");
-const fs = require("fs");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -32,23 +27,17 @@ module.exports = {
         flags: hiddenOption ? MessageFlags.Ephemeral : 0,
       });
 
-      let now = SnowflakeUtil.generate();
-      let filePath = `./images/qr_code/${interaction.guild.id}.${now}.png`;
-
       const QRValue = interaction.options.getString("keyword");
+      QRCode.toBuffer(QRValue, async function (err, buffer) {
+        if (err)
+          return interaction.editReply(
+            "QRコード生成時にエラーが発生しました。時間を空けて再度お試ししただき、同様の問題が発生する場合はサポートサーバーまでお問い合わせください。"
+          );
 
-      //splitでユーザーのメッセージを取得し、それを<snowflake>.pngへ出力する
-      QRCode.toFile(filePath, QRValue);
-      //出力されたqr.pngを添付ファイルとして、送信する
-      setTimeout(async () => {
-        await interaction.editReply({
-          files: [filePath],
-          flags: hiddenOption ? MessageFlags.Ephemeral : 0,
+        return interaction.editReply({
+          files: [buffer],
         });
-        fs.unlink(filePath, (err) => {
-          if (err) throw err;
-        });
-      }, 1000);
+      });
     } catch (err) {
       const errorNotification = require("../errorNotification.js");
       errorNotification(client, interaction, err);
