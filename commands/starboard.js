@@ -102,7 +102,16 @@ module.exports = {
         .setDescription("スターボード機能の設定を確認します")
     )
     .addSubcommand((subcommand) =>
-      subcommand.setName("off").setDescription("スターボード機能をオフにします")
+      subcommand
+        .setName("off")
+        .setDescription("スターボード機能をオフにします")
+        .addStringOption((option) =>
+          option
+            .setName("starboard_to_be_deleted")
+            .setDescription("削除したいスターボードを選んでください。")
+            .setAutocomplete(true)
+            .setRequired(true)
+        )
     ),
 
   run: async (client, interaction) => {
@@ -248,6 +257,8 @@ module.exports = {
         embeds: [embed],
       });
     } else if (subcommand == "off") {
+      let deleteKey = interaction.options.getString("starboard_to_be_deleted");
+      await profileSchema.findByIdAndDelete(deleteKey);
       await interaction.reply("test");
     }
   },

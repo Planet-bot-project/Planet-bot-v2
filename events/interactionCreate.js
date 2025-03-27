@@ -504,6 +504,34 @@ module.exports = async (client, interaction) => {
           }
         }
       }
+
+      if (interaction?.type == InteractionType.ApplicationCommandAutocomplete) {
+        let subcommand = await interaction.options.getSubcommand();
+        switch (interaction.commandName) {
+          case "starboard": {
+            if (subcommand == "off") {
+              let db = await profileModel.findById(interaction.guild.id);
+              let boards = db.starboard.board;
+              let choices = [];
+
+              // 選択肢を生成
+              for (const board of boards) {
+                let channel = await client.channels.cache.get(board._id);
+                let option = {
+                  name: `送信先チャンネル：「${channel.name}」、絵文字名：「${
+                    board.emoji.split(":")[1]
+                  }」、閾値：「${board.emojiAmount}」`,
+                  value: board._id,
+                };
+                choices.push(option);
+              }
+
+              // オートコンプリートの候補を送信
+              return interaction.respond(choices);
+            }
+          }
+        }
+      }
     }
   } catch (err) {
     const errorNotification = require("../lib/errorNotification.js");
