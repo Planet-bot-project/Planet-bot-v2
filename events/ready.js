@@ -48,6 +48,7 @@ module.exports = async (client) => {
           starboard: {
             status: false,
             boardInfo: [],
+            transportedMessages: [],
           },
         });
         profile

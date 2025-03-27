@@ -16,6 +16,9 @@ module.exports = async (client, reaction, user) => {
     .then((result) => {
       // ステータス確認
       if (!result.starboard.status) return;
+      // 既に送信済みか確認
+      if (result.starboard.transportedMessages.includes(reaction.message?.id))
+        return;
 
       // 絵文字の種類を判定
       // カスタム絵文字は絵文字名とIDが別々で来るので、変換
@@ -43,6 +46,12 @@ module.exports = async (client, reaction, user) => {
             if (reactionCount >= boardInfo.emojiAmount) {
               // メッセージを転送する
               await messageTransport(client, message, boardInfo._id);
+
+              // 転送したメッセージIDを保存
+              result.starboard.transportedMessages.push(message.id);
+              result.save().catch((err) => {
+                console.log(err);
+              });
             }
           })
           .catch((err) => {

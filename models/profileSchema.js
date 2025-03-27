@@ -29,6 +29,7 @@ const profileSchema = new mongoose.Schema(
           ignoreRoleID: { type: Number }, //無視するロールのID
         },
       ],
+      transportedMessages: [{ type: String }],
     },
   },
   { versionKey: false }
