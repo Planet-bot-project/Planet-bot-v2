@@ -5,6 +5,7 @@ const {
   MessageFlags,
 } = require("discord.js");
 const profileSchema = require("../models/profileSchema");
+const messageTransport = require("../lib/messageTransport.js");
 // twemoji-parserから判定用の正規表現を取得(gオプション付き)
 const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 
@@ -36,25 +37,21 @@ module.exports = async (client, reaction, user) => {
               reaction.emoji.id ? reaction.emoji.id : reaction.emoji.name
             ).count;
 
-            if (
-              reactionCount >=
-              result.starboard.board.find(
-                (board) => board.emoji == reaction.emoji.name
-              ).emojiAmount
-            ) {
+            let boardInfo = result.starboard.board.find(
+              (board) => board.emoji == reaction.emoji.name
+            );
+            if (reactionCount >= boardInfo.emojiAmount) {
               // メッセージを転送する
-              console.log("transporting...");
+              await messageTransport(client, message, boardInfo._id);
             }
           })
           .catch((err) => {
-            const errorNotification = require("../lib/errorNotification.js");
-            errorNotification(client, interaction, err);
+            console.log(err);
           });
       }
     })
     .catch((err) => {
-      const errorNotification = require("../lib/errorNotification.js");
-      errorNotification(client, interaction, err);
+      console.log(err);
 
       let button = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
