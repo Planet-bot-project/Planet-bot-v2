@@ -94,14 +94,6 @@ module.exports = {
             )
             .setRequired(true)
         )
-        .addRoleOption((option) =>
-          option
-            .setName("ignore_role")
-            .setDescription(
-              "スターボードの絵文字数から無視するロールを設定します(任意)"
-            )
-            .setRequired(false)
-        )
     )
     .addSubcommand((subcommand) =>
       subcommand.setName("off").setDescription("スターボード機能をオフにします")
@@ -114,7 +106,6 @@ module.exports = {
       let sendChannel = interaction.options.getChannel("send_channel");
       let emoji = interaction.options.getString("emoji");
       let emojiCount = interaction.options.getInteger("emoji_count");
-      let ignoreRole = interaction.options.getRole("ignore_role");
 
       // 入力内容の確認
       let errList = checkInput(sendChannel, emoji, emojiCount);
@@ -176,7 +167,6 @@ module.exports = {
             _id: sendChannel.id,
             emoji: pursedEmoji,
             emojiAmount: emojiCount,
-            ignoreRoleID: ignoreRole.id,
           });
 
           // TODO: 多重登録防止の仕組み

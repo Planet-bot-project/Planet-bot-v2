@@ -10,6 +10,9 @@ const messageTransport = require("../lib/messageTransport.js");
 const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 
 module.exports = async (client, reaction, user) => {
+  // botのリアクションは無視
+  if (user.bot) return;
+
   //db取得して、該当するメッセージは転送
   profileSchema
     .findById(reaction.message.guild.id)
