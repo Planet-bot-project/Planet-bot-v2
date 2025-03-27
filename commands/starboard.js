@@ -162,6 +162,18 @@ module.exports = {
       profileSchema
         .findById(interaction.guild.id)
         .then(async (result) => {
+          // 多重登録防止の仕組み
+          const isAlreadyRegistered = result.starboard.board.some(
+            (board) =>
+              board._id == sendChannel.id &&
+              board.emoji == pursedEmoji.toString()
+          );
+          if (isAlreadyRegistered) {
+            result.starboard.board = result.starboard.board.filter(
+              (board) => board._id != sendChannel.id
+            );
+          }
+
           result.starboard.status = true;
           result.starboard.board.push({
             _id: sendChannel.id,
@@ -169,7 +181,6 @@ module.exports = {
             emojiAmount: emojiCount,
           });
 
-          // TODO: 多重登録防止の仕組み
           await result
             .save()
             .then(async () => {
