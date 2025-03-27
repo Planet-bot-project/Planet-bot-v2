@@ -19,7 +19,9 @@ module.exports = async (client, reaction, user) => {
       // 絵文字の種類を判定
       // カスタム絵文字は絵文字名とIDが別々で来るので、変換
       if (!reaction.emoji.name.match(twemojiRegex)) {
-        reaction.emoji.name = `<:${reaction.emoji.name}:${reaction.emoji.id}>`;
+        reaction.emoji.name = reaction.emoji.animated
+          ? `<a:${reaction.emoji.name}:${reaction.emoji.id}>`
+          : `<:${reaction.emoji.name}:${reaction.emoji.id}>`;
       }
 
       // 該当する絵文字か判定
