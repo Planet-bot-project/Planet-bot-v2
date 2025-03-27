@@ -44,7 +44,7 @@ module.exports = async (client, reaction, user) => {
             ).count;
 
             let boardInfo = result.starboard.board.find(
-              (board) => board.emoji == reaction.emoji.name
+              (board) => board._id == message.channel.id
             );
             if (reactionCount >= boardInfo.emojiAmount) {
               // メッセージを転送する

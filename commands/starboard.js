@@ -179,9 +179,7 @@ module.exports = {
         .then(async (result) => {
           // 多重登録防止の仕組み
           const isAlreadyRegistered = result.starboard.board.some(
-            (board) =>
-              board._id == sendChannel.id &&
-              board.emoji == pursedEmoji.toString()
+            (board) => board._id == sendChannel.id
           );
           if (isAlreadyRegistered) {
             result.starboard.board = result.starboard.board.filter(
@@ -231,12 +229,23 @@ module.exports = {
       let db = await profileSchema.findById(interaction.guild.id);
 
       // スターボードが設定されていない場合の処理
-      if (db.starboard.board.length == 0) {
+      let starBoards = db.starboard.board;
+      if (!db.starboard.status && starBoards.length == 0) {
         return interaction.reply({
           content: "このサーバーにはスターボードの設定がありません。",
           flags: MessageFlags.Ephemeral,
         });
       }
+
+      // データがおかしいときは、サポ鯖を案内
+      let dataCheck1 = !db.starboard.status && starBoards.length != 0;
+      let dataCheck2 = db.starboard.status && starBoards.length == 0;
+      if (dataCheck1 || dataCheck2)
+        return interaction.reply({
+          content:
+            "スターボード関連で意図しないデータを確認しました。お手数ですが、サポートサーバーまでお問い合わせください。",
+          flags: MessageFlags.Ephemeral,
+        });
 
       // Embedを作成
       let embed = new EmbedBuilder()
@@ -257,9 +266,30 @@ module.exports = {
         embeds: [embed],
       });
     } else if (subcommand == "off") {
-      let deleteKey = interaction.options.getString("starboard_to_be_deleted");
-      await profileSchema.findByIdAndDelete(deleteKey);
-      await interaction.reply("test");
+      try {
+        let deleteChannelId = interaction.options.getString(
+          "starboard_to_be_deleted"
+        );
+        let db = await profileSchema.findById(interaction.guild.id);
+        let dataLength = db.starboard.board.length;
+        db.starboard.board = db.starboard.board.filter(
+          (board) => board._id != deleteChannelId
+        );
+
+        // 変更が無かった場合は、エラーを表示
+        if (dataLength == db.starboard.board.length)
+          return interaction.reply("❌ そのデータは見つかりませんでした。");
+
+        // 変更が合った場合は保存して完了
+        if (!db.starboard.board.length) db.starboard.status = false;
+        db.save();
+        return interaction.reply("✅データの削除に成功しました！");
+      } catch (err) {
+        console.log(err);
+        return interaction.reply(
+          "データ削除時にエラーが発生しました。時間を空けて再度お試しください。"
+        );
+      }
     }
   },
 };

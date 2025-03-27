@@ -12,6 +12,8 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 const profileModel = require("../models/profileSchema.js");
+// twemoji-parserから判定用の正規表現を取得(gオプション付き)
+const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 
 module.exports = async (client, interaction) => {
   try {
@@ -517,9 +519,10 @@ module.exports = async (client, interaction) => {
               // 選択肢を生成
               for (const board of boards) {
                 let channel = await client.channels.cache.get(board._id);
+                const isDefaultEmoji = board.emoji.match(twemojiRegex) != null;
                 let option = {
                   name: `送信先チャンネル：「${channel.name}」、絵文字名：「${
-                    board.emoji.split(":")[1]
+                    isDefaultEmoji ? board.emoji : board.emoji.split(":")[1]
                   }」、閾値：「${board.emojiAmount}」`,
                   value: board._id,
                 };
