@@ -80,7 +80,7 @@ module.exports = async (client, message) => {
     })
     .catch((err) => {
       // ユーザー側には何も表示せず、裏にログを残す。
-      const errorNotification = require("../errorNotification.js");
+      const errorNotification = require("../lib/errorNotification.js");
       errorNotification(client, message, err);
     });
 };

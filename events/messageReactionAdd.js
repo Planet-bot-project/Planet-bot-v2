@@ -47,13 +47,13 @@ module.exports = async (client, reaction, user) => {
             }
           })
           .catch((err) => {
-            const errorNotification = require("../errorNotification.js");
+            const errorNotification = require("../lib/errorNotification.js");
             errorNotification(client, interaction, err);
           });
       }
     })
     .catch((err) => {
-      const errorNotification = require("../errorNotification.js");
+      const errorNotification = require("../lib/errorNotification.js");
       errorNotification(client, interaction, err);
 
       let button = new ActionRowBuilder().addComponents(

@@ -133,7 +133,7 @@ module.exports = {
         await interaction.editReply("✅更新が完了しました。");
       }
     } catch (err) {
-      const errorNotification = require("../errorNotification.js");
+      const errorNotification = require("../lib/errorNotification.js");
       errorNotification(client, interaction, err);
     }
   },

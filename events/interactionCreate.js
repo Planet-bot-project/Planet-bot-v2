@@ -457,7 +457,7 @@ module.exports = async (client, interaction) => {
                     });
                   })
                   .catch((err) => {
-                    const errorNotification = require("../errorNotification.js");
+                    const errorNotification = require("../lib/errorNotification.js");
                     errorNotification(client, interaction, err);
 
                     let button = new ActionRowBuilder().addComponents(
@@ -477,7 +477,7 @@ module.exports = async (client, interaction) => {
                   });
               })
               .catch((err) => {
-                const errorNotification = require("../errorNotification.js");
+                const errorNotification = require("../lib/errorNotification.js");
                 errorNotification(client, interaction, err);
 
                 let button = new ActionRowBuilder().addComponents(
@@ -500,7 +500,7 @@ module.exports = async (client, interaction) => {
       }
     }
   } catch (err) {
-    const errorNotification = require("../errorNotification.js");
+    const errorNotification = require("../lib/errorNotification.js");
     errorNotification(client, interaction, err);
   }
 };
