@@ -6,6 +6,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  EmbedBuilder,
 } = require("discord.js");
 // twemoji-parserから判定用の正規表現を取得(gオプション付き)
 const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
@@ -94,6 +95,11 @@ module.exports = {
             )
             .setRequired(true)
         )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("view")
+        .setDescription("スターボード機能の設定を確認します")
     )
     .addSubcommand((subcommand) =>
       subcommand.setName("off").setDescription("スターボード機能をオフにします")
@@ -212,6 +218,35 @@ module.exports = {
           const errorNotification = require("../lib/errorNotification.js");
           errorNotification(client, interaction, err);
         });
+    } else if (subcommand == "view") {
+      let db = await profileSchema.findById(interaction.guild.id);
+
+      // スターボードが設定されていない場合の処理
+      if (db.starboard.board.length == 0) {
+        return interaction.reply({
+          content: "このサーバーにはスターボードの設定がありません。",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
+      // Embedを作成
+      let embed = new EmbedBuilder()
+        .setTitle("このサーバーのスターボード設定")
+        .setColor(0x00ff00)
+        .setDescription(
+          db.starboard.board
+            .map(
+              (board, index) =>
+                `**${index + 1}.** 送信先チャンネル: <#${board._id}>, 絵文字: ${
+                  board.emoji
+                }, 閾値: ${board.emojiAmount}`
+            )
+            .join("\n\n")
+        );
+
+      return interaction.reply({
+        embeds: [embed],
+      });
     } else if (subcommand == "off") {
       await interaction.reply("test");
     }
