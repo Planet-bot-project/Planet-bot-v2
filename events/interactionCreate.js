@@ -22,6 +22,7 @@ module.exports = async (client, interaction) => {
         flags: MessageFlags.Ephemeral,
       });
     } else {
+      // スラッシュコマンド応答
       if (interaction?.type == InteractionType.ApplicationCommand) {
         fs.readdir("./commands", (err, files) => {
           if (err) throw err;
@@ -51,8 +52,8 @@ module.exports = async (client, interaction) => {
         });
       }
 
+      // ボタン応答
       if (interaction?.type == InteractionType.MessageComponent) {
-        //VC接続不要処理
         switch (interaction?.customId) {
           case "server_register": {
             let modal = new ModalBuilder()
@@ -135,9 +136,13 @@ module.exports = async (client, interaction) => {
             modal.addComponents(TextInput3);
             return interaction.showModal(modal);
           }
+          case "cancel": {
+            return interaction.message.delete();
+          }
         }
       }
 
+      // モーダル応答
       if (interaction?.type == InteractionType.ModalSubmit) {
         switch (interaction?.customId) {
           case "ask_register_id": {
