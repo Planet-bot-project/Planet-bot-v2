@@ -12,8 +12,8 @@
     "@distube/ytsr": "^2.0.4",
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "mongoose": "^8.13.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.1",
     "qrcode": "^1.5.4",
     "twemoji-parser": "^14.0.0"
   },
