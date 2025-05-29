@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -7,6 +7,12 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessageReactions,
+  ],
+  partials: [
+    Partials.Message,
+    Partials.Channel,
+    Partials.Reaction,
+    Partials.User,
   ],
 });
 const mongoose = require("mongoose");

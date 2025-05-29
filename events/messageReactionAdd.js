@@ -10,6 +10,9 @@ const messageTransport = require("../lib/messageTransport.js");
 const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 
 module.exports = async (client, reaction, user) => {
+  // 必要な情報をキャッシュ
+  if (reaction.partial) await reaction.fetch();
+  if (user.partial) await user.fetch();
   // botのリアクションは無視
   if (user.bot) return;
 
