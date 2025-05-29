@@ -31,6 +31,12 @@ module.exports = {
 
       let button = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
+          .setLabel("サーバーに招待する")
+          .setStyle(ButtonStyle.Link)
+          .setURL(
+            `https://discord.com/oauth2/authorize?client_id=${client.user.id}`
+          ),
+        new ButtonBuilder()
           .setLabel("サポートサーバーに参加する")
           .setStyle(ButtonStyle.Link)
           .setURL("https://discord.gg/uYYaVRuUuJ")

@@ -8,6 +8,7 @@ const {
   ButtonStyle,
   EmbedBuilder,
 } = require("discord.js");
+require("dotenv").config();
 // twemoji-parserから判定用の正規表現を取得(gオプション付き)
 const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 const profileSchema = require("../models/profileSchema.js");
@@ -211,7 +212,7 @@ module.exports = {
                     .setLabel("再招待はこちらから")
                     .setStyle(ButtonStyle.Link)
                     .setURL(
-                      "https://discord.com/api/oauth2/authorize?client_id=949289830481821776&permissions=8&scope=bot%20applications.commands"
+                      `https://discord.com/oauth2/authorize?client_id=${client.user.id}`
                     )
                 );
                 return interaction.reply({
