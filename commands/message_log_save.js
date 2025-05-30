@@ -5,20 +5,24 @@ const {
   ButtonStyle,
   PermissionsBitField,
   MessageFlags,
+  ContainerBuilder,
+  SectionBuilder,
+  TextDisplayBuilder,
+  FileBuilder,
 } = require("discord.js");
 const discordTranscripts = require("discord-html-transcripts");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("message_log_save")
-    .setDescription("📝メッセージログを保存します！")
+    .setDescription(
+      "📝メッセージログを保存します！(取得に数分かかる場合があります)"
+    )
     .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages),
 
   run: async (client, interaction) => {
     try {
-      await interaction.reply(
-        "メッセージ履歴を取得しています...\n※これには数分かかる場合があります。"
-      );
+      await interaction.deferReply();
 
       // botの権限チェック
       if (
@@ -38,7 +42,7 @@ module.exports = {
         interaction.channel,
         {
           limit: -1,
-          filename: `${interaction.channel.name}.html`,
+          filename: `${interaction.channel.id}.html`,
         }
       );
 
@@ -49,18 +53,31 @@ module.exports = {
           .setStyle(ButtonStyle.Secondary)
       );
 
+      // components v2の準備
+      const component = new ContainerBuilder()
+        .addTextDisplayComponents([
+          new TextDisplayBuilder({
+            content: "## 📤｜出力しました",
+          }),
+          new TextDisplayBuilder({
+            content:
+              "__**必ず、ご自身のデバイスにダウンロードしてください！**__",
+          }),
+        ])
+
+        .addFileComponents(
+          new FileBuilder().setURL(
+            `attachment://${interaction.channel.id}.html`
+          )
+        )
+
+        .setAccentColor(0x20ff20);
+
       await interaction.editReply({
         content: "",
-        embeds: [
-          {
-            title: "📤｜出力しました",
-            description:
-              "__**必ず、ご自身のデバイスにダウンロードしてください！**__",
-            color: 0x20ff20,
-          },
-        ],
+        components: [component],
         files: [attachment],
-        components: [cancel],
+        flags: MessageFlags.IsComponentsV2,
       });
     } catch (err) {
       console.error(err);
