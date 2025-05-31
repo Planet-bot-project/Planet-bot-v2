@@ -4,6 +4,7 @@ const {
   ButtonStyle,
   SlashCommandBuilder,
 } = require("discord.js");
+require("dotenv").config();
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -39,7 +40,7 @@ module.exports = {
         new ButtonBuilder()
           .setLabel("サポートサーバーに参加する")
           .setStyle(ButtonStyle.Link)
-          .setURL("https://discord.gg/uYYaVRuUuJ")
+          .setURL(process.env.discord_bot_support)
       );
 
       let title, description;

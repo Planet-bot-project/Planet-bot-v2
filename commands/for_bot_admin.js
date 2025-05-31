@@ -5,7 +5,8 @@ const {
   SlashCommandBuilder,
   MessageFlags,
 } = require("discord.js");
-let adminIDs = process.env.admin_user.split(",");
+require("dotenv").config();
+let adminIDs = process.env.discord_bot_owner.split(",");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -17,7 +18,7 @@ module.exports = {
     if (!adminIDs.includes(interaction?.user?.id))
       return interaction
         .editReply({
-          content: `申し訳ございません。\n本コマンドはBOTのオーナーのみが使用出来るように設定されているため、使用出来ません。\n\nご不明な点がございましたら、[サポートサーバー](https://discord.gg/uYYaVRuUuJ)にてお問い合わせください。`,
+          content: `申し訳ございません。\n本コマンドはBOTのオーナーのみが使用出来るように設定されているため、使用出来ません。\n\nご不明な点がございましたら、[サポートサーバー](${process.env.discord_bot_support})にてお問い合わせください。`,
           flags: MessageFlags.Ephemeral,
         })
         .catch((err) => {});

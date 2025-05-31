@@ -5,6 +5,7 @@ const {
   SlashCommandBuilder,
   MessageFlags,
 } = require("discord.js");
+require("dotenv").config();
 const profileModel = require("../models/profileSchema");
 
 module.exports = {
@@ -94,7 +95,7 @@ module.exports = {
         new ButtonBuilder()
           .setLabel("サポートサーバーに参加する")
           .setStyle(ButtonStyle.Link)
-          .setURL("https://discord.gg/uYYaVRuUuJ")
+          .setURL(process.env.discord_bot_support)
       );
 
       //時間かかる処理なので、defer

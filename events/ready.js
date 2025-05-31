@@ -1,9 +1,10 @@
 const { REST, Routes, ActivityType } = require("discord.js");
 const os = require("node:os");
-const discord_token = process.env.discord_token;
+require("dotenv").config();
 const profileModel = require("../models/profileSchema");
-const consoleChannel = process.env.console_channel;
-const adminUserID = process.env.admin_user;
+const discord_token = process.env.discord_bot_token;
+const consoleChannel = process.env.discord_bot_console;
+const adminUserID = process.env.discord_bot_owner;
 
 module.exports = async (client) => {
   //discord botへのコマンドの設定
