@@ -3,8 +3,6 @@ const {
   ButtonBuilder,
   ButtonStyle,
   SlashCommandBuilder,
-  ChannelType,
-  PermissionFlagsBits,
   MessageFlags,
 } = require("discord.js");
 const profileModel = require("../models/profileSchema");
@@ -87,8 +85,7 @@ module.exports = {
                 .setRequired(true)
             )
         )
-    )
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    ),
 
   run: async (client, interaction) => {
     try {
