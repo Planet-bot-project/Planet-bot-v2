@@ -41,7 +41,7 @@ module.exports = {
           option
             .setName("voice_notification")
             .setDescription(
-              "音声通知を有効にするかどうか。デフォルトは無効です。"
+              "音声通知を有効にする場合はtrueを指定してください。デフォルトは無効(false)です。"
             )
             .setRequired(false)
         )
@@ -103,6 +103,37 @@ module.exports = {
       );
 
       if (mode == "start") {
+        let workTime = interaction.options.getInteger("work_time");
+        let breakTime = interaction.options.getInteger("break_time");
+        let longBreakTime = interaction.options.getInteger("long_break_time");
+        let voiceNotification =
+          interaction.options.getBoolean("voice_notification");
+
+        // ユーザーのVCを取得
+        if (!interaction?.member?.voice?.channelId)
+          return interaction
+            ?.reply({
+              content: "❌ ボイスチャンネルに参加してください。",
+              flags: MessageFlags.Ephemeral,
+            })
+            .catch((err) => {});
+        let guild_me = interaction?.guild?.members?.cache?.get(
+          client?.user?.id
+        );
+        if (guild_me?.voice?.channelId) {
+          if (
+            guild_me?.voice?.channelId !== interaction?.member?.voice?.channelId
+          ) {
+            return interaction
+              ?.reply({
+                content: "❌ 私と同じボイスチャンネルに接続してください。",
+                flags: MessageFlags.Ephemeral,
+              })
+              .catch((err) => {});
+          }
+        }
+
+        // 続きの処理
       } else if (mode === "setting") {
         if (modeType == "default_work_time") {
         } else if (modeType == "default_break_time") {
