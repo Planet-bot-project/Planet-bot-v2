@@ -4,21 +4,26 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "main": "node index.js",
+    "setupForWindows": "node voicevoxSetup.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/voice": "^0.18.0",
     "@distube/ytsr": "^2.0.4",
     "discord-html-transcripts": "^3.2.0",
     "discord.js": "^14.19.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongoose": "^8.15.1",
+    "node-fetch": "^3.3.2",
     "qrcode": "^1.5.4",
     "twemoji-parser": "^14.0.0"
   },
   "devDependencies": {
+    "adm-zip": "^0.5.16",
+    "cheerio": "^1.0.0",
     "fs": "^0.0.1-security"
   }
 }

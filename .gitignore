@@ -1,3 +1,9 @@
+# いつもの
 node_modules
 .env
 package-lock.json
+
+# lib/voicevoxは除外
+lib/voicevox/*
+# でも、一次ファイルは対象
+!lib/voicevox/.VOICEVOX_FILES_IS_HERE
