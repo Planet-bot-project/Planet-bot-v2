@@ -162,6 +162,7 @@ module.exports = async (client, interaction) => {
                   boardInfo: [],
                   transportedMessages: [],
                 },
+                // ポモドーロタイマーの設定は、スキーマから設定
               });
               profile
                 .save()
