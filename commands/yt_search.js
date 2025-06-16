@@ -26,7 +26,7 @@ module.exports = {
               let videosDescription = [];
 
               //プレイリストのデータ取得
-              if (playlistResult.results != 0) {
+              if (playlistResult.items != 0) {
                 for (let i = 0; i < 5; i++) {
                   let playlistString = `${i + 1}. **[\`${
                     playlistResult.items[i].name
@@ -40,7 +40,7 @@ module.exports = {
               }
 
               //動画のデータ取得
-              if (videoResult.results != 0) {
+              if (videoResult.items != 0) {
                 for (let i = 0; i < 5; i++) {
                   let videoString = `${i + 1}. **[\`${
                     videoResult.items[i].name
