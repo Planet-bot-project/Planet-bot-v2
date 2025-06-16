@@ -20,6 +20,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
 require("dotenv").config();
+const { spawn } = require("child_process");
 
 //機密情報取得
 const discord_token = process.env.discord_bot_token;
@@ -93,4 +94,16 @@ app.get("/", (request, response) => {
 });
 app.listen(PORT, function () {
   console.log(`[NodeJS] Application Listening on Port ${PORT}`);
+});
+
+// Voicevoxの起動
+let cpuThreads=
+  process.env.voicevox_cpu_threads ||
+  require("os").cpus().length; // 環境変数から取得、デフォルトはCPUコア数
+const voicevoxProcess = spawn(`${__dirname}/lib/voicevox/run.exe`, [`--cpu_num_threads=${cpuThreads}`], {
+  stdio: "inherit",
+});
+
+voicevoxProcess.on("error", (err) => {
+  console.error("Voicevoxの起動に失敗しました:", err);
 });
