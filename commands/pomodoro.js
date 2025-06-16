@@ -21,14 +21,14 @@ module.exports = {
             .setName("work_time")
             .setDescription("集中する時間を設定してください。(単位: 分)")
             .setMinValue(1)
-            .setRequired(true)
+            .setRequired(false)
         )
         .addIntegerOption((option) =>
           option
             .setName("break_time")
             .setDescription("休憩する時間を設定してください。(単位: 分)")
             .setMinValue(1)
-            .setRequired(true)
+            .setRequired(false)
         )
         .addIntegerOption((option) =>
           option
@@ -93,6 +93,21 @@ module.exports = {
                 .setName("default_long_break_time")
                 .setDescription("長めの休憩時間を設定してください。(単位: 分)")
                 .setMinValue(1)
+                .setRequired(true)
+            )
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("default_voice_notification")
+            .setDescription(
+              "ポモドーロの音声通知をデフォルトで有効にするか設定します。"
+            )
+            .addBooleanOption((option) =>
+              option
+                .setName("default_voice_notification")
+                .setDescription(
+                  "音声通知をデフォルトで有効にする場合はtrueを指定してください。デフォルトは無効(false)です。"
+                )
                 .setRequired(true)
             )
         )
