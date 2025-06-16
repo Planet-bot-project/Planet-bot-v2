@@ -6,7 +6,7 @@ const {
   MessageFlags,
 } = require("discord.js");
 require("dotenv").config();
-const profileModel = require("../models/profileSchema");
+const pomodoro = require("../lib/pomodoro.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -45,6 +45,16 @@ module.exports = {
             )
             .setRequired(false)
         )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("status")
+        .setDescription("ポモドーロタイマーの状況を確認します。")
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("stop")
+        .setDescription("ポモドーロタイマーを強制終了します。")
     )
     .addSubcommandGroup((subcommands) =>
       subcommands
@@ -91,7 +101,7 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       let mode = interaction.options.getSubcommand();
-      mode != "start"
+      mode != "start" && mode != "status" && mode != "stop"
         ? (mode = interaction.options.getSubcommandGroup())
         : null;
       let modeType = interaction.options.getSubcommand();
@@ -105,9 +115,10 @@ module.exports = {
       if (mode == "start") {
         let workTime = interaction.options.getInteger("work_time");
         let breakTime = interaction.options.getInteger("break_time");
-        let longBreakTime = interaction.options.getInteger("long_break_time");
+        let longBreakTime =
+          interaction.options.getInteger("long_break_time") ?? 15;
         let voiceNotification =
-          interaction.options.getBoolean("voice_notification");
+          interaction.options.getBoolean("voice_notification") ?? false;
 
         // ユーザーのVCを取得
         if (!interaction?.member?.voice?.channelId)
@@ -133,11 +144,24 @@ module.exports = {
           }
         }
 
-        // 続きの処理
+        // ポモドーロタイマー開始
+        await pomodoro.start(client, interaction, {
+          workTime,
+          breakTime,
+          longBreakTime,
+          voiceNotification,
+        });
+      } else if (mode === "status") {
+        await pomodoro.status(interaction);
+      } else if (mode === "stop") {
+        await pomodoro.stop(interaction);
       } else if (mode === "setting") {
         if (modeType == "default_work_time") {
+          // 設定処理（未実装）
         } else if (modeType == "default_break_time") {
+          // 設定処理（未実装）
         } else if (modeType == "default_long_break_time") {
+          // 設定処理（未実装）
         }
       }
     } catch (err) {
