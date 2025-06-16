@@ -2,6 +2,7 @@ const { REST, Routes, ActivityType } = require("discord.js");
 const os = require("node:os");
 require("dotenv").config();
 const profileModel = require("../models/profileSchema");
+const { init } = require("../lib/pomodoro");
 const discord_token = process.env.discord_bot_token;
 const consoleChannel = process.env.discord_bot_console;
 const adminUserID = process.env.discord_bot_owner;
@@ -36,7 +37,7 @@ module.exports = async (client) => {
     );
   }, 10000);
 
-  //登録外のサーバーがあれば、自動登録する
+  //登録外のサーバーがあれば、自動登録し、ポモドーロタイマーの設定をする
   client.guilds.cache.forEach(async (guild) => {
     await profileModel.findById(guild.id).then(async (model) => {
       if (!model) {
@@ -51,6 +52,7 @@ module.exports = async (client) => {
             boardInfo: [],
             transportedMessages: [],
           },
+          // ポモドーロタイマーの設定は、スキーマから設定
         });
         profile
           .save()
@@ -66,6 +68,10 @@ module.exports = async (client) => {
           });
       }
     });
+
+    // ポモドーロタイマーの設定
+    client.pomodoroState = new Map();
+    await init(client, guild.id);
   });
 
   //登録済みのサーバーの中で、退出済みの物があれば削除する
