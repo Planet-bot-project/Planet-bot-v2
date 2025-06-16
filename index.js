@@ -97,12 +97,15 @@ app.listen(PORT, function () {
 });
 
 // Voicevoxの起動
-let cpuThreads=
-  process.env.voicevox_cpu_threads ||
-  require("os").cpus().length; // 環境変数から取得、デフォルトはCPUコア数
-const voicevoxProcess = spawn(`${__dirname}/lib/voicevox/run.exe`, [`--cpu_num_threads=${cpuThreads}`], {
-  stdio: "inherit",
-});
+let cpuThreads =
+  process.env.voicevox_cpu_threads || require("os").cpus().length; // 環境変数から取得、デフォルトはCPUコア数
+const voicevoxProcess = spawn(
+  `${__dirname}/lib/voicevox/run.exe`,
+  [`--cpu_num_threads=${cpuThreads}`],
+  {
+    stdio: "inherit",
+  }
+);
 
 voicevoxProcess.on("error", (err) => {
   console.error("Voicevoxの起動に失敗しました:", err);
