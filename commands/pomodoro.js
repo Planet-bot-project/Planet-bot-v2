@@ -167,9 +167,9 @@ module.exports = {
           voiceNotification,
         });
       } else if (mode === "status") {
-        await pomodoro.status(interaction);
+        await pomodoro.status(client, interaction);
       } else if (mode === "stop") {
-        await pomodoro.stop(interaction);
+        await pomodoro.stop(client, interaction);
       } else if (mode === "setting") {
         if (modeType == "default_work_time") {
           // 設定処理（未実装）
