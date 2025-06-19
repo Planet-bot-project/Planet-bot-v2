@@ -7,3 +7,8 @@ package-lock.json
 lib/voicevox/*
 # でも、一次ファイルは対象
 !lib/voicevox/.VOICEVOX_FILES_IS_HERE
+
+# audio/<数字>は除外
+audio/*
+# でも、一次ファイルは対象
+!audio/voiceList.json
