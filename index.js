@@ -99,6 +99,11 @@ app.listen(PORT, function () {
 // Voicevoxの起動
 let cpuThreads =
   process.env.voicevox_cpu_threads || require("os").cpus().length; // 環境変数から取得、デフォルトはCPUコア数
+//voicevoxエンジンが存在するか確認
+if (!fs.existsSync(`${__dirname}/lib/voicevox/run.exe`))
+  throw new Error(
+    "VOICEVOXの実行ファイルが見つかりません。voicevoxSetup.jsを実行してセットアップしてください。"
+  );
 const voicevoxProcess = spawn(
   `${__dirname}/lib/voicevox/run.exe`,
   [`--cpu_num_threads=${cpuThreads}`],
