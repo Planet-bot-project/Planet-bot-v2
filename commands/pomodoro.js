@@ -111,6 +111,19 @@ module.exports = {
                 .setRequired(true)
             )
         )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("default_voice_notification_volume")
+            .setDescription("音声通知をする際の音量を設定します。")
+            .addIntegerOption((option) =>
+              option
+                .setName("default_voice_notification_volume")
+                .setDescription("音声通知の音量を設定してください。(1～100%)")
+                .setMinValue(1)
+                .setMaxValue(100)
+                .setRequired(true)
+            )
+        )
     ),
 
   run: async (client, interaction) => {
@@ -176,6 +189,10 @@ module.exports = {
         } else if (modeType == "default_break_time") {
           // 設定処理（未実装）
         } else if (modeType == "default_long_break_time") {
+          // 設定処理（未実装）
+        } else if (modeType == "default_voice_notification") {
+          // 設定処理（未実装）
+        } else if (modeType == "default_voice_notification_volume") {
           // 設定処理（未実装）
         }
       }
