@@ -5,7 +5,7 @@ const {
   SlashCommandBuilder,
   MessageFlags,
 } = require("discord.js");
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const pomodoro = require("../lib/pomodoro.js");
 
 module.exports = {

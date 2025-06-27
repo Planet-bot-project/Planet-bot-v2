@@ -1,6 +1,6 @@
 const { REST, Routes, ActivityType } = require("discord.js");
 const os = require("node:os");
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const profileModel = require("../models/profileSchema");
 const { init } = require("../lib/pomodoro");
 const discord_token = process.env.discord_bot_token;

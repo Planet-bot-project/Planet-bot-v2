@@ -8,7 +8,7 @@ const {
   ButtonStyle,
   EmbedBuilder,
 } = require("discord.js");
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 // twemoji-parserから判定用の正規表現を取得(gオプション付き)
 const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 const profileSchema = require("../models/profileSchema.js");

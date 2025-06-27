@@ -19,7 +19,7 @@ const client = new Client({
 const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const { spawn } = require("child_process");
 
 //機密情報取得
