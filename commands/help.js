@@ -75,7 +75,7 @@ module.exports = {
         ],
         files: [
           {
-            attachment: "images/logo.png",
+            attachment: "assets/images/logo.png",
             name: "logo.png",
           },
         ],
