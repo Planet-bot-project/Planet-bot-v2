@@ -113,11 +113,11 @@ module.exports = {
         )
         .addSubcommand((subcommand) =>
           subcommand
-            .setName("default_voice_notification_volume")
+            .setName("default_vc_notification_volume")
             .setDescription("音声通知をする際の音量を設定します。")
             .addIntegerOption((option) =>
               option
-                .setName("default_voice_notification_volume")
+                .setName("default_vc_notification_volume")
                 .setDescription("音声通知の音量を設定してください。(1～100%)")
                 .setMinValue(1)
                 .setMaxValue(100)
