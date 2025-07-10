@@ -9,9 +9,12 @@ const {
   ButtonStyle,
   ButtonBuilder,
   MessageFlags,
+  AttachmentBuilder,
 } = require("discord.js");
 const fs = require("fs");
 const profileModel = require("../models/profileSchema.js");
+const { getPomodoroState } = require("../lib/pomodoro.js");
+const generatePomodoroPicture = require("../lib/pomodoroPictureGenerator.js");
 // twemoji-parserから判定用の正規表現を取得(gオプション付き)
 const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 
@@ -137,6 +140,70 @@ module.exports = async (client, interaction) => {
             modal.addComponents(TextInput2);
             modal.addComponents(TextInput3);
             return interaction.showModal(modal);
+          }
+          case "pomodoro_update": {
+            try {
+              // ステータス取得
+              let status;
+              if (interaction.message.content.includes("作業時間")) {
+                status = "work";
+              } else if (interaction.message.content.includes("休憩時間")) {
+                status = "break";
+              } else if (interaction.message.content.includes("長時間休憩")) {
+                status = "longBreak";
+              }
+              // メッセージ準備
+              let pomodoroState = await getPomodoroState(
+                client,
+                interaction.guild.id
+              );
+              let { workTime, breakTime, longBreakTime } =
+                pomodoroState.options;
+
+              let img = new AttachmentBuilder()
+                .setName("pomodoro.png")
+                .setFile(await generatePomodoroPicture(status, pomodoroState));
+              let embed = new EmbedBuilder()
+                .setImage("attachment://pomodoro.png")
+                .setColor(0x00ff00)
+                .setTimestamp();
+
+              let messageContent;
+              if (status === "work") {
+                messageContent = `作業時間 ${workTime}分 開始！ (${pomodoroState.currentCycle}サイクル目)`;
+              } else if (status === "break") {
+                messageContent = `休憩時間 ${breakTime}分 開始！`;
+              } else if (status === "longBreak") {
+                messageContent = `長休憩時間 ${longBreakTime}分 開始！`;
+              }
+
+              let button = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setCustomId("pomodoro_update")
+                  .setStyle(ButtonStyle.Success)
+                  .setLabel("更新")
+              );
+
+              await interaction.message.edit({
+                content: messageContent,
+                embeds: [embed],
+                files: [img],
+                components: [button],
+              });
+
+              return interaction.deferUpdate();
+            } catch (err) {
+              let embed = new EmbedBuilder().setTitle(
+                "❌ エラーが発生しました。"
+              );
+              await interaction.message.edit({
+                content: "",
+                embeds: [embed],
+                files: [],
+                components: [],
+              });
+              return interaction.deferUpdate();
+            }
           }
           case "cancel": {
             return interaction.message.delete();
