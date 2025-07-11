@@ -192,7 +192,7 @@ module.exports = {
           // 設定処理（未実装）
         } else if (modeType == "default_voice_notification") {
           // 設定処理（未実装）
-        } else if (modeType == "default_voice_notification_volume") {
+        } else if (modeType == "default_vc_notification_volume") {
           // 設定処理（未実装）
         }
       }
