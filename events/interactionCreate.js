@@ -15,6 +15,8 @@ const fs = require("fs");
 const profileModel = require("../models/profileSchema.js");
 const { getPomodoroState } = require("../lib/pomodoro.js");
 const generatePomodoroPicture = require("../lib/pomodoroPictureGenerator.js");
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 // twemoji-parserから判定用の正規表現を取得(gオプション付き)
 const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
 
@@ -486,17 +488,37 @@ module.exports = async (client, interaction) => {
             let stickyImageURL =
               interaction.fields.getTextInputValue("stickyImageURL");
 
+            // 画像URLチェック
+            let imageURLCheck;
+            try {
+              new URL(stickyImageURL); //URLの形式であるかチェック
+              const response = await fetch(stickyImageURL, {
+                method: "HEAD",
+              });
+              const contentType = response.headers.get("content-type");
+              if (
+                response.ok &&
+                contentType &&
+                contentType.startsWith("image/")
+              ) {
+                imageURLCheck = true;
+              } else {
+                imageURLCheck = false;
+              }
+            } catch (err) {
+              imageURLCheck = false;
+            }
+
             // 固定メッセージを送信する
             let channelId = interaction.channelId;
+            let embed = new EmbedBuilder()
+              .setTitle(stickyTitle)
+              .setDescription(stickyBody)
+              .setImage(imageURLCheck ? stickyImageURL : null); //画像URLが無い場合は「""」になってしまうので、nullにする
             let stickyMessage = await client.channels.cache
               .get(channelId)
               .send({
-                embeds: [
-                  new EmbedBuilder()
-                    .setTitle(stickyTitle)
-                    .setDescription(stickyBody)
-                    .setImage(stickyImageURL ? stickyImageURL : null), //画像URLが無い場合は「""」になってしまうので、nullにする
-                ],
+                embeds: [embed],
               })
               .catch((err) => {});
             // DBを更新(ステータスとメッセージ内容とメッセージID)

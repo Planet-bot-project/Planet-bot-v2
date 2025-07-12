@@ -9,13 +9,7 @@ module.exports = async (client, message) => {
   let myPermissions = message.guild.members.me
     .permissionsIn(message.channel)
     .toArray();
-  let conditions = [
-    "ViewChannel",
-    "SendMessages",
-    "ManageMessages",
-    "EmbedLinks",
-    "AttachFiles",
-  ];
+  let conditions = ["ViewChannel", "SendMessages", "EmbedLinks", "AttachFiles"];
   for (const key in conditions) {
     if (!myPermissions.includes(conditions[key])) {
       return;
@@ -59,17 +53,16 @@ module.exports = async (client, message) => {
         }
 
         // 改めてsilentで送信
+        let embed = new EmbedBuilder()
+          .setTitle(stickyChannel.stickyMessage.message.title)
+          .setDescription(stickyChannel.stickyMessage.message.body)
+          .setImage(
+            stickyChannel.stickyMessage.message.imageURL
+              ? stickyChannel.stickyMessage.message.imageURL
+              : null
+          );
         const newStickyMessage = await message.channel.send({
-          embeds: [
-            new EmbedBuilder()
-              .setTitle(stickyChannel.stickyMessage.message.title)
-              .setDescription(stickyChannel.stickyMessage.message.body)
-              .setImage(
-                stickyChannel.stickyMessage.message.imageURL
-                  ? stickyChannel.stickyMessage.message.imageURL
-                  : null
-              ),
-          ],
+          embeds: [embed],
           flags: MessageFlags.SuppressNotifications, //silentメッセージで送信
         });
 
