@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const ytsr = require("@distube/ytsr");
 
 module.exports = {
@@ -53,22 +53,19 @@ module.exports = {
                 videosDescription = ["見つかりませんでした。"];
               }
 
+              let embed = new EmbedBuilder()
+                .setTitle(`「${keyword}」の検索結果`)
+                .addFields({
+                  name: "プレイリスト",
+                  value: playlistDescription.join("\n"),
+                })
+                .addFields({
+                  name: "動画",
+                  value: videosDescription.join("\n"),
+                })
+                .setColor(0xff0000);
               return interaction.editReply({
-                embeds: [
-                  {
-                    title: `「${keyword}」の検索結果`,
-                    fields: [
-                      {
-                        name: "プレイリスト",
-                        value: playlistDescription.join("\n"),
-                      },
-                      {
-                        name: "動画",
-                        value: videosDescription.join("\n"),
-                      },
-                    ],
-                  },
-                ],
+                embeds: [embed],
               });
             }
           );

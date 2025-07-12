@@ -2,6 +2,7 @@ const {
   PermissionsBitField,
   SlashCommandBuilder,
   MessageFlags,
+  EmbedBuilder,
 } = require("discord.js");
 
 module.exports = {
@@ -32,16 +33,15 @@ module.exports = {
           role.name.includes(roles[key])
         );
         if (!role) {
+          let embed = new EmbedBuilder()
+            .setTitle("⚠️ エラー！")
+            .setDescription(
+              "更新で使用するロールのうち１つ以上が存在しないため、ロールを更新できません。\n　※このコマンドを実行するために、以下の文言が含まれたロールが必要です。\n\n- 高校3年生\n- 高校2年生\n- 高校1年生\n- 中学3年生\n- 中学2年生\n- 中学1年生\n- 生徒\n- 卒業生"
+            )
+            .setColor(0xff0000)
+            .setTimestamp();
           return interaction.editReply({
-            embeds: [
-              {
-                title: ":warning: エラー！",
-                description:
-                  "更新で使用するロールのうち１つ以上が存在しないため、ロールを更新できません。\n　※このコマンドを実行するために、以下の文言が含まれたロールが必要です。\n\n- 高校3年生\n- 高校2年生\n- 高校1年生\n- 中学3年生\n- 中学2年生\n- 中学1年生\n- 生徒\n- 卒業生",
-                color: 0xff0000,
-                timestamp: new Date(),
-              },
-            ],
+            embeds: [embed],
           });
         }
       }
@@ -53,16 +53,15 @@ module.exports = {
         );
         let compare = guildMe.roles.highest.comparePositionTo(otherRole);
         if (compare < 0) {
+          let embed = new EmbedBuilder()
+            .setTitle("⚠️ エラー！")
+            .setDescription(
+              "私に割り当てられている最高順位のロールよりも、更新するロールの位置の方が高いため、ロールを更新できません。私に割り当てられてるロールのうちの１つ以上を、以下のロールよりも上に設定して、再度実行してください。\n\n- 高校3年生\n- 高校2年生\n- 高校1年生\n- 中学3年生\n- 中学2年生\n- 中学1年生\n- 生徒\n- 卒業生"
+            )
+            .setColor(0xff0000)
+            .setTimestamp();
           return interaction.editReply({
-            embeds: [
-              {
-                title: ":warning: エラー！",
-                description:
-                  "私に割り当てられている最高順位のロールよりも、更新するロールの位置の方が高いため、ロールを更新できません。私に割り当てられてるロールのうちの１つ以上を、以下のロールよりも上に設定して、再度実行してください。\n\n- 高校3年生\n- 高校2年生\n- 高校1年生\n- 中学3年生\n- 中学2年生\n- 中学1年生\n- 生徒\n- 卒業生",
-                color: 0xff0000,
-                timestamp: new Date(),
-              },
-            ],
+            embeds: [embed],
           });
         }
       }

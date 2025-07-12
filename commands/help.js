@@ -3,6 +3,8 @@ const {
   ButtonBuilder,
   ButtonStyle,
   SlashCommandBuilder,
+  EmbedBuilder,
+  AttachmentBuilder,
 } = require("discord.js");
 require("dotenv").config({ quiet: true });
 
@@ -61,24 +63,18 @@ module.exports = {
       }
 
       //↓TODO調整
+      let embed = new EmbedBuilder()
+        .setTitle(title)
+        .setDescription(description)
+        .setColor(4303284)
+        .setThumbnail("attachment://logo.png")
+        .setTimestamp();
+      let attachment = new AttachmentBuilder()
+        .setName("logo.png")
+        .setFile("assets/images/logo.png");
       await interaction.reply({
-        embeds: [
-          {
-            title: title,
-            description: description,
-            color: 4303284,
-            thumbnail: {
-              url: "attachment://logo.png",
-            },
-            timestamp: new Date(),
-          },
-        ],
-        files: [
-          {
-            attachment: "assets/images/logo.png",
-            name: "logo.png",
-          },
-        ],
+        embeds: [embed],
+        files: [attachment],
         components: [button],
       });
     } catch (err) {
