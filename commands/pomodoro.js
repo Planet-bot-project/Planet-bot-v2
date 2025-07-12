@@ -2,6 +2,7 @@ const {
   SlashCommandBuilder,
   MessageFlags,
   EmbedBuilder,
+  PermissionsBitField,
 } = require("discord.js");
 require("dotenv").config({ quiet: true });
 const pomodoro = require("../lib/pomodoro.js");
@@ -76,11 +77,18 @@ module.exports = {
         )
         .addSubcommand((subcommand) =>
           subcommand
-            .setName("default_work_time")
+            .setName("reset")
+            .setDescription(
+              "ポモドーロタイマーのデフォルト設定をリセットします。"
+            )
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("work_time")
             .setDescription("ポモドーロの作業時間を設定します。")
             .addIntegerOption((option) =>
               option
-                .setName("default_work_time")
+                .setName("work_time")
                 .setDescription("作業時間を設定してください。(単位: 分)")
                 .setMinValue(1)
                 .setRequired(true)
@@ -88,11 +96,11 @@ module.exports = {
         )
         .addSubcommand((subcommand) =>
           subcommand
-            .setName("default_break_time")
+            .setName("break_time")
             .setDescription("ポモドーロの休憩時間を設定します。")
             .addIntegerOption((option) =>
               option
-                .setName("default_break_time")
+                .setName("break_time")
                 .setDescription("休憩時間を設定してください。(単位: 分)")
                 .setMinValue(1)
                 .setRequired(true)
@@ -100,11 +108,11 @@ module.exports = {
         )
         .addSubcommand((subcommand) =>
           subcommand
-            .setName("default_long_break_time")
+            .setName("long_break_time")
             .setDescription("ポモドーロの長めの休憩時間を設定します。")
             .addIntegerOption((option) =>
               option
-                .setName("default_long_break_time")
+                .setName("long_break_time")
                 .setDescription("長めの休憩時間を設定してください。(単位: 分)")
                 .setMinValue(1)
                 .setRequired(true)
@@ -112,13 +120,13 @@ module.exports = {
         )
         .addSubcommand((subcommand) =>
           subcommand
-            .setName("default_voice_notification")
+            .setName("voice_notification")
             .setDescription(
               "ポモドーロの音声通知をデフォルトで有効にするか設定します。"
             )
             .addBooleanOption((option) =>
               option
-                .setName("default_voice_notification")
+                .setName("voice_notification")
                 .setDescription(
                   "音声通知をデフォルトで有効にする場合はtrueを指定してください。デフォルトは無効(false)です。"
                 )
@@ -127,11 +135,11 @@ module.exports = {
         )
         .addSubcommand((subcommand) =>
           subcommand
-            .setName("default_vc_notification_volume")
+            .setName("vc_notification_volume")
             .setDescription("音声通知をする際の音量を設定します。")
             .addIntegerOption((option) =>
               option
-                .setName("default_vc_notification_volume")
+                .setName("vc_notification_volume")
                 .setDescription("音声通知の音量を設定してください。(1～100%)")
                 .setMinValue(1)
                 .setMaxValue(100)
@@ -195,8 +203,22 @@ module.exports = {
       } else if (mode === "stop") {
         await pomodoro.stop(client, interaction);
       } else if (mode === "settings") {
+        // 権限チェック
+        if (
+          !interaction.member.permissions.has(
+            PermissionsBitField.Flags.ManageGuild
+          )
+        )
+          return interaction
+            .reply({
+              content:
+                "❌ このコマンドを実行する権限がありません。このコマンドを実行するためには「サーバー管理」権限が必要です。",
+              flags: MessageFlags.Ephemeral,
+            })
+            .catch((err) => {});
+
         profileSchema.findById(interaction.guild.id).then(async (data) => {
-          // showコマンドだけ別処理
+          // 一部のコマンドは別処理
           if (modeType == "show") {
             let embed = new EmbedBuilder()
               .setTitle("ポモドーロタイマーのデフォルト設定")
@@ -209,24 +231,37 @@ module.exports = {
               )
               .setTimestamp();
             return interaction.reply({ embeds: [embed] });
+          } else if (modeType == "reset") {
+            // デフォルト設定をリセット
+            data.pomodoro.defaultWorkTime = 25;
+            data.pomodoro.defaultBreakTime = 5;
+            data.pomodoro.defaultLongBreakTime = 15;
+            data.pomodoro.defaultVoiceNotification = false;
+            data.pomodoro.defaultVoiceNotificationVolume = 50;
+
+            return data.save().then(() => {
+              return interaction.reply({
+                content:
+                  "✅ ポモドーロタイマーのデフォルト設定をリセットしました。",
+              });
+            });
           }
 
-          if (modeType == "default_work_time") {
+          if (modeType == "work_time") {
             data.pomodoro.defaultWorkTime =
-              interaction.options.getInteger("default_work_time");
-          } else if (modeType == "default_break_time") {
+              interaction.options.getInteger("work_time");
+          } else if (modeType == "break_time") {
             data.pomodoro.defaultBreakTime =
-              interaction.options.getInteger("default_break_time");
-          } else if (modeType == "default_long_break_time") {
-            data.pomodoro.defaultLongBreakTime = interaction.options.getInteger(
-              "default_long_break_time"
-            );
-          } else if (modeType == "default_voice_notification") {
+              interaction.options.getInteger("break_time");
+          } else if (modeType == "long_break_time") {
+            data.pomodoro.defaultLongBreakTime =
+              interaction.options.getInteger("long_break_time");
+          } else if (modeType == "voice_notification") {
             data.pomodoro.defaultVoiceNotification =
-              interaction.options.getBoolean("default_voice_notification");
-          } else if (modeType == "default_vc_notification_volume") {
+              interaction.options.getBoolean("voice_notification");
+          } else if (modeType == "vc_notification_volume") {
             data.pomodoro.defaultVoiceNotificationVolume =
-              interaction.options.getInteger("default_vc_notification_volume");
+              interaction.options.getInteger("vc_notification_volume");
           }
 
           data.save().then(() => {
