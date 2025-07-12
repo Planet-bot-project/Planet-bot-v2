@@ -76,7 +76,7 @@ module.exports = {
             let imageURLInput = new TextInputBuilder()
               .setCustomId("stickyImageURL")
               .setLabel(
-                "ピン留めする画像がある場合はそのURLを入力してください。(任意)"
+                "ピン留めする画像がある場合は入力してください。無効なURLは無視されます。(任意)"
               )
               .setPlaceholder("ここに画像のURLを入力してください。")
               .setStyle(TextInputStyle.Short)
@@ -115,7 +115,7 @@ module.exports = {
             }
 
             // このチャンネルのデータを削除
-            result.sticky.channels.filter(
+            result.sticky.channels = result.sticky.channels.filter(
               (c) => c._id !== interaction.channel.id
             );
             // 全てのチャンネルで無効化しているならoffに
