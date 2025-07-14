@@ -227,6 +227,24 @@ module.exports = async (client, interaction) => {
             }
           }
           case "pomodoro_stop": {
+            // ポモドーロタイマーの状態取得とステータスの確認
+            let pomodoroState = await pomodoro.getPomodoroState(
+              client,
+              interaction.guild.id
+            );
+            if (!pomodoroState.running) {
+              let embed = new EmbedBuilder().setTitle(
+                "❌ ポモドーロタイマーが実行されていません。"
+              );
+              await interaction.message.edit({
+                content: "",
+                embeds: [embed],
+                files: [],
+                components: [],
+              });
+              return interaction.deferUpdate();
+            }
+
             return pomodoro.stop(client, interaction);
           }
           case "cancel": {
