@@ -13,7 +13,7 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 const profileModel = require("../models/profileSchema.js");
-const { getPomodoroState } = require("../lib/pomodoro.js");
+const pomodoro = require("../lib/pomodoro.js");
 const generatePomodoroPicture = require("../lib/pomodoroPictureGenerator.js");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -154,11 +154,26 @@ module.exports = async (client, interaction) => {
               } else if (interaction.message.content.includes("長時間休憩")) {
                 status = "longBreak";
               }
-              // メッセージ準備
-              let pomodoroState = await getPomodoroState(
+
+              // ポモドーロタイマーの状態取得とステータスの確認
+              let pomodoroState = await pomodoro.getPomodoroState(
                 client,
                 interaction.guild.id
               );
+              if (!pomodoroState.running) {
+                let embed = new EmbedBuilder().setTitle(
+                  "❌ ポモドーロタイマーが実行されていません。"
+                );
+                await interaction.message.edit({
+                  content: "",
+                  embeds: [embed],
+                  files: [],
+                  components: [],
+                });
+                return interaction.deferUpdate();
+              }
+
+              // メッセージ準備
               let { workTime, breakTime, longBreakTime } =
                 pomodoroState.options;
 
@@ -183,7 +198,11 @@ module.exports = async (client, interaction) => {
                 new ButtonBuilder()
                   .setCustomId("pomodoro_update")
                   .setStyle(ButtonStyle.Success)
-                  .setLabel("更新")
+                  .setLabel("更新"),
+                new ButtonBuilder()
+                  .setCustomId("pomodoro_stop")
+                  .setStyle(ButtonStyle.Danger)
+                  .setLabel("ポモドーロタイマーを終了する")
               );
 
               await interaction.message.edit({
@@ -195,9 +214,9 @@ module.exports = async (client, interaction) => {
 
               return interaction.deferUpdate();
             } catch (err) {
-              let embed = new EmbedBuilder().setTitle(
-                "❌ エラーが発生しました。"
-              );
+              let embed = new EmbedBuilder()
+                .setTitle("❌ エラーが発生しました。")
+                .setColor(0xff0000);
               await interaction.message.edit({
                 content: "",
                 embeds: [embed],
@@ -206,6 +225,9 @@ module.exports = async (client, interaction) => {
               });
               return interaction.deferUpdate();
             }
+          }
+          case "pomodoro_stop": {
+            return pomodoro.stop(client, interaction);
           }
           case "cancel": {
             return interaction.message.delete();
