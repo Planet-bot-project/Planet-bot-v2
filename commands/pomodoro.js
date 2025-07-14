@@ -37,6 +37,15 @@ module.exports = {
             .setMinValue(1)
             .setRequired(false)
         )
+        .addIntegerOption((option) =>
+          option
+            .setName("cycle_count")
+            .setDescription(
+              "ポモドーロセッションの回数を設定します。(単位: 回)"
+            )
+            .setMinValue(1)
+            .setRequired(false)
+        )
         .addBooleanOption((option) =>
           option
             .setName("voice_notification")
@@ -120,6 +129,20 @@ module.exports = {
         )
         .addSubcommand((subcommand) =>
           subcommand
+            .setName("cycle_count")
+            .setDescription("ポモドーロセッションの回数を設定します。")
+            .addIntegerOption((option) =>
+              option
+                .setName("cycle_count")
+                .setDescription(
+                  "ポモドーロセッションの回数を設定してください。"
+                )
+                .setMinValue(1)
+                .setRequired(false)
+            )
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
             .setName("voice_notification")
             .setDescription(
               "ポモドーロの音声通知をデフォルトで有効にするか設定します。"
@@ -160,6 +183,7 @@ module.exports = {
         let workTime = interaction.options.getInteger("work_time");
         let breakTime = interaction.options.getInteger("break_time");
         let longBreakTime = interaction.options.getInteger("long_break_time");
+        let cycleCount = interaction.options.getInteger("cycle_count");
         let voiceNotification =
           interaction.options.getBoolean("voice_notification");
         let voiceNotificationVolume = interaction.options.getInteger(
@@ -195,6 +219,7 @@ module.exports = {
           workTime,
           breakTime,
           longBreakTime,
+          cycleCount,
           voiceNotification,
           voiceNotificationVolume,
         });
@@ -226,6 +251,7 @@ module.exports = {
                 `- 作業時間: ${data.pomodoro.defaultWorkTime}分
 - 休憩時間: ${data.pomodoro.defaultBreakTime}分
 - 長めの休憩時間: ${data.pomodoro.defaultLongBreakTime}分
+- セッション数: ${data.pomodoro.defaultCycleCount}回
 - 音声通知: ${data.pomodoro.defaultVoiceNotification ? "有効" : "無効"}
 - 音声通知の音量: ${data.pomodoro.defaultVoiceNotificationVolume}%`
               )
@@ -236,6 +262,7 @@ module.exports = {
             data.pomodoro.defaultWorkTime = 25;
             data.pomodoro.defaultBreakTime = 5;
             data.pomodoro.defaultLongBreakTime = 15;
+            data.pomodoro.defaultCycleCount = 4;
             data.pomodoro.defaultVoiceNotification = false;
             data.pomodoro.defaultVoiceNotificationVolume = 50;
 
@@ -256,6 +283,9 @@ module.exports = {
           } else if (modeType == "long_break_time") {
             data.pomodoro.defaultLongBreakTime =
               interaction.options.getInteger("long_break_time");
+          } else if (modeType == "cycle_count") {
+            data.pomodoro.defaultCycleCount =
+              interaction.options.getInteger("cycle_count");
           } else if (modeType == "voice_notification") {
             data.pomodoro.defaultVoiceNotification =
               interaction.options.getBoolean("voice_notification");
@@ -271,6 +301,7 @@ module.exports = {
 - 作業時間: ${data.pomodoro.defaultWorkTime}分
 - 休憩時間: ${data.pomodoro.defaultBreakTime}分
 - 長めの休憩時間: ${data.pomodoro.defaultLongBreakTime}分
+- セッション数: ${data.pomodoro.defaultCycleCount}回
 - 音声通知: ${data.pomodoro.defaultVoiceNotification ? "有効" : "無効"}
 - 音声通知の音量: ${data.pomodoro.defaultVoiceNotificationVolume}%`,
             });
