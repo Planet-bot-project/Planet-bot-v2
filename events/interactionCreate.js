@@ -13,8 +13,8 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 const profileModel = require("../models/profileSchema.js");
-const pomodoro = require("../lib/pomodoro.js");
-const generatePomodoroPicture = require("../lib/pomodoroPictureGenerator.js");
+const pomodoro = require("../lib/pomodoro/main.js");
+const generatePomodoroPicture = require("../lib/pomodoro/pictureGenerator.js");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 // twemoji-parserから判定用の正規表現を取得(gオプション付き)

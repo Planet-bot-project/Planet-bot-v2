@@ -6,7 +6,7 @@ const fsp = require("fs").promises;
 const path = require("path");
 const AdmZip = require("adm-zip");
 
-const LIB_DIR = path.join(__dirname, "lib", "voicevox");
+const LIB_DIR = path.join(__dirname, "lib", "pomodoro", "voicevox");
 
 async function ensureDir(dir) {
   try {

@@ -5,7 +5,7 @@ const {
   PermissionsBitField,
 } = require("discord.js");
 require("dotenv").config({ quiet: true });
-const pomodoro = require("../lib/pomodoro.js");
+const pomodoro = require("../lib/pomodoro/main.js");
 const profileSchema = require("../models/profileSchema.js");
 
 module.exports = {

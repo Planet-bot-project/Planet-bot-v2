@@ -4,9 +4,9 @@ node_modules
 package-lock.json
 
 # lib/voicevoxは除外
-lib/voicevox/*
+lib/pomodoro/voicevox/*
 # でも、一次ファイルは対象
-!lib/voicevox/.VOICEVOX_FILES_IS_HERE
+!lib/pomodoro/voicevox/.VOICEVOX_FILES_IS_HERE
 
 # assets/audio/<数字>は除外
 assets/audio/*
