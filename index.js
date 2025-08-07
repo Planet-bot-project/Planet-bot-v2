@@ -100,12 +100,12 @@ app.listen(PORT, function () {
 let cpuThreads =
 	process.env.voicevox_cpu_threads || require("os").cpus().length; // 環境変数から取得、デフォルトはCPUコア数
 //voicevoxエンジンが存在するか確認
-if (!fs.existsSync(`${__dirname}/lib/voicevox/run.exe`))
+if (!fs.existsSync(`${__dirname}/lib/pomodoro/voicevox/run.exe`))
 	throw new Error(
 		"VOICEVOXの実行ファイルが見つかりません。voicevoxSetup.jsを実行してセットアップしてください。"
 	);
 const voicevoxProcess = spawn(
-	`${__dirname}/lib/voicevox/run.exe`,
+	`${__dirname}/lib/pomodoro/voicevox/run.exe`,
 	[`--cpu_num_threads=${cpuThreads}`],
 	{
 		stdio: "inherit",

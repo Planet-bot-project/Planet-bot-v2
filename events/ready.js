@@ -2,7 +2,7 @@ const { REST, Routes, ActivityType } = require("discord.js");
 const os = require("node:os");
 require("dotenv").config({ quiet: true });
 const profileModel = require("../models/profileSchema");
-const { init } = require("../lib/pomodoro");
+const { init } = require("../lib/pomodoro/main.js");
 const discord_token = process.env.discord_bot_token;
 const consoleChannel = process.env.discord_bot_console;
 const adminUserID = process.env.discord_bot_owner;
