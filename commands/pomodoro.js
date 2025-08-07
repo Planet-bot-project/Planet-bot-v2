@@ -33,7 +33,7 @@ module.exports = {
 				.addIntegerOption((option) =>
 					option
 						.setName("long_break_time")
-						.setDescription("長めの休憩時間を設定してください。(単位: 分)")
+						.setDescription("長めに休憩する時間を設定してください。(単位: 分)")
 						.setMinValue(1)
 						.setRequired(false)
 				)
@@ -41,7 +41,7 @@ module.exports = {
 					option
 						.setName("cycle_count")
 						.setDescription(
-							"ポモドーロセッションの回数を設定します。(単位: 回)"
+							"集中する時間と休憩する時間のセットの、何回に1回長めに休憩するかを設定します。(単位: 回)"
 						)
 						.setMinValue(1)
 						.setRequired(false)
@@ -94,11 +94,13 @@ module.exports = {
 				.addSubcommand((subcommand) =>
 					subcommand
 						.setName("work_time")
-						.setDescription("ポモドーロの作業時間を設定します。")
+						.setDescription(
+							"ポモドーロのデフォルトの集中する時間を設定します。"
+						)
 						.addIntegerOption((option) =>
 							option
 								.setName("work_time")
-								.setDescription("作業時間を設定してください。(単位: 分)")
+								.setDescription("集中する時間を入力してください。(単位: 分)")
 								.setMinValue(1)
 								.setRequired(true)
 						)
@@ -106,11 +108,13 @@ module.exports = {
 				.addSubcommand((subcommand) =>
 					subcommand
 						.setName("break_time")
-						.setDescription("ポモドーロの休憩時間を設定します。")
+						.setDescription(
+							"ポモドーロのデフォルトの休憩する時間を設定します。"
+						)
 						.addIntegerOption((option) =>
 							option
 								.setName("break_time")
-								.setDescription("休憩時間を設定してください。(単位: 分)")
+								.setDescription("休憩する時間を入力してください。(単位: 分)")
 								.setMinValue(1)
 								.setRequired(true)
 						)
@@ -118,11 +122,15 @@ module.exports = {
 				.addSubcommand((subcommand) =>
 					subcommand
 						.setName("long_break_time")
-						.setDescription("ポモドーロの長めの休憩時間を設定します。")
+						.setDescription(
+							"ポモドーロのデフォルトの長めに休憩する時間を設定します。"
+						)
 						.addIntegerOption((option) =>
 							option
 								.setName("long_break_time")
-								.setDescription("長めの休憩時間を設定してください。(単位: 分)")
+								.setDescription(
+									"長めに休憩する時間を入力してください。(単位: 分)"
+								)
 								.setMinValue(1)
 								.setRequired(true)
 						)
@@ -248,7 +256,7 @@ module.exports = {
 						let embed = new EmbedBuilder()
 							.setTitle("ポモドーロタイマーのデフォルト設定")
 							.setDescription(
-								`- 作業時間: ${data.pomodoro.defaultWorkTime}分
+								`- 集中する時間: ${data.pomodoro.defaultWorkTime}分
 - 休憩時間: ${data.pomodoro.defaultBreakTime}分
 - 長めの休憩時間: ${data.pomodoro.defaultLongBreakTime}分
 - セッション数: ${data.pomodoro.defaultCycleCount}回
@@ -298,7 +306,7 @@ module.exports = {
 						// データベースの更新が成功した場合
 						return interaction.reply({
 							content: `✅ ポモドーロタイマーのデフォルト設定を更新しました。現在の設定は次の通りです。
-- 作業時間: ${data.pomodoro.defaultWorkTime}分
+- 集中する時間: ${data.pomodoro.defaultWorkTime}分
 - 休憩時間: ${data.pomodoro.defaultBreakTime}分
 - 長めの休憩時間: ${data.pomodoro.defaultLongBreakTime}分
 - セッション数: ${data.pomodoro.defaultCycleCount}回

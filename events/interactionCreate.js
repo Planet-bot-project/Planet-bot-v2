@@ -147,11 +147,11 @@ module.exports = async (client, interaction) => {
 						try {
 							// ステータス取得
 							let status;
-							if (interaction.message.content.includes("作業時間")) {
+							if (interaction.message.content.startsWith("集中する時間")) {
 								status = "work";
-							} else if (interaction.message.content.includes("休憩時間")) {
+							} else if (interaction.message.content.startsWith("休憩時間")) {
 								status = "break";
-							} else if (interaction.message.content.includes("長時間休憩")) {
+							} else if (interaction.message.content.startsWith("長時間休憩")) {
 								status = "longBreak";
 							}
 
@@ -187,11 +187,11 @@ module.exports = async (client, interaction) => {
 
 							let messageContent;
 							if (status === "work") {
-								messageContent = `作業時間 ${workTime}分 開始！ (${pomodoroState.currentCycle}サイクル目)`;
+								messageContent = `集中する時間 ${workTime}分 開始！ (${pomodoroState.currentCycle}サイクル目)`;
 							} else if (status === "break") {
 								messageContent = `休憩時間 ${breakTime}分 開始！`;
 							} else if (status === "longBreak") {
-								messageContent = `長休憩時間 ${longBreakTime}分 開始！`;
+								messageContent = `長めの休憩時間 ${longBreakTime}分 開始！`;
 							}
 
 							let button = new ActionRowBuilder().addComponents(

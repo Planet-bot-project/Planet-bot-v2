@@ -31,7 +31,7 @@ const profileSchema = new mongoose.Schema(
 			transportedMessages: [{ type: String }],
 		},
 		pomodoro: {
-			defaultWorkTime: { type: Number, default: 25 }, //デフォルトの作業時間（分）
+			defaultWorkTime: { type: Number, default: 25 }, //デフォルトの集中する時間（分）
 			defaultBreakTime: { type: Number, default: 5 }, //デフォルトの休憩時間（分）
 			defaultLongBreakTime: { type: Number, default: 15 }, //デフォルトの長い休憩時間（分）
 			defaultCycleCount: { type: Number, default: 4 }, //デフォルトのポモドーロセッションの回数
