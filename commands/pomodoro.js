@@ -26,14 +26,14 @@ module.exports = {
 				.addIntegerOption((option) =>
 					option
 						.setName("break_time")
-						.setDescription("休憩する時間を設定してください。(単位: 分)")
+						.setDescription("休憩時間を設定してください。(単位: 分)")
 						.setMinValue(1)
 						.setRequired(false)
 				)
 				.addIntegerOption((option) =>
 					option
 						.setName("long_break_time")
-						.setDescription("長めに休憩する時間を設定してください。(単位: 分)")
+						.setDescription("長めの休憩時間を設定してください。(単位: 分)")
 						.setMinValue(1)
 						.setRequired(false)
 				)
@@ -41,7 +41,7 @@ module.exports = {
 					option
 						.setName("cycle_count")
 						.setDescription(
-							"集中する時間と休憩する時間のセットの、何回に1回長めに休憩するかを設定します。(単位: 回)"
+							"集中する時間と休憩時間のセットの、何回に1回長めに休憩するかを設定します。(単位: 回)"
 						)
 						.setMinValue(1)
 						.setRequired(false)
@@ -109,12 +109,12 @@ module.exports = {
 					subcommand
 						.setName("break_time")
 						.setDescription(
-							"ポモドーロのデフォルトの休憩する時間を設定します。"
+							"ポモドーロのデフォルトの休憩時間を設定します。"
 						)
 						.addIntegerOption((option) =>
 							option
 								.setName("break_time")
-								.setDescription("休憩する時間を入力してください。(単位: 分)")
+								.setDescription("休憩時間を入力してください。(単位: 分)")
 								.setMinValue(1)
 								.setRequired(true)
 						)
@@ -123,13 +123,13 @@ module.exports = {
 					subcommand
 						.setName("long_break_time")
 						.setDescription(
-							"ポモドーロのデフォルトの長めに休憩する時間を設定します。"
+							"ポモドーロのデフォルトの長めに休憩時間を設定します。"
 						)
 						.addIntegerOption((option) =>
 							option
 								.setName("long_break_time")
 								.setDescription(
-									"長めに休憩する時間を入力してください。(単位: 分)"
+									"長めに休憩時間を入力してください。(単位: 分)"
 								)
 								.setMinValue(1)
 								.setRequired(true)
