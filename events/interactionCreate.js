@@ -189,11 +189,11 @@ module.exports = async (client, interaction) => {
 
 							let messageContent;
 							if (status === "work") {
-								messageContent = `集中する時間 ${workTime}分 開始！ (${pomodoroState.currentCycle}サイクル目)`;
+								messageContent = `集中する時間 ${workTime}分 開始しました！ (${pomodoroState.currentCycle}サイクル目)`;
 							} else if (status === "break") {
-								messageContent = `休憩時間 ${breakTime}分 開始！`;
+								messageContent = `休憩時間 ${breakTime}分 開始しました！`;
 							} else if (status === "longBreak") {
-								messageContent = `長めの休憩時間 ${longBreakTime}分 開始！`;
+								messageContent = `長めの休憩時間 ${longBreakTime}分 開始しました！`;
 							}
 
 							let button = new ActionRowBuilder().addComponents(
