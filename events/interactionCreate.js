@@ -187,13 +187,30 @@ module.exports = async (client, interaction) => {
 								.setColor(0x00ff00)
 								.setTimestamp();
 
+							// 次のステータスの時間を取得
+							let nextStatus;
+							switch (pomodoroState.nextStatus) {
+								case "work":
+									nextStatus = "集中する時間";
+									break;
+								case "break":
+									nextStatus = "休憩時間";
+									break;
+								case "longBreak":
+									nextStatus = "長めの休憩時間";
+									break;
+							}
+							let remainingSeconds = pomodoroState.remainingSeconds;
+							let nowUnixTimeStamp = Math.floor(Date.now() / 1000);
+							let nextStatusTimestamp = nowUnixTimeStamp + remainingSeconds;
+
 							let messageContent;
 							if (status === "work") {
-								messageContent = `集中する時間 ${workTime}分 開始しました！ (${pomodoroState.currentCycle}サイクル目)`;
+								messageContent = `集中する時間 ${workTime}分 開始しました！ (${pomodoroState.currentCycle}サイクル目)\n 次のステータス: ${nextStatus} (<t:${nextStatusTimestamp}:R>)`;
 							} else if (status === "break") {
-								messageContent = `休憩時間 ${breakTime}分 開始しました！`;
+								messageContent = `休憩時間 ${breakTime}分 開始しました！\n 次のステータス: ${nextStatus} (<t:${nextStatusTimestamp}:R>)`;
 							} else if (status === "longBreak") {
-								messageContent = `長めの休憩時間 ${longBreakTime}分 開始しました！`;
+								messageContent = `長めの休憩時間 ${longBreakTime}分 開始しました！\n 次のステータス: ${nextStatus} (<t:${nextStatusTimestamp}:R>)`;
 							}
 
 							let button = new ActionRowBuilder().addComponents(
