@@ -151,7 +151,9 @@ module.exports = async (client, interaction) => {
 								status = "work";
 							} else if (interaction.message.content.startsWith("休憩時間")) {
 								status = "break";
-							} else if (interaction.message.content.startsWith("長時間休憩")) {
+							} else if (
+								interaction.message.content.startsWith("長めの休憩時間")
+							) {
 								status = "longBreak";
 							}
 
