@@ -38,6 +38,25 @@ const profileSchema = new mongoose.Schema(
 			defaultVoiceNotification: { type: Boolean, default: false }, //ボイス通知の有効/無効
 			defaultVoiceNotificationVolume: { type: Number, default: 50 }, //ボイス通知の音量（1-100%）
 		},
+		flashcards: [
+			{
+				userId: { type: String, required: true }, //ユーザーID
+				cards: [
+					{
+						_id: { type: String }, //フラッシュカードのユニークID
+						keyword: { type: String, required: true }, //キーワード（表面）
+						definition: { type: String, required: true }, //定義（裏面）
+						category: { type: String, default: "general" }, //カテゴリ
+						createdAt: { type: Date, default: Date.now }, //作成日時
+						lastReviewed: { type: Date }, //最後に確認した日時
+						reviewCount: { type: Number, default: 0 }, //確認回数
+						correctCount: { type: Number, default: 0 }, //正解回数
+						incorrectCount: { type: Number, default: 0 }, //不正解回数
+						tags: [{ type: String }], //タグ
+					},
+				],
+			},
+		],
 	},
 	{ versionKey: false }
 );
