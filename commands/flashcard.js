@@ -113,15 +113,13 @@ module.exports = {
 								answer,
 								category
 							);
-							if (card && typeof card == "object") {
+							if (card && !card?.alreadyExists) {
 								await interaction.reply({
 									content: `カードが作成されました！\n表面: ${card.keyword}\n裏面: ${card.definition}\nカテゴリー: ${card.category}`,
 								});
-							} else if (card && typeof card != "object") {
+							} else if (card && card?.alreadyExists) {
 								await interaction.reply({
-									content:
-										"カードの作成に失敗しました。既に同じキーワードのカードが存在する可能性があります。",
-									flags: MessageFlags.Ephemeral,
+									content: `そのキーワードのカードは既に存在します！更新する場合は「/flashcard card edit」コマンドを使用してください。\n表面: ${card.keyword}\n裏面: ${card.definition}\nカテゴリー: ${card.category}`,
 								});
 							} else {
 								await interaction.reply({
