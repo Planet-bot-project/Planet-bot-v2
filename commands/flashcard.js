@@ -1,4 +1,5 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
+const flashcard = require("../lib/flashcard/main.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -93,6 +94,65 @@ module.exports = {
 
 	run: async (client, interaction) => {
 		try {
+			let subcommandGroup = interaction.options.getSubcommandGroup();
+			let subcommand = interaction.options.getSubcommand();
+
+			// カードに関するサブコマンド
+			switch (subcommandGroup) {
+				case "card":
+					switch (subcommand) {
+						case "create":
+							// カード作成のロジック
+							const word = interaction.options.getString("word");
+							const answer = interaction.options.getString("answer");
+							const category = interaction.options.getString("category");
+							let card = await flashcard.add(
+								interaction.guild.id,
+								interaction.user.id,
+								word,
+								answer,
+								category
+							);
+							if (card && typeof card == "object") {
+								await interaction.reply({
+									content: `カードが作成されました！\n表面: ${card.keyword}\n裏面: ${card.definition}\nカテゴリー: ${card.category}`,
+								});
+							} else if (card && typeof card != "object") {
+								await interaction.reply({
+									content:
+										"カードの作成に失敗しました。既に同じキーワードのカードが存在する可能性があります。",
+									flags: MessageFlags.Ephemeral,
+								});
+							} else {
+								await interaction.reply({
+									content:
+										"カードの作成に失敗しました。不明なエラーが発生した可能性が有ります。時間を空けて再度お試しください。",
+									flags: MessageFlags.Ephemeral,
+								});
+							}
+							break;
+						case "list":
+							// カード一覧表示のロジック
+							break;
+						case "delete":
+							// カード削除のロジック
+							break;
+					}
+					break;
+				case "category":
+					switch (subcommand) {
+						case "create":
+							// カテゴリー作成のロジック
+							break;
+						case "list":
+							// カテゴリー一覧表示のロジック
+							break;
+						case "delete":
+							// カテゴリー削除のロジック
+							break;
+					}
+					break;
+			}
 			await interaction.reply("このコマンドはまだ実装されていません。");
 		} catch (err) {
 			const errorNotification = require("../lib/errorNotification.js");
