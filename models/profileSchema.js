@@ -44,8 +44,8 @@ const profileSchema = new mongoose.Schema(
 				cards: [
 					{
 						_id: { type: String }, //フラッシュカードのユニークID
-						keyword: { type: String, required: true }, //キーワード（表面）
-						definition: { type: String, required: true }, //定義（裏面）
+						word: { type: String, required: true }, //キーワード（表面）
+						meaning: { type: String, required: true }, //定義（裏面）
 						category: { type: String, default: "一般" }, //カテゴリ
 						createdAt: { type: Date, default: Date.now }, //作成日時
 						lastReviewed: { type: Date }, //最後に確認した日時

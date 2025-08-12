@@ -23,7 +23,7 @@ module.exports = {
 						)
 						.addStringOption((option) =>
 							option
-								.setName("answer")
+								.setName("meaning")
 								.setDescription(
 									"カードの裏面(日本語など)の答えを入力してください。"
 								)
@@ -104,22 +104,22 @@ module.exports = {
 						case "create":
 							// カード作成のロジック
 							const word = interaction.options.getString("word");
-							const answer = interaction.options.getString("answer");
+							const meaning = interaction.options.getString("meaning");
 							const category = interaction.options.getString("category");
 							let card = await flashcard.add(
 								interaction.guild.id,
 								interaction.user.id,
 								word,
-								answer,
+								meaning,
 								category
 							);
 							if (card && !card?.alreadyExists) {
 								await interaction.reply({
-									content: `カードが作成されました！\n表面: ${card.keyword}\n裏面: ${card.definition}\nカテゴリー: ${card.category}`,
+									content: `カードが作成されました！\n表面: ${card.word}\n裏面: ${card.meaning}\nカテゴリー: ${card.category}`,
 								});
 							} else if (card && card?.alreadyExists) {
 								await interaction.reply({
-									content: `そのキーワードのカードは既に存在します！更新する場合は「/flashcard card edit」コマンドを使用してください。\n表面: ${card.keyword}\n裏面: ${card.definition}\nカテゴリー: ${card.category}`,
+									content: `そのキーワードのカードは既に存在します！更新する場合は「/flashcard card edit」コマンドを使用してください。\n表面: ${card.word}\n裏面: ${card.meaning}\nカテゴリー: ${card.category}`,
 								});
 							} else {
 								await interaction.reply({
