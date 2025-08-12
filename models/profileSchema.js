@@ -46,7 +46,7 @@ const profileSchema = new mongoose.Schema(
 						_id: { type: String }, //フラッシュカードのユニークID
 						keyword: { type: String, required: true }, //キーワード（表面）
 						definition: { type: String, required: true }, //定義（裏面）
-						category: { type: String, default: "general" }, //カテゴリ
+						category: { type: String, default: "一般" }, //カテゴリ
 						createdAt: { type: Date, default: Date.now }, //作成日時
 						lastReviewed: { type: Date }, //最後に確認した日時
 						reviewCount: { type: Number, default: 0 }, //確認回数
