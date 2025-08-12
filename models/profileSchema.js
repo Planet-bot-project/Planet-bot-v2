@@ -52,7 +52,6 @@ const profileSchema = new mongoose.Schema(
 						reviewCount: { type: Number, default: 0 }, //確認回数
 						correctCount: { type: Number, default: 0 }, //正解回数
 						incorrectCount: { type: Number, default: 0 }, //不正解回数
-						tags: [{ type: String }], //タグ
 					},
 				],
 			},
