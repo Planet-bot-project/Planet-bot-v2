@@ -108,9 +108,7 @@ module.exports = {
 				.addSubcommand((subcommand) =>
 					subcommand
 						.setName("break_time")
-						.setDescription(
-							"ポモドーロのデフォルトの休憩時間を設定します。"
-						)
+						.setDescription("ポモドーロのデフォルトの休憩時間を設定します。")
 						.addIntegerOption((option) =>
 							option
 								.setName("break_time")
@@ -128,9 +126,7 @@ module.exports = {
 						.addIntegerOption((option) =>
 							option
 								.setName("long_break_time")
-								.setDescription(
-									"長めに休憩時間を入力してください。(単位: 分)"
-								)
+								.setDescription("長めに休憩時間を入力してください。(単位: 分)")
 								.setMinValue(1)
 								.setRequired(true)
 						)
