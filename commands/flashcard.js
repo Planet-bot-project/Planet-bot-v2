@@ -131,9 +131,32 @@ module.exports = {
 							break;
 						case "list":
 							// カード一覧表示のロジック
+							const categoryFilter = interaction.options.getString("category");
+
+							const cards = await flashcard.list(
+								interaction.guild.id,
+								interaction.user.id,
+								categoryFilter
+							);
+							if (cards && cards.length > 0) {
+								const cardList = cards
+									.map(
+										(card) =>
+											`表面: ${card.word}, 裏面: ${card.meaning}, カテゴリー: ${card.category}`
+									)
+									.join("\n");
+								await interaction.reply({
+									content: `以下のカードがあります:\n${cardList}`,
+								});
+							} else {
+								await interaction.reply({
+									content: "カードが見つかりませんでした。",
+								});
+							}
 							break;
 						case "delete":
 							// カード削除のロジック
+							await interaction.reply("このコマンドはまだ実装されていません。");
 							break;
 					}
 					break;
@@ -141,17 +164,19 @@ module.exports = {
 					switch (subcommand) {
 						case "create":
 							// カテゴリー作成のロジック
+							await interaction.reply("このコマンドはまだ実装されていません。");
 							break;
 						case "list":
 							// カテゴリー一覧表示のロジック
+							await interaction.reply("このコマンドはまだ実装されていません。");
 							break;
 						case "delete":
 							// カテゴリー削除のロジック
+							await interaction.reply("このコマンドはまだ実装されていません。");
 							break;
 					}
 					break;
 			}
-			await interaction.reply("このコマンドはまだ実装されていません。");
 		} catch (err) {
 			const errorNotification = require("../lib/errorNotification.js");
 			errorNotification(client, interaction, err);
