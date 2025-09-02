@@ -133,10 +133,10 @@ module.exports = {
 							// カード一覧表示のロジック
 							const categoryFilter = interaction.options.getString("category");
 
-							const cards = await flashcard.list(
+							const cards = await flashcard.get(
 								interaction.guild.id,
 								interaction.user.id,
-								categoryFilter
+								{ category: categoryFilter }
 							);
 							if (cards && cards.length > 0) {
 								const cardList = cards
