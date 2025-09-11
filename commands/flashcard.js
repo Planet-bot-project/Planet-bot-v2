@@ -156,7 +156,22 @@ module.exports = {
 							break;
 						case "delete":
 							// カード削除のロジック
-							await interaction.reply("このコマンドはまだ実装されていません。");
+							const deleteWord = interaction.options.getString("word");
+							const deleteResult = await flashcard.remove(
+								interaction.guild.id,
+								interaction.user.id,
+								deleteWord
+							);
+							if (deleteResult) {
+								await interaction.reply({
+									content: `カードが削除されました！\n削除されたカード: ${deleteWord}`,
+								});
+							} else {
+								await interaction.reply({
+									content: `指定されたカード「${deleteWord}」が見つかりませんでした。カードの表面の単語を正確に入力してください。`,
+									flags: MessageFlags.Ephemeral,
+								});
+							}
 							break;
 					}
 					break;
