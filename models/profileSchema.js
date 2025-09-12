@@ -41,6 +41,7 @@ const profileSchema = new mongoose.Schema(
 		flashcards: [
 			{
 				userId: { type: String, required: true }, //ユーザーID
+				categories: { type: [String], default: ["一般"] }, //利用可能なカテゴリー一覧
 				cards: [
 					{
 						_id: { type: String }, //フラッシュカードのユニークID

@@ -81,6 +81,11 @@ module.exports = {
 				)
 				.addSubcommand((subcommand) =>
 					subcommand
+						.setName("list")
+						.setDescription("利用可能なカテゴリーの一覧を表示します。")
+				)
+				.addSubcommand((subcommand) =>
+					subcommand
 						.setName("delete")
 						.setDescription("カテゴリーを削除します。")
 						.addStringOption((option) =>
@@ -106,18 +111,25 @@ module.exports = {
 							const word = interaction.options.getString("word");
 							const meaning = interaction.options.getString("meaning");
 							const category = interaction.options.getString("category");
-							let card = await flashcard.add(
+							let cardResult = await flashcard.add(
 								interaction.guild.id,
 								interaction.user.id,
 								word,
 								meaning,
 								category
 							);
-							if (card && !card?.alreadyExists) {
+							if (!cardResult.success) {
+								await interaction.reply({
+									content: cardResult.error,
+									flags: MessageFlags.Ephemeral,
+								});
+							} else if (cardResult.data && !cardResult.data?.alreadyExists) {
+								const card = cardResult.data;
 								await interaction.reply({
 									content: `カードが作成されました！\n表面: ${card.word}\n裏面: ${card.meaning}\nカテゴリー: ${card.category}`,
 								});
-							} else if (card && card?.alreadyExists) {
+							} else if (cardResult.data && cardResult.data?.alreadyExists) {
+								const card = cardResult.data;
 								await interaction.reply({
 									content: `そのキーワードのカードは既に存在します！更新する場合は「/flashcard card edit」コマンドを使用してください。\n表面: ${card.word}\n裏面: ${card.meaning}\nカテゴリー: ${card.category}`,
 								});
@@ -133,13 +145,18 @@ module.exports = {
 							// カード一覧表示のロジック
 							const categoryFilter = interaction.options.getString("category");
 
-							const cards = await flashcard.get(
+							const cardsResult = await flashcard.get(
 								interaction.guild.id,
 								interaction.user.id,
 								{ category: categoryFilter }
 							);
-							if (cards && cards.length > 0) {
-								const cardList = cards
+							if (!cardsResult.success) {
+								await interaction.reply({
+									content: cardsResult.error,
+									flags: MessageFlags.Ephemeral,
+								});
+							} else if (cardsResult.data && cardsResult.data.length > 0) {
+								const cardList = cardsResult.data
 									.map(
 										(card) =>
 											`表面: ${card.word}, 裏面: ${card.meaning}, カテゴリー: ${card.category}`
@@ -162,7 +179,12 @@ module.exports = {
 								interaction.user.id,
 								deleteWord
 							);
-							if (deleteResult) {
+							if (!deleteResult.success) {
+								await interaction.reply({
+									content: deleteResult.error,
+									flags: MessageFlags.Ephemeral,
+								});
+							} else if (deleteResult.data) {
 								await interaction.reply({
 									content: `カードが削除されました！\n削除されたカード: ${deleteWord}`,
 								});
@@ -179,11 +201,49 @@ module.exports = {
 					switch (subcommand) {
 						case "create":
 							// カテゴリー作成のロジック
-							await interaction.reply("このコマンドはまだ実装されていません。");
+							const categoryName = interaction.options.getString("name");
+							const result = await flashcard.createCategory(
+								interaction.guild.id,
+								interaction.user.id,
+								categoryName
+							);
+
+							if (result.success) {
+								await interaction.reply({
+									content: `カテゴリー「${result.categoryName}」が作成されました！\nこのカテゴリーはカード作成時に選択できるようになります。`,
+								});
+							} else {
+								await interaction.reply({
+									content: result.error,
+									flags: MessageFlags.Ephemeral,
+								});
+							}
 							break;
 						case "list":
 							// カテゴリー一覧表示のロジック
-							await interaction.reply("このコマンドはまだ実装されていません。");
+							const categoriesResult = await flashcard.getCategories(
+								interaction.guild.id,
+								interaction.user.id
+							);
+
+							if (!categoriesResult.success) {
+								await interaction.reply({
+									content: categoriesResult.error,
+									flags: MessageFlags.Ephemeral,
+								});
+							} else {
+								const categories = categoriesResult.data || [];
+								if (categories && categories.length > 0) {
+									const categoryList = categories.join(", ");
+									await interaction.reply({
+										content: `利用可能なカテゴリー:\n${categoryList}`,
+									});
+								} else {
+									await interaction.reply({
+										content: "利用可能なカテゴリーがありません。",
+									});
+								}
+							}
 							break;
 						case "delete":
 							// カテゴリー削除のロジック
