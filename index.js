@@ -34,7 +34,11 @@ fs.readdir("./events", (_err, files) => {
 		const event = require(`./events/${file}`);
 		let eventName = file.split(".")[0];
 		console.log(`クライアントイベントの読み込みが完了: ${eventName}`);
+
+		// 既存のリスナーを削除してから追加
+		client.removeAllListeners(eventName);
 		client.on(eventName, event.bind(null, client));
+
 		delete require.cache[require.resolve(`./events/${file}`)];
 	});
 });

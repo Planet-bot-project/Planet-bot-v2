@@ -8,6 +8,9 @@ const consoleChannel = process.env.discord_bot_console;
 const adminUserID = process.env.discord_bot_owner;
 
 module.exports = async (client) => {
+	// 既にセットアップ済みの場合は何もしない
+	if (client.isReady && client.setupComplete) return;
+
 	//discord botへのコマンドの設定
 	const rest = new REST({ version: "10" }).setToken(discord_token);
 	(async () => {
@@ -109,4 +112,7 @@ module.exports = async (client) => {
 				os.type().includes("Windows") ? "開発環境" : "本番環境"
 			}で起動しました！`
 		);
+
+	// セットアップ完了フラグを設定
+	client.setupComplete = true;
 };
