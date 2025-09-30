@@ -110,11 +110,9 @@ let cpuThreads =
 const voicevoxExecutablePath = getVoicevoxExecutablePath();
 if (!voicevoxExecutablePath || !fs.existsSync(voicevoxExecutablePath)) {
 	throw new Error(
-		"VOICEVOXの実行ファイルが見つかりません。voicevoxSetup.jsを実行してセットアップしてください。"
+		`VOICEVOXの実行ファイルが${voicevoxExecutablePath}に見つかりません。voicevoxSetup.jsを実行してセットアップしてください。`
 	);
 }
-
-console.log(`VOICEVOX実行ファイル: ${voicevoxExecutablePath}`);
 
 const voicevoxProcess = spawn(
 	voicevoxExecutablePath,
