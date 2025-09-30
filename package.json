@@ -5,8 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"main": "node index.js",
-		"voicevoxSetup": "node voicevoxSetup.js",
-		"build": "npm run voicevoxSetup && npm run main"
+		"build": "node voicevoxSetup.js"
 	},
 	"author": "",
 	"license": "ISC",
