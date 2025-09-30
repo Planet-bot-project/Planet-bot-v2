@@ -133,46 +133,15 @@ function getVoicevoxExecutablePath() {
 	} else if (platform === "linux") {
 		// Linux用実行ファイルを検索
 		try {
-			console.log(`Linux環境でのVOICEVOX検索を開始します`);
-			console.log(`検索ディレクトリ: ${LIB_DIR}`);
-
-			// ディレクトリの存在確認
-			if (!fs.existsSync(LIB_DIR)) {
-				console.log(`ディレクトリが存在しません: ${LIB_DIR}`);
-				return null;
-			}
-
-			// ディレクトリ内のファイル一覧を表示
-			const files = fs.readdirSync(LIB_DIR);
-			console.log(`ディレクトリ内のファイル一覧:`, files);
-
 			// 実行可能ファイルを検索
 			const runExe = path.join(LIB_DIR, "run");
-			console.log(`検索対象パス: ${runExe}`);
 
 			if (fs.existsSync(runExe)) {
 				console.log(`runファイルが見つかりました: ${runExe}`);
 
-				// ファイルの詳細情報を取得
-				const stats = fs.statSync(runExe);
-				console.log(`ファイル情報:`, {
-					isFile: stats.isFile(),
-					isDirectory: stats.isDirectory(),
-					mode: stats.mode.toString(8),
-					size: stats.size,
-				});
-
 				return runExe;
 			} else {
 				console.log(`runファイルが見つかりません: ${runExe}`);
-
-				// 類似ファイルを検索
-				const similarFiles = files.filter(
-					(file) =>
-						file.toLowerCase().includes("run") ||
-						file.toLowerCase().includes("voicevox")
-				);
-				console.log(`類似ファイル:`, similarFiles);
 			}
 		} catch (e) {
 			console.error(`Linux用実行ファイルの検索中にエラー: ${e.message}`);
@@ -236,34 +205,88 @@ async function extractTarGz(tarGzPath, extractDir) {
 		await execAsync(`tar -xzf "${tarGzPath}" -C "${extractDir}"`);
 		console.log(`tar.gzファイルを解凍しました: ${tarGzPath}`);
 
-		// 解凍されたディレクトリを確認して、必要に応じて構造を調整
+		// 解凍されたディレクトリを確認
 		const items = await fsp.readdir(extractDir);
-		const extractedDir = items.find((item) => {
+		console.log(`解凍後のディレクトリ内容:`, items);
+
+		// VOICEVOXディレクトリを探す
+		const voicevoxDir = items.find((item) => {
 			const itemPath = path.join(extractDir, item);
-			return fs.statSync(itemPath).isDirectory() && item.startsWith("voicevox");
+			return (
+				fs.statSync(itemPath).isDirectory() &&
+				(item === "VOICEVOX" || item.toLowerCase().includes("voicevox"))
+			);
 		});
 
-		if (extractedDir) {
-			const sourcePath = path.join(extractDir, extractedDir);
-			const sourceItems = await fsp.readdir(sourcePath);
+		if (voicevoxDir) {
+			const voicevoxPath = path.join(extractDir, voicevoxDir);
+			console.log(`VOICEVOXディレクトリが見つかりました: ${voicevoxPath}`);
 
-			// 解凍されたディレクトリの中身を上の階層に移動
-			for (const item of sourceItems) {
-				await move(
-					path.join(sourcePath, item),
-					path.join(extractDir, item),
-					true
+			// VOICEVOX/vv-engine のパス
+			const vvEngineDir = path.join(voicevoxPath, "vv-engine");
+
+			if (fs.existsSync(vvEngineDir)) {
+				console.log(`vv-engineディレクトリが見つかりました: ${vvEngineDir}`);
+
+				// vv-engineの中身をvoicevox直下に移動
+				const vvEngineItems = await fsp.readdir(vvEngineDir);
+				for (const item of vvEngineItems) {
+					await move(
+						path.join(vvEngineDir, item),
+						path.join(extractDir, item),
+						true
+					);
+				}
+				console.log(`vv-engineの内容を移動しました`);
+			} else {
+				// vv-engineがない場合は、VOICEVOXディレクトリの中身をそのまま移動
+				console.log(
+					`vv-engineが見つからないため、VOICEVOXディレクトリの中身を移動します`
 				);
+				const voicevoxItems = await fsp.readdir(voicevoxPath);
+				for (const item of voicevoxItems) {
+					await move(
+						path.join(voicevoxPath, item),
+						path.join(extractDir, item),
+						true
+					);
+				}
 			}
 
-			// 空になったディレクトリを削除
-			await remove(sourcePath);
+			// VOICEVOXフォルダを削除
+			await remove(voicevoxPath);
+			console.log(`VOICEVOXディレクトリを削除しました`);
+		} else {
+			// VOICEVOXディレクトリが見つからない場合は、最初に見つかったディレクトリの中身を移動
+			const extractedDir = items.find((item) => {
+				const itemPath = path.join(extractDir, item);
+				return fs.statSync(itemPath).isDirectory();
+			});
+
+			if (extractedDir) {
+				console.log(`解凍されたディレクトリを処理します: ${extractedDir}`);
+				const sourcePath = path.join(extractDir, extractedDir);
+				const sourceItems = await fsp.readdir(sourcePath);
+
+				// 解凍されたディレクトリの中身を上の階層に移動
+				for (const item of sourceItems) {
+					await move(
+						path.join(sourcePath, item),
+						path.join(extractDir, item),
+						true
+					);
+				}
+
+				// 空になったディレクトリを削除
+				await remove(sourcePath);
+			}
 		}
 
 		// runファイルに実行権限を付与
 		const runPath = path.join(extractDir, "run");
 		if (fs.existsSync(runPath)) {
 			await makeExecutable(runPath);
+			console.log(`runファイルに実行権限を付与しました: ${runPath}`);
 		}
 	} catch (e) {
 		console.error(`tar.gz解凍エラー: ${e.message}`);
