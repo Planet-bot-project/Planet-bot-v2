@@ -133,9 +133,10 @@ function getVoicevoxExecutablePath() {
 	} else if (platform === "linux") {
 		// Linux用tar.gzファイルを検索
 		try {
-			const files = fs.readdirSync(LIB_DIR);
-			// run.exeまたは実行可能ファイルを検索
+			// 実行可能ファイルを検索
 			const runExe = path.join(LIB_DIR, "run");
+			console.log(runExe);
+			console.log(fs.existsSync(runExe));
 			if (fs.existsSync(runExe)) {
 				return runExe;
 			}
