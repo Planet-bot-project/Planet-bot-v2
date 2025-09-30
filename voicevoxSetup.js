@@ -131,17 +131,51 @@ function getVoicevoxExecutablePath() {
 		}
 		return null;
 	} else if (platform === "linux") {
-		// Linux用tar.gzファイルを検索
+		// Linux用実行ファイルを検索
 		try {
+			console.log(`Linux環境でのVOICEVOX検索を開始します`);
+			console.log(`検索ディレクトリ: ${LIB_DIR}`);
+
+			// ディレクトリの存在確認
+			if (!fs.existsSync(LIB_DIR)) {
+				console.log(`ディレクトリが存在しません: ${LIB_DIR}`);
+				return null;
+			}
+
+			// ディレクトリ内のファイル一覧を表示
+			const files = fs.readdirSync(LIB_DIR);
+			console.log(`ディレクトリ内のファイル一覧:`, files);
+
 			// 実行可能ファイルを検索
 			const runExe = path.join(LIB_DIR, "run");
-			console.log(runExe);
-			console.log(fs.existsSync(runExe));
+			console.log(`検索対象パス: ${runExe}`);
+
 			if (fs.existsSync(runExe)) {
+				console.log(`runファイルが見つかりました: ${runExe}`);
+
+				// ファイルの詳細情報を取得
+				const stats = fs.statSync(runExe);
+				console.log(`ファイル情報:`, {
+					isFile: stats.isFile(),
+					isDirectory: stats.isDirectory(),
+					mode: stats.mode.toString(8),
+					size: stats.size,
+				});
+
 				return runExe;
+			} else {
+				console.log(`runファイルが見つかりません: ${runExe}`);
+
+				// 類似ファイルを検索
+				const similarFiles = files.filter(
+					(file) =>
+						file.toLowerCase().includes("run") ||
+						file.toLowerCase().includes("voicevox")
+				);
+				console.log(`類似ファイル:`, similarFiles);
 			}
 		} catch (e) {
-			// ディレクトリが存在しない場合など
+			console.error(`Linux用実行ファイルの検索中にエラー: ${e.message}`);
 		}
 		return null;
 	}
