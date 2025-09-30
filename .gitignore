@@ -1,7 +1,6 @@
 # いつもの
 node_modules
 .env
-package-lock.json
 
 # lib/voicevoxは除外
 lib/pomodoro/voicevox/*
