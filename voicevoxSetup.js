@@ -74,10 +74,10 @@ async function getLatestVoiceVoxUrl() {
 			}
 		});
 	} else if (platform === "linux") {
-		// Linux用のAppImageファイルを検索
-		$('a[href$=".AppImage"]').each((_, el) => {
+		// Linux用のtar.gzファイルを検索
+		$('a[href$=".tar.gz"]').each((_, el) => {
 			const href = $(el).attr("href");
-			if (href && href.includes("voicevox-linux-")) {
+			if (href && href.includes("voicevox-linux-cpu-x64-")) {
 				downloadUrl = href;
 				return false;
 			}
@@ -131,14 +131,13 @@ function getVoicevoxExecutablePath() {
 		}
 		return null;
 	} else if (platform === "linux") {
-		// Linux用AppImageファイルを検索
+		// Linux用tar.gzファイルを検索
 		try {
 			const files = fs.readdirSync(LIB_DIR);
-			const appImageFile = files.find(
-				(file) => file.includes("voicevox-linux-") && file.endsWith(".AppImage")
-			);
-			if (appImageFile) {
-				return path.join(LIB_DIR, appImageFile);
+			// run.exeまたは実行可能ファイルを検索
+			const runExe = path.join(LIB_DIR, "run");
+			if (fs.existsSync(runExe)) {
+				return runExe;
 			}
 		} catch (e) {
 			// ディレクトリが存在しない場合など
@@ -192,6 +191,51 @@ async function extractAndClean(zipPath, extractDir) {
 	}
 }
 
+async function extractTarGz(tarGzPath, extractDir) {
+	const { exec } = require("child_process");
+	const { promisify } = require("util");
+	const execAsync = promisify(exec);
+
+	try {
+		// tar.gzファイルを解凍
+		await execAsync(`tar -xzf "${tarGzPath}" -C "${extractDir}"`);
+		console.log(`tar.gzファイルを解凍しました: ${tarGzPath}`);
+
+		// 解凍されたディレクトリを確認して、必要に応じて構造を調整
+		const items = await fsp.readdir(extractDir);
+		const extractedDir = items.find((item) => {
+			const itemPath = path.join(extractDir, item);
+			return fs.statSync(itemPath).isDirectory() && item.startsWith("voicevox");
+		});
+
+		if (extractedDir) {
+			const sourcePath = path.join(extractDir, extractedDir);
+			const sourceItems = await fsp.readdir(sourcePath);
+
+			// 解凍されたディレクトリの中身を上の階層に移動
+			for (const item of sourceItems) {
+				await move(
+					path.join(sourcePath, item),
+					path.join(extractDir, item),
+					true
+				);
+			}
+
+			// 空になったディレクトリを削除
+			await remove(sourcePath);
+		}
+
+		// runファイルに実行権限を付与
+		const runPath = path.join(extractDir, "run");
+		if (fs.existsSync(runPath)) {
+			await makeExecutable(runPath);
+		}
+	} catch (e) {
+		console.error(`tar.gz解凍エラー: ${e.message}`);
+		throw e;
+	}
+}
+
 async function setupVoicevox() {
 	await ensureDir(LIB_DIR);
 	console.log("==============================================");
@@ -212,7 +256,7 @@ async function setupVoicevox() {
 		const expectedFile =
 			platform === "win32"
 				? "voicevox-windows-cpu-*.zip"
-				: "voicevox-linux-*.AppImage";
+				: "voicevox-linux-cpu-x64-*.tar.gz";
 		throw new Error(`${expectedFile}が見つかりませんでした`);
 	}
 
@@ -229,11 +273,13 @@ async function setupVoicevox() {
 		await remove(filePath);
 		console.log("セットアップ完了");
 	} else if (platform === "linux") {
-		// Linux: AppImageファイルに実行権限を付与
-		await makeExecutable(filePath);
+		// Linux: tar.gzファイルを展開
+		await extractTarGz(filePath, LIB_DIR);
+		await remove(filePath);
 		console.log("セットアップ完了");
-		console.log(`VOICEVOXは以下のパスにあります: ${filePath}`);
-		console.log("使用時は直接このAppImageファイルを実行してください。");
+		const runPath = path.join(LIB_DIR, "run");
+		console.log(`VOICEVOXは以下のパスにあります: ${runPath}`);
+		console.log("使用時は直接このrunファイルを実行してください。");
 	}
 }
 
