@@ -101,15 +101,23 @@ app.listen(PORT, function () {
 });
 
 // Voicevoxの起動
+const { getVoicevoxExecutablePath } = require("./voicevoxSetup");
+
 let cpuThreads =
 	process.env.voicevox_cpu_threads || require("os").cpus().length; // 環境変数から取得、デフォルトはCPUコア数
-//voicevoxエンジンが存在するか確認
-if (!fs.existsSync(`${__dirname}/lib/pomodoro/voicevox/run.exe`))
+
+// プラットフォーム対応でVOICEVOXの実行ファイルパスを取得
+const voicevoxExecutablePath = getVoicevoxExecutablePath();
+if (!voicevoxExecutablePath || !fs.existsSync(voicevoxExecutablePath)) {
 	throw new Error(
 		"VOICEVOXの実行ファイルが見つかりません。voicevoxSetup.jsを実行してセットアップしてください。"
 	);
+}
+
+console.log(`VOICEVOX実行ファイル: ${voicevoxExecutablePath}`);
+
 const voicevoxProcess = spawn(
-	`${__dirname}/lib/pomodoro/voicevox/run.exe`,
+	voicevoxExecutablePath,
 	[`--cpu_num_threads=${cpuThreads}`],
 	{
 		stdio: "inherit",
