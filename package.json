@@ -6,7 +6,7 @@
 	"scripts": {
 		"main": "node index.js",
 		"voicevoxSetup": "node voicevoxSetup.js",
-		"test": "npm run voicevoxSetup && npm run main"
+		"build": "npm run voicevoxSetup && npm run main"
 	},
 	"author": "",
 	"license": "ISC",
