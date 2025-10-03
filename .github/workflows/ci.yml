@@ -45,14 +45,15 @@ jobs:
         run: |
           node -e "
           try {
-            require('./index.js');
-            console.log('✅ Main file syntax is valid');
+            setTimeout(() => {
+              require('./index.js');
+              console.info('✅ Main file syntax is valid');
+            }, 5 * 60 * 1000); // 5 minutes
           } catch (error) {
             if (error.message.includes('TOKEN') || error.message.includes('MONGODB')) {
-              console.log('✅ Main file loads correctly (environment variables missing as expected)');
+              console.info('✅ Main file loads correctly (environment variables missing as expected)');
             } else {
               console.error('❌ Syntax or import error:', error.message);
               process.exit(1);
             }
-          }
-          "
+          }"
