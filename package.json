@@ -5,7 +5,12 @@
 	"main": "index.js",
 	"scripts": {
 		"main": "node index.js",
-		"build": "node voicevoxSetup.js"
+		"build": "node voicevoxSetup.js",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"format:lint": "prettier --write . && eslint . --fix"
 	},
 	"author": "",
 	"license": "ISC",
@@ -25,8 +30,14 @@
 		"twemoji-parser": "^14.0.0"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.36.0",
 		"adm-zip": "^0.5.16",
 		"cheerio": "^1.1.2",
-		"fs": "^0.0.1-security"
+		"eslint": "^9.36.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.4",
+		"fs": "^0.0.1-security",
+		"globals": "^16.4.0",
+		"prettier": "^3.6.2"
 	}
 }
