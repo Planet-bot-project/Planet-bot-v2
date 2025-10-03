@@ -45,10 +45,17 @@ export default [
 		},
 	},
 	{
-		// 無視するファイル/ディレクトリ
+		// 無視するファイル/ディレクトリ（.gitignoreの内容を含む）
 		ignores: [
+			// .gitignoreから取り込み
 			'node_modules/**',
+			'.env',
 			'lib/pomodoro/voicevox/**',
+			'!lib/pomodoro/voicevox/.VOICEVOX_FILES_IS_HERE',
+			'assets/audio/**',
+			'!assets/audio/voiceList.json',
+
+			// ESLint用の追加設定
 			'*.min.js',
 			'dist/**',
 			'build/**',

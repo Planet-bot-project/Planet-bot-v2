@@ -36,7 +36,7 @@ jobs:
 
       - name: Lint code
         run: |
-          npx eslint . --ext .js --ignore-path .gitignore || echo "ESLint not configured, skipping..."
+          npx eslint . --ext .js || echo "ESLint not configured, skipping..."
 
       - name: Check syntax
         run: node -c index.js
