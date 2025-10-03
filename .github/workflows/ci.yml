@@ -45,6 +45,9 @@ jobs:
         run: |
           node -e "
           try {
+            // set environment info to process.environment
+            process.env.isTest = true;
+
             setTimeout(() => {
               require('./index.js');
               console.info('✅ Main file syntax is valid');

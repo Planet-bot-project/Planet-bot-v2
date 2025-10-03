@@ -69,9 +69,10 @@ if (discord_token) {
 	});
 } else {
 	setTimeout(() => {
-		throw new Error(
-			'ボットのトークンをプロジェクト内の.envファイルに設定してください!',
-		);
+		if (process.env.isTest !== 'true')
+			throw new Error(
+				'ボットのトークンをプロジェクト内の.envファイルに設定してください!',
+			);
 	}, 2000);
 }
 
@@ -88,9 +89,10 @@ if (mongodb_TOKEN) {
 		});
 } else {
 	setTimeout(() => {
-		throw new Error(
-			'mongodbのトークンをプロジェクト内の.envファイルに設定してください!',
-		);
+		if (process.env.isTest !== 'true')
+			throw new Error(
+				'mongodbのトークンをプロジェクト内の.envファイルに設定してください!',
+			);
 	}, 2000);
 }
 
