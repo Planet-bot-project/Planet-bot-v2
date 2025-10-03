@@ -6,7 +6,9 @@ const {
 	MessageFlags,
 } = require('discord.js');
 require('dotenv').config({ quiet: true });
-const adminIDs = process.env.discord_bot_owner.split(',');
+const adminIDs = process.env.discord_bot_owner
+	? process.env.discord_bot_owner.split(',')
+	: [];
 
 module.exports = {
 	data: new SlashCommandBuilder()
