@@ -51,10 +51,12 @@ jobs:
             setTimeout(() => {
               require('./index.js');
               console.info('✅ Main file syntax is valid');
+              process.exit(0);
             }, 5 * 60 * 1000); // 5 minutes
           } catch (error) {
             if (error.message.includes('TOKEN') || error.message.includes('MONGODB')) {
               console.info('✅ Main file loads correctly (environment variables missing as expected)');
+              process.exit(0);
             } else {
               console.error('❌ Syntax or import error:', error.message);
               process.exit(1);
