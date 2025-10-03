@@ -18,15 +18,15 @@ module.exports = async (client) => {
 			await rest.put(Routes.applicationCommands(client.user.id), {
 				body: await client.commands,
 			});
-			console.log('スラッシュコマンドの再読み込みに成功しました。');
+			console.info('スラッシュコマンドの再読み込みに成功しました。');
 		} catch (err) {
-			console.log(
+			console.info(
 				`❌ スラッシュコマンドの再読み込み時にエラーが発生しました。：\n${err}`,
 			);
 		}
 	})();
 
-	console.log(`${client.user.username}への接続に成功しました。`);
+	console.info(`${client.user.username}への接続に成功しました。`);
 
 	//カスタマイズアクティビティを設定
 	setInterval(() => {
@@ -60,10 +60,10 @@ module.exports = async (client) => {
 				profile
 					.save()
 					.then(() => {
-						console.log(`未登録のサーバーID「${guild.id}」を新規登録しました`);
+						console.info(`未登録のサーバーID「${guild.id}」を新規登録しました`);
 					})
 					.catch((err) => {
-						console.log(err);
+						console.error(err);
 						return client.channels.cache
 							.get(consoleChannel)
 							?.send({
@@ -96,15 +96,12 @@ module.exports = async (client) => {
 				await profileModel
 					.deleteOne({ _id: guildID })
 					.then(() => {
-						return console.log(
+						return console.info(
 							'退出済みのサーバーを発見したため、DBから削除しました。',
 						);
 					})
 					.catch((err) => {
-						console.log(err);
-						return console.log(
-							'退出済みのサーバー発見し、DBから削除しようとしましたが、エラーが発生しました。',
-						);
+						console.error(err);
 					});
 			}
 		}

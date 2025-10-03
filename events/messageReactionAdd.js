@@ -56,18 +56,16 @@ module.exports = async (client, reaction, user) => {
 							// 転送したメッセージIDを保存
 							result.starboard.transportedMessages.push(message.id);
 							result.save().catch((err) => {
-								console.log(err);
+								console.error(err);
 							});
 						}
 					})
 					.catch((err) => {
-						console.log(err);
+						console.error(err);
 					});
 			}
 		})
-		.catch((err) => {
-			console.log(err);
-
+		.catch(async (err) => {
 			const button = new ActionRowBuilder().addComponents(
 				new ButtonBuilder()
 					.setLabel('再招待はこちらから')
@@ -76,11 +74,13 @@ module.exports = async (client, reaction, user) => {
 						`https://discord.com/oauth2/authorize?client_id=${client.user.id}`,
 					),
 			);
-			return reaction.message.reply({
+			await reaction.message.reply({
 				content:
 					'メッセージリアクション受信時に、DB取得エラーが発生しました。お手数ですが、BOTを一度サーバーからkickしていただき、再招待をお願い致します。',
 				components: [button],
 				flags: MessageFlags.Ephemeral,
 			});
+
+			throw new Error(err);
 		});
 };

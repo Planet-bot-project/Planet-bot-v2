@@ -231,7 +231,7 @@ module.exports = {
 						errorNotification(client, interaction, err);
 					});
 			} catch (err) {
-				console.log(err);
+				console.error(err);
 				return interaction.reply(
 					'データ作成時にエラーが発生しました。時間を空けて再度お試しください。',
 				);
@@ -278,7 +278,7 @@ module.exports = {
 					embeds: [embed],
 				});
 			} catch (err) {
-				console.log(err);
+				console.error(err);
 				return interaction.reply(
 					'データ表示時にエラーが発生しました。時間を空けて再度お試しください。',
 				);
@@ -303,7 +303,7 @@ module.exports = {
 				db.save();
 				return interaction.reply('✅データの削除に成功しました！');
 			} catch (err) {
-				console.log(err);
+				console.error(err);
 				return interaction.reply(
 					'データ削除時にエラーが発生しました。時間を空けて再度お試しください。',
 				);

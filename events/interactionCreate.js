@@ -33,7 +33,7 @@ module.exports = async (client, interaction) => {
 			if (interaction?.type === InteractionType.ApplicationCommand) {
 				fs.readdir('./commands', (err, files) => {
 					if (err) throw err;
-					files.forEach((f) => {
+					files.forEach(async (f) => {
 						const props = require(`../commands/${f}`);
 						const propsJson = props.data.toJSON();
 
@@ -49,11 +49,11 @@ module.exports = async (client, interaction) => {
 							try {
 								return props.run(client, interaction);
 							} catch (err) {
-								console.log(err);
-								return interaction?.reply({
+								await interaction?.reply({
 									content: '❌ 何らかのエラーが発生しました。',
 									flags: MessageFlags.Ephemeral,
 								});
+								throw new Error(err);
 							}
 						}
 					});
@@ -234,7 +234,7 @@ module.exports = async (client, interaction) => {
 
 							return interaction.deferUpdate();
 						} catch (err) {
-							console.log(err);
+							console.error(err);
 							const embed = new EmbedBuilder()
 								.setTitle('❌ エラーが発生しました。')
 								.setColor(0xff0000);
@@ -297,10 +297,10 @@ module.exports = async (client, interaction) => {
 							profile
 								.save()
 								.catch(async (err) => {
-									console.log(err);
 									await interaction.reply(
 										'❌ エラーが発生しました。コンソールを確認してください。',
 									);
+									throw new Error(err);
 								})
 								.then(async () => {
 									await interaction.reply('✅　登録しました。');
@@ -322,10 +322,10 @@ module.exports = async (client, interaction) => {
 									await interaction.reply('✅　登録を解除しました。');
 								})
 								.catch(async (err) => {
-									console.log(err);
 									await interaction.reply(
 										'❌ エラーが発生しました。コンソールを確認してください。',
 									);
+									throw new Error(err);
 								});
 						} else {
 							await interaction.reply({
@@ -507,13 +507,13 @@ module.exports = async (client, interaction) => {
 
 						if (how_to === '追加') {
 							if (variable_value === 'false' || variable_value === 'true') {
-								console.log('Boolean');
+								console.info('Boolean');
 								variable_value = variable_value === 'true';
 							} else if (!variable_value) {
-								console.log('no data');
+								console.info('no data');
 								variable_value = '';
 							} else {
-								console.log('other data');
+								console.info('other data');
 							}
 
 							const new_data = { [variable_name]: variable_value };
@@ -531,7 +531,7 @@ module.exports = async (client, interaction) => {
 										{ new: true },
 									);
 
-									console.log(`updated to: ${doc}`);
+									console.info(`updated to: ${doc}`);
 								}
 
 								return interaction.reply('done');
@@ -549,7 +549,7 @@ module.exports = async (client, interaction) => {
 										data[variable_name] = undefined;
 
 										data.save().then(() => {
-											console.log('updated!');
+											console.info('updated!');
 										});
 									});
 								}

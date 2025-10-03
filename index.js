@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
+
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -33,7 +34,7 @@ fs.readdir('./events', (_err, files) => {
 		if (!file.endsWith('.js')) return;
 		const event = require(`./events/${file}`);
 		const eventName = file.split('.')[0];
-		console.log(`クライアントイベントの読み込みが完了: ${eventName}`);
+		console.info(`クライアントイベントの読み込みが完了: ${eventName}`);
 
 		// 既存のリスナーを削除してから追加
 		client.removeAllListeners(eventName);
@@ -52,24 +53,23 @@ fs.readdir('./commands', (err, files) => {
 				const props = require(`./commands/${f}`);
 				const propsJson = props.data.toJSON();
 				client.commands.push(propsJson);
-				console.log(`コマンドの読み込みが完了: ${propsJson.name}`);
+				console.info(`コマンドの読み込みが完了: ${propsJson.name}`);
 			}
 		} catch (err) {
-			console.log(err);
+			throw new Error(err);
 		}
 	});
 });
 
 if (discord_token) {
 	client.login(discord_token).catch((err) => {
-		console.log(
-			'プロジェクトに入力したボットのトークンが間違っているか、ボットのINTENTSがオフになっています!',
+		throw new Error(
+			`プロジェクトに入力したボットのトークンが間違っているか、ボットのINTENTSがオフになっています!\n${err}`,
 		);
-		console.log(err);
 	});
 } else {
 	setTimeout(() => {
-		console.log(
+		throw new Error(
 			'ボットのトークンをプロジェクト内の.envファイルに設定してください!',
 		);
 	}, 2000);
@@ -81,14 +81,14 @@ if (mongodb_TOKEN) {
 	mongoose
 		.connect(mongodb_TOKEN, { dbName: 'serverDB' })
 		.then(() => {
-			console.log('データベースに接続したんだゾ');
+			console.info('データベースに接続したんだゾ');
 		})
 		.catch((err) => {
-			console.log(err);
+			throw new Error(`データベースの接続に失敗しました: ${err}`);
 		});
 } else {
 	setTimeout(() => {
-		console.log(
+		throw new Error(
 			'mongodbのトークンをプロジェクト内の.envファイルに設定してください!',
 		);
 	}, 2000);
@@ -98,7 +98,7 @@ app.get('/', (request, response) => {
 	response?.sendStatus(200);
 });
 app.listen(PORT, () => {
-	console.log(`[NodeJS] Application Listening on Port ${PORT}`);
+	console.info(`[NodeJS] Application Listening on Port ${PORT}`);
 });
 
 // Voicevoxの起動
@@ -124,5 +124,5 @@ const voicevoxProcess = spawn(
 );
 
 voicevoxProcess.on('error', (err) => {
-	console.error('Voicevoxの起動に失敗しました:', err);
+	throw new Error(`Voicevoxの起動に失敗しました: ${err}`);
 });
