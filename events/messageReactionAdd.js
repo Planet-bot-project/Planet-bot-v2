@@ -3,11 +3,11 @@ const {
 	ButtonBuilder,
 	ButtonStyle,
 	MessageFlags,
-} = require("discord.js");
-const profileSchema = require("../models/profileSchema");
-const messageTransport = require("../lib/messageTransport.js");
+} = require('discord.js');
+const profileSchema = require('../models/profileSchema');
+const messageTransport = require('../lib/messageTransport.js');
 // twemoji-parserから判定用の正規表現を取得(gオプション付き)
-const twemojiRegex = require("twemoji-parser/dist/lib/regex").default;
+const twemojiRegex = require('twemoji-parser/dist/lib/regex').default;
 
 module.exports = async (client, reaction, user) => {
 	// 必要な情報をキャッシュ
@@ -35,7 +35,7 @@ module.exports = async (client, reaction, user) => {
 			}
 
 			// 該当する絵文字か判定
-			let emojis = result.starboard.board.map((board) => board.emoji);
+			const emojis = result.starboard.board.map((board) => board.emoji);
 			if (emojis.includes(reaction.emoji.name)) {
 				// 該当する絵文字の場合、絵文字数を確認する
 				reaction.message
@@ -43,11 +43,11 @@ module.exports = async (client, reaction, user) => {
 					.then(async (message) => {
 						const reactionCount = message.reactions.cache.get(
 							// カスタム絵文字の場合は絵文字ID、unicode絵文字の場合はその絵文字を検索する必要があるのでこの記法
-							reaction.emoji.id ? reaction.emoji.id : reaction.emoji.name
+							reaction.emoji.id ? reaction.emoji.id : reaction.emoji.name,
 						).count;
 
-						let boardInfo = result.starboard.board.find(
-							(board) => board._id == message.channel.id
+						const boardInfo = result.starboard.board.find(
+							(board) => board._id === message.channel.id,
 						);
 						if (reactionCount >= boardInfo.emojiAmount) {
 							// メッセージを転送する
@@ -68,17 +68,17 @@ module.exports = async (client, reaction, user) => {
 		.catch((err) => {
 			console.log(err);
 
-			let button = new ActionRowBuilder().addComponents(
+			const button = new ActionRowBuilder().addComponents(
 				new ButtonBuilder()
-					.setLabel("再招待はこちらから")
+					.setLabel('再招待はこちらから')
 					.setStyle(ButtonStyle.Link)
 					.setURL(
-						`https://discord.com/oauth2/authorize?client_id=${client.user.id}`
-					)
+						`https://discord.com/oauth2/authorize?client_id=${client.user.id}`,
+					),
 			);
 			return reaction.message.reply({
 				content:
-					"メッセージリアクション受信時に、DB取得エラーが発生しました。お手数ですが、BOTを一度サーバーからkickしていただき、再招待をお願い致します。",
+					'メッセージリアクション受信時に、DB取得エラーが発生しました。お手数ですが、BOTを一度サーバーからkickしていただき、再招待をお願い致します。',
 				components: [button],
 				flags: MessageFlags.Ephemeral,
 			});

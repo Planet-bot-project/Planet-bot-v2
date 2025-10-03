@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema(
 	{
@@ -41,13 +41,13 @@ const profileSchema = new mongoose.Schema(
 		flashcards: [
 			{
 				userId: { type: String, required: true }, //ユーザーID
-				categories: { type: [String], default: ["一般"] }, //利用可能なカテゴリー一覧
+				categories: { type: [String], default: ['一般'] }, //利用可能なカテゴリー一覧
 				cards: [
 					{
 						_id: { type: String }, //フラッシュカードのユニークID
 						word: { type: String, required: true }, //キーワード（表面）
 						meaning: { type: String, required: true }, //定義（裏面）
-						category: { type: String, default: "一般" }, //カテゴリ
+						category: { type: String, default: '一般' }, //カテゴリ
 						createdAt: { type: Date, default: Date.now }, //作成日時
 						lastReviewed: { type: Date }, //最後に確認した日時
 						reviewCount: { type: Number, default: 0 }, //確認回数
@@ -58,9 +58,9 @@ const profileSchema = new mongoose.Schema(
 			},
 		],
 	},
-	{ versionKey: false }
+	{ versionKey: false },
 );
 
-const model = mongoose.model("servers", profileSchema);
+const model = mongoose.model('servers', profileSchema);
 
 module.exports = model;

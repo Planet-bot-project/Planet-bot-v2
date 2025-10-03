@@ -1,15 +1,20 @@
-const { MessageFlags, EmbedBuilder } = require("discord.js");
-const profileModel = require("../models/profileSchema.js");
+const { MessageFlags, EmbedBuilder } = require('discord.js');
+const profileModel = require('../models/profileSchema.js');
 
-module.exports = async (client, message) => {
+module.exports = (client, message) => {
 	// botは無視
 	if (message.author.bot) return;
 
 	// 権限チェック
-	let myPermissions = message.guild.members.me
+	const myPermissions = message.guild.members.me
 		.permissionsIn(message.channel)
 		.toArray();
-	let conditions = ["ViewChannel", "SendMessages", "EmbedLinks", "AttachFiles"];
+	const conditions = [
+		'ViewChannel',
+		'SendMessages',
+		'EmbedLinks',
+		'AttachFiles',
+	];
 	for (const key in conditions) {
 		if (!myPermissions.includes(conditions[key])) {
 			return;
@@ -26,7 +31,7 @@ module.exports = async (client, message) => {
 
 			// sticky対象チャンネルか確認
 			const stickyChannel = result.sticky.channels.find(
-				(c) => c._id == message.channel.id
+				(c) => c._id === message.channel.id,
 			);
 			if (stickyChannel) {
 				// 前回のメッセージの時間を保存する変数
@@ -35,7 +40,7 @@ module.exports = async (client, message) => {
 				// 古いメッセージを削除出来そうならする
 				try {
 					const oldMessage = await message.channel.messages.fetch(
-						stickyChannel.stickyMessage.oldMessageId
+						stickyChannel.stickyMessage.oldMessageId,
 					);
 					if (oldMessage) {
 						oldMessageTimestamp = oldMessage.createdTimestamp;
@@ -50,16 +55,17 @@ module.exports = async (client, message) => {
 					}
 				} catch (err) {
 					// 古いメッセージが見つからなかったり削除できない場合は、そのままメッセージ送信
+					void err;
 				}
 
 				// 改めてsilentで送信
-				let embed = new EmbedBuilder()
+				const embed = new EmbedBuilder()
 					.setTitle(stickyChannel.stickyMessage.message.title)
 					.setDescription(stickyChannel.stickyMessage.message.body)
 					.setImage(
 						stickyChannel.stickyMessage.message.imageURL
 							? stickyChannel.stickyMessage.message.imageURL
-							: null
+							: null,
 					);
 				const newStickyMessage = await message.channel.send({
 					embeds: [embed],
@@ -73,7 +79,7 @@ module.exports = async (client, message) => {
 		})
 		.catch((err) => {
 			// ユーザー側には何も表示せず、裏にログを残す。
-			const errorNotification = require("../lib/errorNotification.js");
+			const errorNotification = require('../lib/errorNotification.js');
 			errorNotification(client, message, err);
 		});
 };

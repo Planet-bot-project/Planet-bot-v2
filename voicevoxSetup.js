@@ -1,18 +1,18 @@
 const fetch = (...args) =>
-	import("node-fetch").then(({ default: fetch }) => fetch(...args));
-const cheerio = require("cheerio");
-const fs = require("fs");
-const fsp = require("fs").promises;
-const path = require("path");
-const AdmZip = require("adm-zip");
+	import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const cheerio = require('cheerio');
+const fs = require('fs');
+const fsp = require('fs').promises;
+const path = require('path');
+const AdmZip = require('adm-zip');
 
-const LIB_DIR = path.join(__dirname, "lib", "pomodoro", "voicevox");
+const LIB_DIR = path.join(__dirname, 'lib', 'pomodoro', 'voicevox');
 
 async function ensureDir(dir) {
 	try {
 		await fsp.mkdir(dir, { recursive: true });
 	} catch (e) {
-		if (e.code !== "EEXIST") throw e;
+		if (e.code !== 'EEXIST') throw e;
 	}
 }
 
@@ -22,14 +22,14 @@ async function remove(targetPath) {
 		if (stat.isDirectory()) {
 			const files = await fsp.readdir(targetPath);
 			await Promise.all(
-				files.map((file) => remove(path.join(targetPath, file)))
+				files.map((file) => remove(path.join(targetPath, file))),
 			);
 			await fsp.rmdir(targetPath);
 		} else {
 			await fsp.unlink(targetPath);
 		}
 	} catch (e) {
-		if (e.code !== "ENOENT") throw e;
+		if (e.code !== 'ENOENT') throw e;
 	}
 }
 
@@ -40,7 +40,7 @@ async function move(src, dest, overwrite = true) {
 		}
 		await fsp.rename(src, dest);
 	} catch (e) {
-		if (e.code === "EXDEV") {
+		if (e.code === 'EXDEV') {
 			// Cross-device move fallback
 			await fsp.copyFile(src, dest);
 			await fsp.unlink(src);
@@ -53,10 +53,10 @@ async function move(src, dest, overwrite = true) {
 async function getLatestVoiceVoxUrl() {
 	// 最新リリースページへリダイレクト
 	const res = await fetch(
-		"https://github.com/VOICEVOX/voicevox/releases/latest",
-		{ redirect: "manual" }
+		'https://github.com/VOICEVOX/voicevox/releases/latest',
+		{ redirect: 'manual' },
 	);
-	const latestUrl = res.headers.get("location") || res.url;
+	const latestUrl = res.headers.get('location') || res.url;
 	const htmlRes = await fetch(latestUrl);
 	const html = await htmlRes.text();
 	const $ = cheerio.load(html);
@@ -64,20 +64,20 @@ async function getLatestVoiceVoxUrl() {
 
 	const platform = process.platform;
 
-	if (platform === "win32") {
+	if (platform === 'win32') {
 		// Windows用のzipファイルを検索
 		$('a[href$=".zip"]').each((_, el) => {
-			const href = $(el).attr("href");
-			if (href && href.includes("voicevox-windows-cpu-")) {
+			const href = $(el).attr('href');
+			if (href && href.includes('voicevox-windows-cpu-')) {
 				downloadUrl = href;
 				return false;
 			}
 		});
-	} else if (platform === "linux") {
+	} else if (platform === 'linux') {
 		// Linux用のtar.gzファイルを検索
 		$('a[href$=".tar.gz"]').each((_, el) => {
-			const href = $(el).attr("href");
-			if (href && href.includes("voicevox-linux-cpu-x64-")) {
+			const href = $(el).attr('href');
+			if (href && href.includes('voicevox-linux-cpu-x64-')) {
 				downloadUrl = href;
 				return false;
 			}
@@ -91,7 +91,7 @@ async function downloadFile(url, dest) {
 	// 既にファイルが存在する場合はダウンロードしない
 	if (fs.existsSync(dest)) {
 		console.log(
-			`既にファイルが存在するためダウンロードをスキップします: ${dest}`
+			`既にファイルが存在するためダウンロードをスキップします: ${dest}`,
 		);
 		return new Promise((resolve) => resolve());
 	}
@@ -100,16 +100,16 @@ async function downloadFile(url, dest) {
 	const fileStream = fs.createWriteStream(dest);
 	return new Promise((resolve, reject) => {
 		res.body.pipe(fileStream);
-		res.body.on("error", reject);
-		fileStream.on("finish", resolve);
+		res.body.on('error', reject);
+		fileStream.on('finish', resolve);
 	});
 }
 
 async function makeExecutable(filePath) {
-	if (process.platform !== "linux") return;
+	if (process.platform !== 'linux') return;
 
-	const { exec } = require("child_process");
-	const { promisify } = require("util");
+	const { exec } = require('child_process');
+	const { promisify } = require('util');
 	const execAsync = promisify(exec);
 
 	try {
@@ -124,17 +124,17 @@ async function makeExecutable(filePath) {
 function getVoicevoxExecutablePath() {
 	const platform = process.platform;
 
-	if (platform === "win32") {
-		const windowsPath = path.join(LIB_DIR, "run.exe");
+	if (platform === 'win32') {
+		const windowsPath = path.join(LIB_DIR, 'run.exe');
 		if (fs.existsSync(windowsPath)) {
 			return windowsPath;
 		}
 		return null;
-	} else if (platform === "linux") {
+	} else if (platform === 'linux') {
 		// Linux用実行ファイルを検索
 		try {
 			// 実行可能ファイルを検索
-			const runExe = path.join(LIB_DIR, "run");
+			const runExe = path.join(LIB_DIR, 'run');
 
 			if (fs.existsSync(runExe)) {
 				console.log(`runファイルが見つかりました: ${runExe}`);
@@ -163,8 +163,8 @@ async function extractAndClean(zipPath, extractDir) {
 	zip.extractAllTo(extractDir, true);
 
 	// VOICEVOX/vv-engine のパス
-	const voicevoxDir = path.join(extractDir, "VOICEVOX");
-	const vvEngineDir = path.join(voicevoxDir, "vv-engine");
+	const voicevoxDir = path.join(extractDir, 'VOICEVOX');
+	const vvEngineDir = path.join(voicevoxDir, 'vv-engine');
 
 	// vv-engineの中身をvoicevox直下に移動
 	try {
@@ -173,11 +173,12 @@ async function extractAndClean(zipPath, extractDir) {
 			await move(
 				path.join(vvEngineDir, item),
 				path.join(extractDir, item),
-				true
+				true,
 			);
 		}
-	} catch (e) {
-		throw new Error("VOICEVOX/vv-engine フォルダが見つかりませんでした");
+	} catch (err) {
+		console.log(err);
+		throw new Error('VOICEVOX/vv-engine フォルダが見つかりませんでした');
 	}
 
 	// VOICEVOXフォルダごと削除（vv-engineも含めて不要ファイルを消す）
@@ -186,18 +187,18 @@ async function extractAndClean(zipPath, extractDir) {
 	// lib/voicevox直下にvv-engine以外のファイル・フォルダがあれば削除（念のため）
 	const items = await fsp.readdir(extractDir);
 	for (const item of items) {
-		if (item === "." || item === "..") continue;
+		if (item === '.' || item === '..') continue;
 		const itemPath = path.join(extractDir, item);
 		// vv-engineフォルダは既に消えているはずですが、念のため
-		if (item === "vv-engine") {
+		if (item === 'vv-engine') {
 			await remove(itemPath);
 		}
 	}
 }
 
 async function extractTarGz(tarGzPath, extractDir) {
-	const { exec } = require("child_process");
-	const { promisify } = require("util");
+	const { exec } = require('child_process');
+	const { promisify } = require('util');
 	const execAsync = promisify(exec);
 
 	try {
@@ -207,14 +208,14 @@ async function extractTarGz(tarGzPath, extractDir) {
 
 		// 解凍されたディレクトリを確認
 		const items = await fsp.readdir(extractDir);
-		console.log(`解凍後のディレクトリ内容:`, items);
+		console.log('解凍後のディレクトリ内容:', items);
 
 		// VOICEVOXディレクトリを探す
 		const voicevoxDir = items.find((item) => {
 			const itemPath = path.join(extractDir, item);
 			return (
 				fs.statSync(itemPath).isDirectory() &&
-				(item === "VOICEVOX" || item.toLowerCase().includes("voicevox"))
+				(item === 'VOICEVOX' || item.toLowerCase().includes('voicevox'))
 			);
 		});
 
@@ -223,7 +224,7 @@ async function extractTarGz(tarGzPath, extractDir) {
 			console.log(`VOICEVOXディレクトリが見つかりました: ${voicevoxPath}`);
 
 			// VOICEVOX/vv-engine のパス
-			const vvEngineDir = path.join(voicevoxPath, "vv-engine");
+			const vvEngineDir = path.join(voicevoxPath, 'vv-engine');
 
 			if (fs.existsSync(vvEngineDir)) {
 				console.log(`vv-engineディレクトリが見つかりました: ${vvEngineDir}`);
@@ -234,28 +235,28 @@ async function extractTarGz(tarGzPath, extractDir) {
 					await move(
 						path.join(vvEngineDir, item),
 						path.join(extractDir, item),
-						true
+						true,
 					);
 				}
-				console.log(`vv-engineの内容を移動しました`);
+				console.log('vv-engineの内容を移動しました');
 			} else {
 				// vv-engineがない場合は、VOICEVOXディレクトリの中身をそのまま移動
 				console.log(
-					`vv-engineが見つからないため、VOICEVOXディレクトリの中身を移動します`
+					'vv-engineが見つからないため、VOICEVOXディレクトリの中身を移動します',
 				);
 				const voicevoxItems = await fsp.readdir(voicevoxPath);
 				for (const item of voicevoxItems) {
 					await move(
 						path.join(voicevoxPath, item),
 						path.join(extractDir, item),
-						true
+						true,
 					);
 				}
 			}
 
 			// VOICEVOXフォルダを削除
 			await remove(voicevoxPath);
-			console.log(`VOICEVOXディレクトリを削除しました`);
+			console.log('VOICEVOXディレクトリを削除しました');
 		} else {
 			// VOICEVOXディレクトリが見つからない場合は、最初に見つかったディレクトリの中身を移動
 			const extractedDir = items.find((item) => {
@@ -273,7 +274,7 @@ async function extractTarGz(tarGzPath, extractDir) {
 					await move(
 						path.join(sourcePath, item),
 						path.join(extractDir, item),
-						true
+						true,
 					);
 				}
 
@@ -283,61 +284,61 @@ async function extractTarGz(tarGzPath, extractDir) {
 		}
 
 		// runファイルに実行権限を付与
-		const runPath = path.join(extractDir, "run");
+		const runPath = path.join(extractDir, 'run');
 		if (fs.existsSync(runPath)) {
 			await makeExecutable(runPath);
 			console.log(`runファイルに実行権限を付与しました: ${runPath}`);
 		}
-	} catch (e) {
-		console.error(`tar.gz解凍エラー: ${e.message}`);
-		throw e;
+	} catch (err) {
+		console.error(`tar.gz解凍エラー: ${err.message}`);
+		throw err;
 	}
 }
 
 async function setupVoicevox() {
 	await ensureDir(LIB_DIR);
-	console.log("==============================================");
-	console.log("VOICEVOXセットアップ処理を開始します。");
-	console.log("この処理は一度VOICEVOXをダウンロードする必要があるため、");
-	console.log("数分以上時間がかかる場合があります。しばらくお待ちください。");
-	console.log("==============================================");
+	console.log('==============================================');
+	console.log('VOICEVOXセットアップ処理を開始します。');
+	console.log('この処理は一度VOICEVOXをダウンロードする必要があるため、');
+	console.log('数分以上時間がかかる場合があります。しばらくお待ちください。');
+	console.log('==============================================');
 
 	const platform = process.platform;
 	console.log(`検出されたプラットフォーム: ${platform}`);
 
-	if (platform !== "win32" && platform !== "linux") {
+	if (platform !== 'win32' && platform !== 'linux') {
 		throw new Error(`サポートされていないプラットフォーム: ${platform}`);
 	}
 
 	const downloadUrl = await getLatestVoiceVoxUrl();
 	if (!downloadUrl) {
 		const expectedFile =
-			platform === "win32"
-				? "voicevox-windows-cpu-*.zip"
-				: "voicevox-linux-cpu-x64-*.tar.gz";
+			platform === 'win32'
+				? 'voicevox-windows-cpu-*.zip'
+				: 'voicevox-linux-cpu-x64-*.tar.gz';
 		throw new Error(`${expectedFile}が見つかりませんでした`);
 	}
 
 	const fileName = path.basename(downloadUrl);
 	const filePath = path.join(LIB_DIR, fileName);
 
-	console.log("ダウンロード開始:", downloadUrl);
+	console.log('ダウンロード開始:', downloadUrl);
 	await downloadFile(downloadUrl, filePath);
-	console.log("ダウンロード完了:", filePath);
+	console.log('ダウンロード完了:', filePath);
 
-	if (platform === "win32") {
+	if (platform === 'win32') {
 		// Windows: zipファイルを展開
 		await extractAndClean(filePath, LIB_DIR);
 		await remove(filePath);
-		console.log("セットアップ完了");
-	} else if (platform === "linux") {
+		console.log('セットアップ完了');
+	} else if (platform === 'linux') {
 		// Linux: tar.gzファイルを展開
 		await extractTarGz(filePath, LIB_DIR);
 		await remove(filePath);
-		console.log("セットアップ完了");
-		const runPath = path.join(LIB_DIR, "run");
+		console.log('セットアップ完了');
+		const runPath = path.join(LIB_DIR, 'run');
 		console.log(`VOICEVOXは以下のパスにあります: ${runPath}`);
-		console.log("使用時は直接このrunファイルを実行してください。");
+		console.log('使用時は直接このrunファイルを実行してください。');
 	}
 }
 
@@ -350,7 +351,7 @@ module.exports = {
 // 直接実行された場合のみセットアップを実行
 if (require.main === module) {
 	setupVoicevox().catch((e) => {
-		console.error("エラー:", e);
+		console.error('エラー:', e);
 		process.exit(1);
 	});
 }
