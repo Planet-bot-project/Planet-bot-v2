@@ -146,7 +146,7 @@ module.exports = {
 							// カード一覧表示のロジック
 							const categoryFilter = interaction.options.getString('category');
 
-							const cardsResult = await flashcard.get(
+							const cardsResult = await flashcard.getCar(
 								interaction.guild.id,
 								interaction.user.id,
 								{ category: categoryFilter },
@@ -176,7 +176,7 @@ module.exports = {
 						case 'delete': {
 							// カード削除のロジック
 							const deleteWord = interaction.options.getString('word');
-							const deleteResult = await flashcard.remove(
+							const deleteResult = await flashcard.deleteCard(
 								interaction.guild.id,
 								interaction.user.id,
 								deleteWord,
