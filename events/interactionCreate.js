@@ -148,7 +148,7 @@ module.exports = async (client, interaction) => {
 						try {
 							// ステータス取得
 							let status;
-							if (interaction.message.content.startsWith('集中する時間')) {
+							if (interaction.message.content.startsWith('作業時間')) {
 								status = 'work';
 							} else if (interaction.message.content.startsWith('休憩時間')) {
 								status = 'break';
@@ -192,7 +192,7 @@ module.exports = async (client, interaction) => {
 							let nextStatus;
 							switch (pomodoroState.nextStatus) {
 								case 'work':
-									nextStatus = '集中する時間';
+									nextStatus = '作業時間';
 									break;
 								case 'break':
 									nextStatus = '休憩時間';
@@ -207,7 +207,7 @@ module.exports = async (client, interaction) => {
 
 							let messageContent;
 							if (status === 'work') {
-								messageContent = `集中する時間 ${workTime}分 開始しました！ (${pomodoroState.currentCycle}サイクル目)\n 次のステータス: ${nextStatus} (<t:${nextStatusTimestamp}:R>)`;
+								messageContent = `作業時間 ${workTime}分 開始しました！ (${pomodoroState.currentCycle}サイクル目)\n 次のステータス: ${nextStatus} (<t:${nextStatusTimestamp}:R>)`;
 							} else if (status === 'break') {
 								messageContent = `休憩時間 ${breakTime}分 開始しました！\n 次のステータス: ${nextStatus} (<t:${nextStatusTimestamp}:R>)`;
 							} else if (status === 'longBreak') {
