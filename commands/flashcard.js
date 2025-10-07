@@ -87,7 +87,7 @@ module.exports = {
 				.addSubcommand((subcommand) =>
 					subcommand
 						.setName('delete')
-						.setDescription('カテゴリーを削除します。')
+						.setDescription('カテゴリーとそのカテゴリーのカードを削除します。')
 						.addStringOption((option) =>
 							option
 								.setName('name')
@@ -131,7 +131,7 @@ module.exports = {
 							} else if (cardResult.data && cardResult.data?.alreadyExists) {
 								const card = cardResult.data;
 								await interaction.reply({
-									content: `そのキーワードのカードは既に存在します！更新する場合は「/flashcard card edit」コマンドを使用してください。\n表面: ${card.word}\n裏面: ${card.meaning}\nカテゴリー: ${card.category}`,
+									content: `そのキーワードのカードは既に存在します！更新する場合は一度カードを削除してから再度作成してください。\n表面: ${card.word}\n裏面: ${card.meaning}\nカテゴリー: ${card.category}`,
 								});
 							} else {
 								await interaction.reply({
@@ -251,10 +251,28 @@ module.exports = {
 							}
 							break;
 						}
-						case 'delete':
+						case 'delete': {
 							// カテゴリー削除のロジック
-							await interaction.reply('このコマンドはまだ実装されていません。');
+							const categoryNameToDelete =
+								interaction.options.getString('name');
+							const deleteResult = await flashcard.deleteCategory(
+								interaction.guild.id,
+								interaction.user.id,
+								categoryNameToDelete,
+							);
+
+							if (deleteResult.success) {
+								await interaction.reply({
+									content: `カテゴリー「${categoryNameToDelete}」が削除されました。`,
+								});
+							} else {
+								await interaction.reply({
+									content: deleteResult.error,
+									flags: MessageFlags.Ephemeral,
+								});
+							}
 							break;
+						}
 					}
 					break;
 				}
