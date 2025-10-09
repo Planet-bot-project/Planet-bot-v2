@@ -3,15 +3,14 @@ const {
 	ApplicationCommandType,
 	InteractionContextType,
 	MessageFlags,
+	Locale,
 } = require('discord.js');
 const messageTransport = require('../lib/messageTransport');
 
 module.exports = {
 	data: new ContextMenuCommandBuilder()
 		.setName('DM starboard')
-		.setNameLocalizations({
-			ja: 'BOTとのDMに内容をメモする',
-		})
+		.setNameLocalizations({ [Locale.Japanese]: 'BOTとのDMに内容をメモする' })
 		.setType(ApplicationCommandType.Message)
 		.setContexts(InteractionContextType.Guild),
 
