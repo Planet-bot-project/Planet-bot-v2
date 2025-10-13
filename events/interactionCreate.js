@@ -10,6 +10,9 @@ const {
 	ButtonBuilder,
 	MessageFlags,
 	AttachmentBuilder,
+	LabelBuilder,
+	StringSelectMenuBuilder,
+	StringSelectMenuOptionBuilder,
 } = require('discord.js');
 const fs = require('fs');
 const profileModel = require('../models/profileSchema.js');
@@ -65,83 +68,119 @@ module.exports = async (client, interaction) => {
 				switch (interaction?.customId) {
 					case 'server_register': {
 						const modal = new ModalBuilder()
-							.setTitle('登録するサーバーのサーバーIDを入力してください。')
+							.setTitle('サーバー登録')
 							.setCustomId('ask_register_id');
-						const TextInput = new TextInputBuilder()
+						const serverIdInput = new LabelBuilder()
 							.setLabel('サーバーID')
-							.setCustomId('register_id')
-							.setStyle(TextInputStyle.Short)
-							.setMaxLength(20) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
-							.setMinLength(15)
-							.setRequired(true);
-						const ActionRow = new ActionRowBuilder().addComponents(TextInput);
-						modal.addComponents(ActionRow);
+							.setDescription(
+								'登録するサーバーのサーバーIDを入力してください。',
+							)
+							.setTextInputComponent(
+								new TextInputBuilder()
+									.setCustomId('register_id')
+									.setStyle(TextInputStyle.Short)
+									.setMaxLength(20) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
+									.setMinLength(15)
+									.setRequired(true),
+							);
+
+						modal.addLabelComponents(serverIdInput);
 						return interaction.showModal(modal);
 					}
 					case 'server_unregister': {
 						const modal = new ModalBuilder()
-							.setTitle('登録解除するサーバーのサーバーIDを入力してください。')
+							.setTitle('サーバー登録解除')
 							.setCustomId('ask_unregister_id');
-						const TextInput = new TextInputBuilder()
+						const serverIdInput = new LabelBuilder()
 							.setLabel('サーバーID')
-							.setCustomId('unregister_id')
-							.setStyle(TextInputStyle.Short)
-							.setMaxLength(20) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
-							.setMinLength(15)
-							.setRequired(true);
-						const ActionRow = new ActionRowBuilder().addComponents(TextInput);
-						modal.addComponents(ActionRow);
+							.setDescription(
+								'登録解除するサーバーのサーバーIDを入力してください。',
+							)
+							.setTextInputComponent(
+								new TextInputBuilder()
+									.setCustomId('unregister_id')
+									.setStyle(TextInputStyle.Short)
+									.setMaxLength(20) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
+									.setMinLength(15)
+									.setRequired(true),
+							);
+
+						modal.addLabelComponents(serverIdInput);
 						return interaction.showModal(modal);
 					}
 					case 'debug': {
 						const modal = new ModalBuilder()
-							.setTitle('デバッグするサーバーIDを入力してください。')
+							.setTitle('デバッグするサーバーIDを入力')
 							.setCustomId('ask_server_id');
-						const TextInput = new TextInputBuilder()
+						const serverIdInput = new LabelBuilder()
 							.setLabel('サーバーID')
-							.setCustomId('server_id')
-							.setStyle(TextInputStyle.Short)
-							.setMaxLength(20) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
-							.setMinLength(15)
-							.setRequired(false);
-						const ActionRow = new ActionRowBuilder().addComponents(TextInput);
-						modal.addComponents(ActionRow);
+							.setDescription('デバッグするサーバーIDを入力してください。')
+							.setTextInputComponent(
+								new TextInputBuilder()
+									.setCustomId('server_id')
+									.setStyle(TextInputStyle.Short)
+									.setMaxLength(20) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
+									.setMinLength(15)
+									.setRequired(false),
+							);
+
+						modal.addLabelComponents(serverIdInput);
 						return interaction.showModal(modal);
 					}
 					case 'data_control': {
 						const modal = new ModalBuilder()
 							.setTitle('変数名と操作を指定')
 							.setCustomId('data_control_form');
-						const TextInput1 = new ActionRowBuilder().addComponents(
-							new TextInputBuilder()
-								.setLabel('変数名')
-								.setCustomId('variable_name')
-								.setStyle(TextInputStyle.Short)
-								.setMaxLength(30) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
-								.setMinLength(1)
-								.setRequired(true),
+						const variableName = new LabelBuilder()
+							.setLabel('変数名')
+							.setDescription('追加・削除する変数名を入力してください。')
+							.setTextInputComponent(
+								new TextInputBuilder()
+									.setCustomId('variable_name')
+									.setStyle(TextInputStyle.Short)
+									.setMaxLength(30)
+									.setMinLength(1)
+									.setRequired(true),
+							);
+						const variableValue = new LabelBuilder()
+							.setLabel('変数内容')
+							.setDescription(
+								'追加する場合は内容を、削除する場合は空欄にしてください。',
+							)
+							.setTextInputComponent(
+								new TextInputBuilder()
+									.setCustomId('variable_value')
+									.setStyle(TextInputStyle.Short)
+									.setMaxLength(30)
+									.setMinLength(1)
+									.setRequired(false),
+							);
+						const variableAction = new LabelBuilder()
+							.setLabel('操作')
+							.setDescription('変数を追加するか削除するかを指定してください。')
+							.setStringSelectMenuComponent(
+								new StringSelectMenuBuilder()
+									.setCustomId('how_to_variable')
+									.setOptions(
+										new StringSelectMenuOptionBuilder()
+											.setLabel('追加')
+											.setValue('add')
+											.setDescription('指定した変数を追加します。')
+											.setEmoji('➕'),
+										new StringSelectMenuOptionBuilder()
+											.setLabel('削除')
+											.setValue('remove')
+											.setDescription('指定した変数を削除します。')
+											.setEmoji('➖'),
+									)
+									.setMaxValues(1)
+									.setRequired(true),
+							);
+						modal.addLabelComponents(
+							variableName,
+							variableValue,
+							variableAction,
 						);
-						const TextInput2 = new ActionRowBuilder().addComponents(
-							new TextInputBuilder()
-								.setLabel('変数内容')
-								.setCustomId('variable_value')
-								.setStyle(TextInputStyle.Short)
-								.setMaxLength(30) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
-								.setMinLength(1)
-								.setRequired(false),
-						);
-						const TextInput3 = new ActionRowBuilder().addComponents(
-							new TextInputBuilder()
-								.setLabel('「追加」か「削除」')
-								.setCustomId('how_to_variable')
-								.setStyle(TextInputStyle.Short)
-								.setMaxLength(2) //snowflakeの文字数的に700年後まで使えれば大丈夫だろうという事で20文字以内
-								.setMinLength(0)
-								.setRequired(true),
-						);
-						modal.addComponents(TextInput1);
-						modal.addComponents(TextInput2);
-						modal.addComponents(TextInput3);
 						return interaction.showModal(modal);
 					}
 					case 'pomodoro_update': {
@@ -503,9 +542,9 @@ module.exports = async (client, interaction) => {
 						let variable_value =
 							interaction.fields.getTextInputValue('variable_value');
 						const how_to =
-							interaction.fields.getTextInputValue('how_to_variable');
+							interaction.fields.getStringSelectValues('how_to_variable')[0];
 
-						if (how_to === '追加') {
+						if (how_to === 'add') {
 							if (variable_value === 'false' || variable_value === 'true') {
 								console.info('Boolean');
 								variable_value = variable_value === 'true';
@@ -536,7 +575,7 @@ module.exports = async (client, interaction) => {
 
 								return interaction.reply('done');
 							});
-						} else if (how_to === '削除') {
+						} else if (how_to === 'remove') {
 							const all_guild_id = [];
 
 							await profileModel.find({}).then(async (all_data) => {
@@ -557,6 +596,7 @@ module.exports = async (client, interaction) => {
 								return interaction.reply('done');
 							});
 						} else {
+							console.log(how_to);
 							await interaction.reply(
 								'❌ how_toに予期せぬ値が入力されました。再度お試しください。',
 							);

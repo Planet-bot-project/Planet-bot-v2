@@ -7,6 +7,7 @@ const {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
+	LabelBuilder,
 } = require('discord.js');
 const profileSchema = require('../models/profileSchema.js');
 
@@ -55,39 +56,46 @@ module.exports = {
 						const modal = new ModalBuilder()
 							.setCustomId('sticky')
 							.setTitle('ピン留めの内容を設定');
-						const titleInput = new TextInputBuilder()
-							.setCustomId('stickyTitle')
-							.setLabel(
-								'ピン留めするメッセージのタイトルを入力してください。(任意)',
+						const titleInput = new LabelBuilder()
+							.setLabel('タイトル (任意)')
+							.setDescription(
+								'ピン留めするメッセージのタイトルを入力してください。',
 							)
-							.setPlaceholder('ここにメッセージを入力')
-							.setStyle(TextInputStyle.Short)
-							.setMinLength(0)
-							.setMaxLength(256)
-							.setRequired(false);
-						const bodyInput = new TextInputBuilder()
-							.setCustomId('stickyBody')
-							.setLabel('ピン留めをするメッセージを入力してください。(必須)')
-							.setPlaceholder('ここにメッセージを入力')
-							.setStyle(TextInputStyle.Paragraph)
-							.setMinLength(1)
-							.setMaxLength(400)
-							.setRequired(true);
-						const imageURLInput = new TextInputBuilder()
-							.setCustomId('stickyImageURL')
-							.setLabel(
-								'ピン留めする画像がある場合は入力してください。無効なURLは無視されます。(任意)',
+							.setTextInputComponent(
+								new TextInputBuilder()
+									.setCustomId('stickyTitle')
+									.setStyle(TextInputStyle.Short)
+									.setPlaceholder('ここにメッセージを入力')
+									.setMinLength(0)
+									.setMaxLength(256)
+									.setRequired(false),
+							);
+						const bodyInput = new LabelBuilder()
+							.setLabel('本文 (必須)')
+							.setDescription('ピン留めをするメッセージを入力してください。')
+							.setTextInputComponent(
+								new TextInputBuilder()
+									.setCustomId('stickyBody')
+									.setStyle(TextInputStyle.Paragraph)
+									.setPlaceholder('ここにメッセージを入力')
+									.setMinLength(0)
+									.setMaxLength(400)
+									.setRequired(true),
+							);
+						const imageURLInput = new LabelBuilder()
+							.setLabel('画像 (任意)')
+							.setDescription(
+								'ピン留めする画像がある場合は入力してください。無効なURLは無視されます。',
 							)
-							.setPlaceholder('ここに画像のURLを入力してください。')
-							.setStyle(TextInputStyle.Short)
-							.setRequired(false);
+							.setTextInputComponent(
+								new TextInputBuilder()
+									.setCustomId('stickyImageURL')
+									.setStyle(TextInputStyle.Short)
+									.setPlaceholder('ここに画像のURLを入力')
+									.setRequired(false),
+							);
 
-						let actionRow = new ActionRowBuilder().addComponents(titleInput);
-						modal.addComponents(actionRow);
-						actionRow = new ActionRowBuilder().addComponents(bodyInput);
-						modal.addComponents(actionRow);
-						actionRow = new ActionRowBuilder().addComponents(imageURLInput);
-						modal.addComponents(actionRow);
+						modal.addLabelComponents(titleInput, bodyInput, imageURLInput);
 
 						await interaction.showModal(modal);
 					})
