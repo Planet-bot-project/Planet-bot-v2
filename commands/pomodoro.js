@@ -94,9 +94,7 @@ module.exports = {
 				.addSubcommand((subcommand) =>
 					subcommand
 						.setName('work_time')
-						.setDescription(
-							'ポモドーロのデフォルトの作業時間を設定します。',
-						)
+						.setDescription('ポモドーロのデフォルトの作業時間を設定します。')
 						.addIntegerOption((option) =>
 							option
 								.setName('work_time')

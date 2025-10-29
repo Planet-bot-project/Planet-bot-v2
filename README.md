@@ -16,9 +16,12 @@ npm i --save-dev dotenv fs
 ```
 
 # 開発者用
+
 ## テストについて
+
 ローカル環境でもテスト可。管理者権限ターミナルで`net start MongoDB`ってして、index.jsでmongodbのtokenをローカル用に切り替えれば起動可能。終わったら`net stop MongoDB`で停止出来る。DBの中身をGUIで確認する場合は「MongoDB Compass」アプリを使用すること。
 なお、MongoDBのサーバー上のデータベースを使用する場合は同様にindex.jsでmongodbのtokenをリモート用に切り替えれば起動可能。
 
 ## 有料化について
+
 各種項目の数の制限解除や、pomodoroのvoice notificationの音声メッセージの内容を変えられたりとか
