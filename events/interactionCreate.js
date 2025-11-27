@@ -636,7 +636,7 @@ module.exports = async (client, interaction) => {
 						// 固定メッセージを送信する
 						const channelId = interaction.channelId;
 						const embed = new EmbedBuilder()
-							.setTitle(stickyTitle)
+							.setTitle(stickyTitle || null)
 							.setDescription(stickyBody)
 							.setImage(imageURLCheck ? stickyImageURL : null); //画像URLが無い場合は「""」になってしまうので、nullにする
 						const stickyMessage = await client.channels.cache
@@ -756,7 +756,7 @@ module.exports = async (client, interaction) => {
 					case 'flashcard': {
 						if (subcommand === 'create') {
 							// カテゴリ一覧を取得
-							// オートコンプリートの候補を送信
+							// TODO:オートコンプリートの候補を送信
 						}
 						break;
 					}

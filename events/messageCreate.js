@@ -60,7 +60,7 @@ module.exports = (client, message) => {
 
 				// 改めてsilentで送信
 				const embed = new EmbedBuilder()
-					.setTitle(stickyChannel.stickyMessage.message.title)
+					.setTitle(stickyChannel.stickyMessage.message.title || null)
 					.setDescription(stickyChannel.stickyMessage.message.body)
 					.setImage(
 						stickyChannel.stickyMessage.message.imageURL
