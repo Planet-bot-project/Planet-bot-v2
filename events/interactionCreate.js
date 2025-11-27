@@ -563,9 +563,9 @@ module.exports = async (client, interaction) => {
 								}
 
 								for (const guild_id of all_guild_id) {
-									let doc = await serverDB.findById(guild_id);
+									const doc = await profileModel.findById(guild_id);
 									doc[variable_name] = variable_value;
-									await doc.save().then(async () => {
+									await doc.save().then(() => {
 										console.log(
 											`${guild_id} is updated as this!\n${JSON.stringify(doc)}`,
 										);
