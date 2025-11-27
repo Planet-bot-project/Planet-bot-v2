@@ -146,7 +146,7 @@ module.exports = {
 							// カード一覧表示のロジック
 							const categoryFilter = interaction.options.getString('category');
 
-							const cardsResult = await flashcard.getCar(
+							const cardsResult = await flashcard.getCard(
 								interaction.guild.id,
 								interaction.user.id,
 								{ category: categoryFilter },
