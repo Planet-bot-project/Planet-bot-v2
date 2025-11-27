@@ -44,7 +44,7 @@ const profileSchema = new mongoose.Schema(
 				categories: { type: [String], default: ['一般'] }, //利用可能なカテゴリー一覧
 				cards: [
 					{
-						_id: { type: String }, //フラッシュカードのユニークID
+						_id: { type: mongoose.Schema.Types.ObjectId }, //フラッシュカードのユニークID
 						word: { type: String, required: true }, //キーワード（表面）
 						meaning: { type: String, required: true }, //定義（裏面）
 						category: { type: String, default: '一般' }, //カテゴリ
