@@ -78,7 +78,6 @@ if (discord_token) {
 
 if (mongodb_TOKEN) {
 	//mongooseについて
-	mongoose.set('strictQuery', false);
 	mongoose
 		.connect(mongodb_TOKEN, { dbName: 'serverDB' })
 		.then(() => {
