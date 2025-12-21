@@ -25,6 +25,14 @@ const twemojiRegex = require('twemoji-parser/dist/lib/regex').default;
 
 module.exports = async (client, interaction) => {
 	try {
+		// DMでの「DM starBoard」機能の、メッセージ削除は例外処理
+		if (
+			interaction?.type === InteractionType.MessageComponent &&
+			interaction?.customId === 'cancel'
+		) {
+			return interaction.message.delete();
+		}
+
 		if (!interaction?.guild) {
 			return interaction?.reply({
 				content:
