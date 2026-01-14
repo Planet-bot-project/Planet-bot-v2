@@ -55,7 +55,8 @@ fs.readdir('./commands', (err, files) => {
 				client.commands.push(propsJson);
 				console.info(`コマンドの読み込みが完了: ${propsJson.name}`);
 			}
-		} catch (err) {
+    } catch (err) {
+      console.log(`コマンドの読み込みに失敗: ${f}`);
 			throw new Error(err);
 		}
 	});
