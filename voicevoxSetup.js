@@ -4,9 +4,34 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
+const { exec } = require('child_process');
+const { promisify } = require('util');
 const AdmZip = require('adm-zip');
 
+const execAsync = promisify(exec);
+
+// Constants
 const LIB_DIR = path.join(__dirname, 'lib', 'pomodoro', 'voicevox');
+const VOICEVOX_ENGINE_PATH = path.join(
+	LIB_DIR,
+	process.platform === 'win32' ? 'run.exe' : 'run',
+);
+const VOICEVOX_MANIFEST_PATH = path.join(LIB_DIR, 'engine_manifest.json');
+const GITHUB_RELEASES_URL =
+	'https://github.com/VOICEVOX/voicevox/releases/latest';
+
+const PLATFORM_CONFIG = {
+	win32: {
+		fileExtension: '.zip',
+		filePattern: 'voicevox-windows-cpu-',
+		executableName: 'run.exe',
+	},
+	linux: {
+		fileExtension: '.tar.gz',
+		filePattern: 'voicevox-linux-cpu-x64-',
+		executableName: 'run',
+	},
+};
 
 async function ensureDir(dir) {
 	try {
@@ -51,52 +76,87 @@ async function move(src, dest, overwrite = true) {
 }
 
 async function getLatestVoiceVoxUrl() {
+	const platform = process.platform;
+	const config = PLATFORM_CONFIG[platform];
+
+	if (!config) {
+		return null;
+	}
+
 	// 最新リリースページへリダイレクト
-	const res = await fetch(
-		'https://github.com/VOICEVOX/voicevox/releases/latest',
-		{ redirect: 'manual' },
-	);
+	const res = await fetch(GITHUB_RELEASES_URL, { redirect: 'manual' });
 	const latestUrl = res.headers.get('location') || res.url;
 	const htmlRes = await fetch(latestUrl);
 	const html = await htmlRes.text();
 	const $ = cheerio.load(html);
+
 	let downloadUrl = null;
-
-	const platform = process.platform;
-
-	if (platform === 'win32') {
-		// Windows用のzipファイルを検索
-		$('a[href$=".zip"]').each((_, el) => {
-			const href = $(el).attr('href');
-			if (href && href.includes('voicevox-windows-cpu-')) {
-				downloadUrl = href;
-				return false;
-			}
-		});
-	} else if (platform === 'linux') {
-		// Linux用のtar.gzファイルを検索
-		$('a[href$=".tar.gz"]').each((_, el) => {
-			const href = $(el).attr('href');
-			if (href && href.includes('voicevox-linux-cpu-x64-')) {
-				downloadUrl = href;
-				return false;
-			}
-		});
-	}
+	$(`a[href$="${config.fileExtension}"]`).each((_, el) => {
+		const href = $(el).attr('href');
+		if (href && href.includes(config.filePattern)) {
+			downloadUrl = href;
+			return false;
+		}
+	});
 
 	return downloadUrl;
 }
 
-async function downloadFile(url, dest) {
-	// 既にファイルが存在する場合はダウンロードしない
-	if (fs.existsSync(dest)) {
-		console.warn(
-			`既にファイルが存在するためダウンロードをスキップします: ${dest}`,
-		);
-		return new Promise((resolve) => resolve());
+function extractVersionFromUrl(url) {
+	const match = url.match(/voicevox-(?:windows|linux)-cpu-([\d.]+)/);
+	return match ? match[1].replace(/\.$/, '') : null;
+}
+
+function getLocalVersion() {
+	if (!fs.existsSync(VOICEVOX_MANIFEST_PATH)) {
+		return null;
 	}
+	try {
+		const manifest = JSON.parse(
+			fs.readFileSync(VOICEVOX_MANIFEST_PATH, 'utf-8'),
+		);
+		return manifest.version;
+	} catch (error) {
+		console.warn(
+			'マニフェストファイルの読み込みに失敗しました:',
+			error.message,
+		);
+		return null;
+	}
+}
+
+function shouldSkipDownload(url) {
+	if (!fs.existsSync(VOICEVOX_ENGINE_PATH)) {
+		return false;
+	}
+
+	const localVersion = getLocalVersion();
+	const latestVersion = extractVersionFromUrl(url);
+
+	return localVersion && latestVersion && localVersion === latestVersion;
+}
+
+async function downloadFile(url, dest) {
+	if (shouldSkipDownload(url)) {
+		console.warn(
+			`既に最新バージョンのVOICEVOXが存在します。ダウンロードをスキップします。 (version: ${getLocalVersion()})`,
+		);
+		process.exit(1);
+	}
+
+	// 既存のVOICEVOXファイルをクリーンアップ
+	console.info('既存のVOICEVOXファイルをクリーンアップ中...');
+	const items = await fsp.readdir(LIB_DIR);
+	for (const item of items) {
+		await remove(path.join(LIB_DIR, item));
+	}
+	console.info('lib/pomodoro/voicevoxの古いデータのクリーンアップ完了');
+
 	const res = await fetch(url);
-	if (!res.ok) throw new Error(`ダウンロード失敗: ${res.statusText}`);
+	if (!res.ok) {
+		throw new Error(`ダウンロード失敗: ${res.statusText}`);
+	}
+
 	const fileStream = fs.createWriteStream(dest);
 	return new Promise((resolve, reject) => {
 		res.body.pipe(fileStream);
@@ -106,11 +166,9 @@ async function downloadFile(url, dest) {
 }
 
 async function makeExecutable(filePath) {
-	if (process.platform !== 'linux') return;
-
-	const { exec } = require('child_process');
-	const { promisify } = require('util');
-	const execAsync = promisify(exec);
+	if (process.platform !== 'linux') {
+		return;
+	}
 
 	try {
 		await execAsync(`chmod +x "${filePath}"`);
@@ -122,40 +180,22 @@ async function makeExecutable(filePath) {
 
 function getVoicevoxExecutablePath() {
 	const platform = process.platform;
+	const config = PLATFORM_CONFIG[platform];
 
-	if (platform === 'win32') {
-		const windowsPath = path.join(LIB_DIR, 'run.exe');
-		if (fs.existsSync(windowsPath)) {
-			return windowsPath;
-		}
-		return null;
-	} else if (platform === 'linux') {
-		// Linux用実行ファイルを検索
-		try {
-			// 実行可能ファイルを検索
-			const runExe = path.join(LIB_DIR, 'run');
-
-			if (fs.existsSync(runExe)) {
-				console.info(`runファイルが見つかりました: ${runExe}`);
-
-				return runExe;
-			} else {
-				console.info(`runファイルが見つかりません: ${runExe}`);
-			}
-		} catch (err) {
-			throw new Error(`Linux用実行ファイルの検索中にエラー: ${err}`);
-		}
+	if (!config) {
 		return null;
 	}
 
+	const executablePath = path.join(LIB_DIR, config.executableName);
+
+	if (fs.existsSync(executablePath)) {
+		console.info(`実行ファイルが見つかりました: ${executablePath}`);
+		return executablePath;
+	}
+
+	console.info(`実行ファイルが見つかりません: ${executablePath}`);
 	return null;
 }
-
-// この関数をエクスポートして外部から使用可能にする
-module.exports = {
-	getVoicevoxExecutablePath,
-	setupVoicevox,
-};
 
 async function extractAndClean(zipPath, extractDir) {
 	const zip = new AdmZip(zipPath);
@@ -197,10 +237,6 @@ async function extractAndClean(zipPath, extractDir) {
 }
 
 async function extractTarGz(tarGzPath, extractDir) {
-	const { exec } = require('child_process');
-	const { promisify } = require('util');
-	const execAsync = promisify(exec);
-
 	try {
 		// tar.gzファイルを解凍
 		await execAsync(`tar -xzf "${tarGzPath}" -C "${extractDir}"`);
@@ -294,28 +330,31 @@ async function extractTarGz(tarGzPath, extractDir) {
 	}
 }
 
-async function setupVoicevox() {
-	await ensureDir(LIB_DIR);
+function logSetupHeader(platform) {
 	console.info('==============================================');
 	console.info('VOICEVOXセットアップ処理を開始します。');
 	console.info('この処理は一度VOICEVOXをダウンロードする必要があるため、');
 	console.info('数分以上時間がかかる場合があります。しばらくお待ちください。');
 	console.info('==============================================');
+	console.info(`検出されたプラットフォーム: ${platform}`);
+}
+
+async function setupVoicevox() {
+	// lib/voicevoxディレクトリが無ければ作成
+	await ensureDir(LIB_DIR);
 
 	const platform = process.platform;
-	console.info(`検出されたプラットフォーム: ${platform}`);
-
-	if (platform !== 'win32' && platform !== 'linux') {
+	if (!PLATFORM_CONFIG[platform]) {
 		throw new Error(`サポートされていないプラットフォーム: ${platform}`);
 	}
 
+	logSetupHeader(platform);
+
 	const downloadUrl = await getLatestVoiceVoxUrl();
 	if (!downloadUrl) {
-		const expectedFile =
-			platform === 'win32'
-				? 'voicevox-windows-cpu-*.zip'
-				: 'voicevox-linux-cpu-x64-*.tar.gz';
-		throw new Error(`${expectedFile}が見つかりませんでした`);
+		const config = PLATFORM_CONFIG[platform];
+		const expectedPattern = `${config.filePattern}*${config.fileExtension}`;
+		throw new Error(`${expectedPattern}が見つかりませんでした`);
 	}
 
 	const fileName = path.basename(downloadUrl);
