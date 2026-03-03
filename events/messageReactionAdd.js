@@ -81,6 +81,6 @@ module.exports = async (client, reaction, user) => {
 				flags: MessageFlags.Ephemeral,
 			});
 
-			throw new Error(err);
+			throw new Error(err.message || String(err), { cause: err });
 		});
 };

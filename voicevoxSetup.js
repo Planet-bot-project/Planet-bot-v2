@@ -174,7 +174,10 @@ async function makeExecutable(filePath) {
 		await execAsync(`chmod +x "${filePath}"`);
 		console.info(`実行権限を付与しました: ${filePath}`);
 	} catch (err) {
-		throw new Error(`実行権限の付与に失敗しました: ${err}`);
+		throw new Error(
+			`実行権限の付与に失敗しました: ${err.message || String(err)}`,
+			{ cause: err },
+		);
 	}
 }
 
@@ -217,7 +220,8 @@ async function extractAndClean(zipPath, extractDir) {
 		}
 	} catch (err) {
 		throw new Error(
-			`VOICEVOX/vv-engine フォルダが見つかりませんでした\n${err}`,
+			`VOICEVOX/vv-engine フォルダが見つかりませんでした\n${err.message || String(err)}`,
+			{ cause: err },
 		);
 	}
 
@@ -326,7 +330,9 @@ async function extractTarGz(tarGzPath, extractDir) {
 			console.info(`runファイルに実行権限を付与しました: ${runPath}`);
 		}
 	} catch (err) {
-		throw new Error(`tar.gz解凍エラー: ${err}`);
+		throw new Error(`tar.gz解凍エラー: ${err.message || String(err)}`, {
+			cause: err,
+		});
 	}
 }
 

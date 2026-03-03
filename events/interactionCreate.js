@@ -64,7 +64,7 @@ module.exports = async (client, interaction) => {
 									content: '❌ 何らかのエラーが発生しました。',
 									flags: MessageFlags.Ephemeral,
 								});
-								throw new Error(err);
+								throw new Error(err.message || String(err), { cause: err });
 							}
 						}
 					});
@@ -347,7 +347,7 @@ module.exports = async (client, interaction) => {
 									await interaction.reply(
 										'❌ エラーが発生しました。コンソールを確認してください。',
 									);
-									throw new Error(err);
+									throw new Error(err.message || String(err), { cause: err });
 								})
 								.then(async () => {
 									await interaction.reply('✅　登録しました。');
@@ -372,7 +372,7 @@ module.exports = async (client, interaction) => {
 									await interaction.reply(
 										'❌ エラーが発生しました。コンソールを確認してください。',
 									);
-									throw new Error(err);
+									throw new Error(err.message || String(err), { cause: err });
 								});
 						} else {
 							await interaction.reply({

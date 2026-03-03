@@ -57,7 +57,7 @@ fs.readdir('./commands', (err, files) => {
 			}
 		} catch (err) {
 			console.log(`コマンドの読み込みに失敗: ${f}`);
-			throw new Error(err);
+			throw new Error(err.message || String(err), { cause: err });
 		}
 	});
 });
